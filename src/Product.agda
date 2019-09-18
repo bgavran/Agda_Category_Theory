@@ -10,24 +10,21 @@ open ≡-Reasoning
 open import Category
 open import Functor
 
+open Cat
 
 private
-  variable n m n' m' n'' m'' : Level
+  variable n m n' m' : Level
 
 _X_ : (Cat n m) → (Cat n' m') → (Cat (n ⊔ n') (m ⊔ m'))
-_X_ (MkCat obj₁ _hom₁_ id₁ _∘₁_ left-id₁ right-id₁ assoc₁)
-        (MkCat obj₂ _hom₂_ id₂ _∘₂_ left-id₂ right-id₂ assoc₂)
-  = MkCat
-  (obj₁ × obj₂)
-  (λ a b → (proj₁ a) hom₁ (proj₁ b) × (proj₂ a) hom₂ (proj₂ b))
-  (λ {a} → id₁ {proj₁ a} , id₂ {proj₂ a} )
-  (zip _∘₁_ _∘₂_)
-  (λ {a} {b} {f} → cong₂ _,_ (left-id₁ {f = proj₁ f}) (left-id₂ {f = proj₂ f}))
-  (λ {a} {b} {f} → cong₂ _,_ (right-id₁ {f = proj₁ f}) (right-id₂ {f = proj₂ f}))
-  (λ {a} {b} {c} {d} {f = f} {g = g} {h = h}
-  → cong₂ _,_ (assoc₁ {f = proj₁ f} {g = proj₁ g} {h = proj₁ h})
-              (assoc₂ {f = proj₂ f} {g = proj₂ g} {h = proj₂ h}))
-
+obj (c₁ X c₂) = (obj c₁ × obj c₂)
+_hom_ (c₁ X c₂) (a₁ , a₂) (b₁ , b₂) = (a₁ hom₁ b₁) × (a₂ hom₂ b₂)
+  where _hom₁_ = _hom_ c₁
+        _hom₂_ = _hom_ c₂
+id (c₁ X c₂) = id c₁ , id c₂
+_∘_ (c₁ X c₂) = zip (_∘_ c₁) (_∘_ c₂)
+left-id (c₁ X c₂) = cong₂ _,_ (left-id c₁) (left-id c₂)
+right-id (c₁ X c₂) = cong₂ _,_ (right-id c₁) (right-id c₂)
+assoc (c₁ X c₂) = cong₂ _,_ (assoc c₁) (assoc c₂)
 
 productAssociator : {cat1 : Cat n m} → {cat2 : Cat n m} → {cat3 : Cat n m}
   → ((cat1 X cat2) X cat3) Functor (cat1 X (cat2 X cat3))
