@@ -34,21 +34,15 @@ record Monoidal (cat : Cat n m) : (Set (n ⊔ m)) where
   --_⊗ₘ_ : obj (cat X cat) → obj cat
   --_⊗ₘ_ = mapMor _⊗_
 
-  multiplyTwiceFromRight : (cat X (cat X cat)) Functor cat
-  multiplyTwiceFromRight = MkFunctor
-    (λ x → {!!})
-    -- (λ x → let gg = (proj₁ x) ⊗ₒ ? -- (proj₁ (proj₂ x) ⊗ₒ ?)
-    --        in {!!} ) -- )(proj₁ x) ⊗ₒ ?)
-    {!!}
-    {!!}
-    {!!}
+  x⊗[y⊗z] : (cat X (cat X cat)) Functor cat
+  x⊗[y⊗z] = functorComposition _⊗_ ((idFunctor) 𝕏 (_⊗_))
 
   multiplyTwiceAssociator : (cat X (cat X cat)) Functor cat
   multiplyTwiceAssociator = {!!}
 
   field
     associator : Isomorphism (functorCategory (cat X (cat X cat)) cat)
-      multiplyTwiceFromRight multiplyTwiceAssociator
+      x⊗[y⊗z] multiplyTwiceAssociator
 
 
 ff : {a b : Set} → a × b → a × a

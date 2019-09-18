@@ -11,9 +11,12 @@ open import Category
 open import Functor
 
 open Cat
+open _Functor_
 
 private
-  variable n m n' m' : Level
+  variable
+    n m n' m' : Level
+    c₁ c₂ d₁ d₂ : Cat n m
 
 _X_ : (Cat n m) → (Cat n' m') → (Cat (n ⊔ n') (m ⊔ m'))
 obj (c₁ X c₂) = (obj c₁ × obj c₂)
@@ -33,3 +36,10 @@ productAssociator = MkFunctor
   (< proj₁ ∙ proj₁ , < proj₂ ∙ proj₁ , proj₂ > > )
   refl
   λ _ _ → refl
+
+
+_𝕏_ : (c₁ Functor d₁) → (c₂ Functor d₂) → (c₁ X c₂) Functor (d₁ X d₂)
+mapObj (F 𝕏 G) (a , a') = mapObj F a , mapObj G a'
+mapMor (F 𝕏 G) (f , g) = mapMor F f , mapMor G g
+idLaw (F 𝕏 G) = cong₂ _,_ (idLaw F) (idLaw G)
+compLaw (F 𝕏 G) (f₁ , f₂) (g₁ , g₂) = cong₂ _,_ (compLaw F f₁ g₁) (compLaw G f₂ g₂)
