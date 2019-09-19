@@ -75,4 +75,3 @@ constFunctor {cat2 = cat2} d = MkFunctor
   (λ _ → id cat2)
   refl
   (λ _ _ → sym (left-id cat2))
-

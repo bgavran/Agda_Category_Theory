@@ -23,24 +23,27 @@ record Monoidal (cat : Cat n m) : (Set (n ⊔ m)) where
   open _Functor_
 
   field
-    _⊗_ : (cat X cat) Functor cat
+    ⊗ : (cat X cat) Functor cat
     𝟙 : obj cat
 
-  -- map on objects
-  _⊗ₒ_ : obj (cat X cat) → obj cat
-  _⊗ₒ_ = mapObj _⊗_
-
-
   x⊗[y⊗z] : (cat X (cat X cat)) Functor cat
-  x⊗[y⊗z] = _⊗_ functorComp (idFunctor 𝕏 _⊗_)
+  x⊗[y⊗z] = ⊗ functorComp (idFunctor 𝕏 ⊗)
 
   [x⊗y]⊗z : (cat X (cat X cat)) Functor cat
-  [x⊗y]⊗z = _⊗_ functorComp ((_⊗_ 𝕏 idFunctor) functorComp productAssociatorᵣ)
+  [x⊗y]⊗z = ⊗ functorComp ((⊗ 𝕏 idFunctor) functorComp productAssociatorᵣ)
+
+  [𝟙⊗x] : cat Functor cat
+  [𝟙⊗x] = ⊗ functorComp (constFunctor 𝟙 /\ idFunctor)
+
+  [x⊗𝟙] : cat Functor cat
+  [x⊗𝟙] = ⊗ functorComp (idFunctor /\ constFunctor 𝟙)
 
   field
     associator  : Isomorphism (functorCategory (cat X (cat X cat)) cat)
-      x⊗[y⊗z] [x⊗y]⊗z
+      [x⊗y]⊗z x⊗[y⊗z]
     leftUnitor  : Isomorphism (functorCategory cat cat)
-      {!!} idFunctor
+      [𝟙⊗x] idFunctor
     rightUnitor : Isomorphism (functorCategory cat cat)
-      {!!} idFunctor
+      [x⊗𝟙] idFunctor
+
+   -- TODO coherence conditions

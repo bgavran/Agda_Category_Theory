@@ -51,3 +51,21 @@ mapObj (F 𝕏 G) (a , a') = mapObj F a , mapObj G a'
 mapMor (F 𝕏 G) (f , g) = mapMor F f , mapMor G g
 idLaw (F 𝕏 G) = cong₂ _,_ (idLaw F) (idLaw G)
 compLaw (F 𝕏 G) (f₁ , f₂) (g₁ , g₂) = cong₂ _,_ (compLaw F f₁ g₁) (compLaw G f₂ g₂)
+
+
+
+_/\_ : {cat1 cat2 cat3 : Cat n m}
+  → cat1 Functor cat2
+  → cat1 Functor cat3
+  → cat1 Functor (cat2 X cat3)
+mapObj (F /\ G) = λ a → mapObj F a , mapObj G a
+mapMor (F /\ G) = λ f → mapMor F f , mapMor G f
+idLaw (F /\ G) = cong₂ _,_ (idLaw F) (idLaw G)
+compLaw (F /\ G) f g = cong₂ _,_ (compLaw F f g) (compLaw G f g)
+
+
+swapFunctor : {cat1 cat2 : Cat n m} → (cat1 X cat2) Functor (cat2 X cat1)
+mapObj swapFunctor = swap
+mapMor swapFunctor = swap
+idLaw swapFunctor = refl
+compLaw swapFunctor = λ _ _ → refl
