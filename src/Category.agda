@@ -135,6 +135,7 @@ record Cat (n m : Level) : Set (suc (n ⊔ m)) where
       inverse : b hom a
       leftInverseLaw  : forward ∘ inverse ≡ id
       rightInverseLaw : inverse ∘ forward ≡ id
+  syntax Isomorphism a b = a ≅ b
 
 infix 10  _[_,_] _[_∘_]
 

@@ -30,20 +30,17 @@ record Monoidal (cat : Cat n m) : (Set (n ⊔ m)) where
   _⊗ₒ_ : obj (cat X cat) → obj cat
   _⊗ₒ_ = mapObj _⊗_
 
-  ---- map on morphisms
-  --_⊗ₘ_ : obj (cat X cat) → obj cat
-  --_⊗ₘ_ = mapMor _⊗_
 
   x⊗[y⊗z] : (cat X (cat X cat)) Functor cat
-  x⊗[y⊗z] = functorComposition _⊗_ ((idFunctor) 𝕏 (_⊗_))
+  x⊗[y⊗z] = _⊗_ functorComp (idFunctor 𝕏 _⊗_)
 
-  multiplyTwiceAssociator : (cat X (cat X cat)) Functor cat
-  multiplyTwiceAssociator = {!!}
+  [x⊗y]⊗z : (cat X (cat X cat)) Functor cat
+  [x⊗y]⊗z = _⊗_ functorComp ((_⊗_ 𝕏 idFunctor) functorComp productAssociatorᵣ)
 
   field
-    associator : Isomorphism (functorCategory (cat X (cat X cat)) cat)
-      x⊗[y⊗z] multiplyTwiceAssociator
-
-
-ff : {a b : Set} → a × b → a × a
-ff = λ x → {!!}
+    associator  : Isomorphism (functorCategory (cat X (cat X cat)) cat)
+      x⊗[y⊗z] [x⊗y]⊗z
+    leftUnitor  : Isomorphism (functorCategory cat cat)
+      {!!} idFunctor
+    rightUnitor : Isomorphism (functorCategory cat cat)
+      {!!} idFunctor

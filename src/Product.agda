@@ -29,11 +29,19 @@ left-id (c₁ X c₂) = cong₂ _,_ (left-id c₁) (left-id c₂)
 right-id (c₁ X c₂) = cong₂ _,_ (right-id c₁) (right-id c₂)
 assoc (c₁ X c₂) = cong₂ _,_ (assoc c₁) (assoc c₂)
 
-productAssociator : {cat1 : Cat n m} → {cat2 : Cat n m} → {cat3 : Cat n m}
+productAssociatorₗ : {cat1 : Cat n m} → {cat2 : Cat n m} → {cat3 : Cat n m}
   → ((cat1 X cat2) X cat3) Functor (cat1 X (cat2 X cat3))
-productAssociator = MkFunctor
+productAssociatorₗ = MkFunctor
   (< proj₁ ∙ proj₁ , < proj₂ ∙ proj₁ , proj₂ > > )
   (< proj₁ ∙ proj₁ , < proj₂ ∙ proj₁ , proj₂ > > )
+  refl
+  λ _ _ → refl
+
+productAssociatorᵣ : {cat1 : Cat n m} → {cat2 : Cat n m} → {cat3 : Cat n m}
+  → (cat1 X (cat2 X cat3)) Functor ((cat1 X cat2) X cat3)
+productAssociatorᵣ = MkFunctor
+  < < proj₁ , proj₁ ∙ proj₂ > , proj₂ ∙ proj₂ >
+  < < proj₁ , proj₁ ∙ proj₂ > , proj₂ ∙ proj₂ >
   refl
   λ _ _ → refl
 
