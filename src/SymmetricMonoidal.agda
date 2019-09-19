@@ -33,5 +33,7 @@ record SymmetricMonoidal {cat : Cat n m} (mc : Monoidal cat) : (Set (n ⊔ m)) w
   field
     σ : Isomorphism (functorCategory (cat X cat) cat) ⊗ (⊗ functorComp swapFunctor)
 
-  _σₒ_ : {a b : obj cat} → cat [ a ⊗ₒ b , b ⊗ₒ a ]
-  _σₒ_ = η (forward σ)
+  σₒ : {a b : obj cat} → cat [ a ⊗ₒ b , b ⊗ₒ a ]
+  σₒ = η (forward σ)
+
+  -- TODO coherence

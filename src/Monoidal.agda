@@ -60,8 +60,11 @@ record Monoidal (cat : Cat n m) : (Set (n ⊔ m)) where
         → cat [ a ⊗ₒ c , b ⊗ₒ d ]
   _⊗ₘ_ = curry (mapMor ⊗)
 
-  leftUnitorₒ : cat [ mapObj (⊗ functorComp (constFunctor 𝟙 /\ idFunctor)) a , mapObj (idFunctor {cat = cat}) a ]
-  leftUnitorₒ = η (forward leftUnitor)
+  λₒ : cat [ 𝟙 ⊗ₒ a ,  a ]
+  λₒ = η (forward leftUnitor)
+
+  ρₒ : cat [ a ⊗ₒ 𝟙 ,  a ]
+  ρₒ = η (forward rightUnitor)
 
   αₒ : cat [ (a ⊗ₒ b) ⊗ₒ c , a ⊗ₒ(b ⊗ₒ c) ]
   αₒ = η (forward associator)
