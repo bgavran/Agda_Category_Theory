@@ -4,7 +4,7 @@ open import Level
 open import Function using (flip)
 open import Data.Product
 open import IO
-open import Relation.Binary.PropositionalEquality
+open import Relation.Binary.PropositionalEquality hiding ([_])
 open ≡-Reasoning
 
 open import Category
@@ -20,7 +20,9 @@ private
 record Monoidal (cat : Cat n m) : (Set (n ⊔ m)) where
   constructor MkMonoidal
   open Cat
+  open Cat.Isomorphism
   open _Functor_
+  open _NatTrans_
 
   field
     ⊗ : (cat X cat) Functor cat
@@ -45,5 +47,24 @@ record Monoidal (cat : Cat n m) : (Set (n ⊔ m)) where
       [𝟙⊗x] idFunctor
     rightUnitor : Isomorphism (functorCategory cat cat)
       [x⊗𝟙] idFunctor
+
+  _⊗ₒ_ : obj cat → obj cat → obj cat
+  _⊗ₒ_ = curry (mapObj ⊗)
+
+  private
+    variable
+      a b c d : obj cat
+
+  _⊗ₘ_ : cat [ a , b ]
+        → cat [ c , d ]
+        → cat [ a ⊗ₒ c , b ⊗ₒ d ]
+  _⊗ₘ_ = curry (mapMor ⊗)
+
+  leftUnitorₒ : cat [ mapObj (⊗ functorComp (constFunctor 𝟙 /\ idFunctor)) a , mapObj (idFunctor {cat = cat}) a ]
+  leftUnitorₒ = η (forward leftUnitor)
+
+  αₒ : cat [ (a ⊗ₒ b) ⊗ₒ c , a ⊗ₒ(b ⊗ₒ c) ]
+  αₒ = η (forward associator)
+
 
    -- TODO coherence conditions

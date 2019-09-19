@@ -4,7 +4,7 @@ open import Data.Product
 open import Level
 open import Function using (flip) renaming (_∘_ to _∙_)
 open import IO
-open import Relation.Binary.PropositionalEquality
+open import Relation.Binary.PropositionalEquality hiding ([_])
 open ≡-Reasoning
 
 open import Category
