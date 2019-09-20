@@ -44,16 +44,16 @@ record Lens (s t a b : obj) : (Set m) where
     get : cat [ s , a ]
     put : cat [ s ⊗ₒ b , t ]
 
-lensHom : (cart : Cartesian smc) → (obj × obj) → (obj × obj) → Set m
-lensHom cart (s , t) (a , b) = Lens s t a b
+lensHom : (obj × obj) → (obj × obj) → Set m
+lensHom (s , t) (a , b) = Lens s t a b
 
-lensId : (cart : Cartesian smc) → {a : obj × obj} → lensHom cart a a
-lensId cart = MkLens id π₂
+--lensId : {a : obj × obj} → lensHom a a
+--lensId = MkLens id π₂
 
 
-lensCompose : {a b c : obj × obj}
-  → lensHom cart b c → lensHom cart a b → lensHom cart a c
-lensCompose {a = (a , a')} {b = (b , b')} {c = (c , c')}
+_∘ₗ_ : {a b c : obj × obj}
+  → lensHom b c → lensHom a b → lensHom a c
+_∘ₗ_ {a = (a , a')} {b = (b , b')} {c = (c , c')}
   (MkLens get₂ put₂) (MkLens get₁ put₁)
   = MkLens
     (get₂ ∘ get₁)
@@ -64,15 +64,26 @@ lensCompose {a = (a , a')} {b = (b , b')} {c = (c , c')}
        id ⊗ₘ put₂          →⟨  a ⊗ₒ     b'       ⟩
        put₁                 →⟨  a'                 ⟩end )
 
-lensLeftId : (cart : Cartesian smc) {a b : obj × obj} {f : lensHom cart a b} → lensCompose (lensId cart) f ≡ f
-lensLeftId cart {f} = cong₂ MkLens left-id {!!}
+lensLeftId : {a b : obj × obj} {f : lensHom a b}
+  → (MkLens id π₂) ∘ₗ f ≡ f
+lensLeftId {a = (a , a')} {b = (b , b')} {MkLens get put} = cong₂ MkLens left-id
+   (begin
+       put ∘  (id ⊗ₘ π₂) ∘ αₒ ∘ ((id ⊗ₘ get) ⊗ₘ id) ∘ (δ ⊗ₘ id)
+   ≡⟨ {!!} ⟩
+      put
+   ∎ )
 
-lensCategory : {cart : Cartesian smc} → Cat n m
-lensCategory {cart = cart} = MkCat
+-- TODO replace a function with its definitioN?
+-- TODO cong?
+-- TODO fall back on definition of π₂ and prove using ε and λₒ?
+-- TODO create new combinators for π₂ ?
+
+lensCategory : Cat n m
+lensCategory = MkCat
   (obj × obj)
-  (lensHom cart)
-  (lensId cart)
-  lensCompose
-  (lensLeftId cart)
+  lensHom
+  (MkLens id π₂)
+  _∘ₗ_
+  lensLeftId
   {!!}
   {!!}
