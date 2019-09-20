@@ -51,6 +51,19 @@ record Cat (n m : Level) : Set (suc (n ⊔ m)) where
     -- ; ∘-resp-≡ = flip ∘-resp-≡
     }
 
+  infixl 2 connect
+  connect : {a c : obj}
+    → (b : obj) → b hom c → a hom b → a hom c
+  connect b g f  = g ∘ f
+  syntax connect b g f = f →⟨ b ⟩ g
+
+  infix 1 begin→⟨_⟩_
+  begin→⟨_⟩_ : (a : obj) → {b : obj} → a hom b → a hom b
+  begin→⟨ a ⟩ f = f
+
+  end∘ : {a : obj} → (b : obj) → a hom b → a hom b
+  end∘ b f = f
+  syntax end∘ b f = f →⟨ b ⟩end
 
 
   record CommutativeSquare {a b c d : obj}

@@ -1,6 +1,3 @@
-module Lens where
-
-
 open import Level
 open import Function using (flip)
 open import Data.Product
@@ -16,81 +13,66 @@ open import Monoidal
 open import SymmetricMonoidal
 open import Comonoid
 
-open Cat
+module Lens
+  {n m }
+  {cat : Cat n m}
+  {mc : Monoidal cat}
+  {smc : SymmetricMonoidal mc}
+  (cart : Cartesian smc) where
 
+open _Functor_
+module cat = Cat cat
+open cat
+module mc = Monoidal.Monoidal mc
+open mc
+module smc = SymmetricMonoidal.SymmetricMonoidal smc
+open smc
+module cart = Comonoid.Cartesian cart
+open cart
 
 private
   variable
-    n m n' m' n'' m'' : Level
---     cat : Cat n m
---     mc : Monoidal cat
---     smc : SymmetricMonoidal mc
+    n' m' n'' m'' : Level
 
 
 -- TODO just get's should be morphisms in cart,not puts also?
 -- for this I need the notion of a subcategory
-
-record Lens {cat : Cat n m}
-            {mc : Monoidal cat}
-            {smc : SymmetricMonoidal mc}
-            (cart : Cartesian smc)
-            (s t a b : obj cat)
-            : (Set m) where
+record Lens (s t a b : obj) : (Set m) where
   constructor MkLens
-  open _Functor_
-  module M = Monoidal.Monoidal mc
-  open M
-  module S = SymmetricMonoidal.SymmetricMonoidal smc
-  open S
 
   field
     get : cat [ s , a ]
     put : cat [ s ⊗ₒ b , t ]
 
-open Comonoid.Cartesian using (π₂)
+lensHom : (cart : Cartesian smc) → (obj × obj) → (obj × obj) → Set m
+lensHom cart (s , t) (a , b) = Lens s t a b
 
-lensHom : {cat : Cat n m} {mc : Monoidal cat} {smc : SymmetricMonoidal mc}
-  → (cart : Cartesian smc) → (obj cat × obj cat) → (obj cat × obj cat) → Set m
-lensHom cart (s , t) (a , b) = Lens cart s t a b
-
-lensId : {cat : Cat n m} {mc : Monoidal cat} {smc : SymmetricMonoidal mc}
-  → (cart : Cartesian smc) → {a : obj cat × obj cat} → lensHom cart a a
-lensId {cat = cat} cart = MkLens (id cat) (π₂ cart)
+lensId : (cart : Cartesian smc) → {a : obj × obj} → lensHom cart a a
+lensId cart = MkLens id π₂
 
 
-lensCompose : {cat : Cat n m} {mc : Monoidal cat} {smc : SymmetricMonoidal mc} {cart : Cartesian smc} {a b c : obj cat × obj cat}
+lensCompose : {a b c : obj × obj}
   → lensHom cart b c → lensHom cart a b → lensHom cart a c
-lensCompose {cat = cat} {mc = mc} {smc = smc} {cart = cart}
+lensCompose {a = (a , a')} {b = (b , b')} {c = (c , c')}
   (MkLens get₂ put₂) (MkLens get₁ put₁)
   = MkLens
-    (get₂ ● get₁)
-    (put₁ ● ((idd ⊗ₘ put₂) ● αₒ) ● (((idd ⊗ₘ get₁) ⊗ₘ idd)) ● (δ ⊗ₘ idd) )
+    (get₂ ∘ get₁)
+    (                  begin→⟨     a      ⊗ₒ c'    ⟩
+        δ ⊗ₘ id            →⟨ (a ⊗ₒ a) ⊗ₒ c'    ⟩
+      (id ⊗ₘ get₁) ⊗ₘ id  →⟨ (a ⊗ₒ b) ⊗ₒ c'    ⟩
+         αₒ                 →⟨  a ⊗ₒ (b ⊗ₒ c')   ⟩
+       id ⊗ₘ put₂          →⟨  a ⊗ₒ     b'       ⟩
+       put₁                 →⟨  a'                 ⟩end )
 
-  where
-  module cat = Cat cat
-  open cat renaming (id to idd; _∘_ to _●_)
-  module M = Monoidal.Monoidal mc
-  open M
-  module S = SymmetricMonoidal.SymmetricMonoidal smc
-  open S
-  module cart = Comonoid.Cartesian cart
-  open cart
+lensLeftId : (cart : Cartesian smc) {a b : obj × obj} {f : lensHom cart a b} → lensCompose (lensId cart) f ≡ f
+lensLeftId cart {f} = cong₂ MkLens left-id {!!}
 
-lensCategory : {cat : Cat n m} {mc : Monoidal cat}
-  {smc : SymmetricMonoidal mc} {cart : Cartesian smc}
-  → Cat n m
-lensCategory {cat = cat} {mc = mc} {smc = smc} {cart = cart} = MkCat
-  (obj cat × obj cat)
+lensCategory : {cart : Cartesian smc} → Cat n m
+lensCategory {cart = cart} = MkCat
+  (obj × obj)
   (lensHom cart)
   (lensId cart)
   lensCompose
+  (lensLeftId cart)
   {!!}
   {!!}
-  {!!}
-
-  where
-  module M = Monoidal.Monoidal mc
-  open M
-  module S = SymmetricMonoidal.SymmetricMonoidal smc
-  open S
-

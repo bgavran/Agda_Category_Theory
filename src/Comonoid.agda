@@ -50,6 +50,8 @@ record Cartesian
   π₂ : {a b : obj} → cat [ a ⊗ₒ b , b ]
   π₂ = cat [ λₒ ∘ (ε ⊗ₘ id) ]
 
+
+-- Did I define this to be a category actually?
   -- TODO prove universal property of cartesian product?
 
 
