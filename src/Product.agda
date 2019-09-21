@@ -1,3 +1,4 @@
+{-# OPTIONS --allow-unsolved-metas #-}
 module Product where
 
 open import Data.Product
@@ -28,6 +29,7 @@ _∘_ (c₁ X c₂) = zip (_∘_ c₁) (_∘_ c₂)
 left-id (c₁ X c₂) = cong₂ _,_ (left-id c₁) (left-id c₂)
 right-id (c₁ X c₂) = cong₂ _,_ (right-id c₁) (right-id c₂)
 assoc (c₁ X c₂) = cong₂ _,_ (assoc c₁) (assoc c₂)
+∘-resp-≡ (c₁ X c₂) f≡g h≡i = {!!} -- let tt = (∘-resp-≡ c₁ {!!} {!!}) in {!!}
 
 productAssociatorₗ : {cat1 : Cat n m} → {cat2 : Cat n m} → {cat3 : Cat n m}
   → ((cat1 X cat2) X cat3) Functor (cat1 X (cat2 X cat3))

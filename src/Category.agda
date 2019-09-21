@@ -26,8 +26,8 @@ record Cat (n m : Level) : Set (suc (n ⊔ m)) where
       {g :       b hom c}
       {h : a hom b}
       → (f ∘ g) ∘ h ≡ f ∘ (g ∘ h)
-    -- ∘-resp-≡ : {a b c : obj} → {f g : a hom b} → {h i : b hom c}
-    --  → f ≡ g → h ≡ i → (h ∘ f ≡ i ∘ g)
+    ∘-resp-≡ : {a b c : obj} → {f g : a hom b} → {h i : b hom c}
+      → f ≡ g → h ≡ i → (h ∘ f ≡ i ∘ g)
 
   -- ∘-resp-≡ₗ : {a b c : obj} → {f g : a hom b} → {h : b hom c}
   --   → f ≡ g → (h ∘ f ≡ h ∘ g)
@@ -48,8 +48,12 @@ record Cat (n m : Level) : Set (suc (n ⊔ m)) where
     ; left-id = right-id
     ; right-id = left-id
     ; assoc = sym assoc
-    -- ; ∘-resp-≡ = flip ∘-resp-≡
+    ; ∘-resp-≡ = flip ∘-resp-≡
     }
+
+  refl⟨∘⟩_ : {a b c : obj} {f g : a hom b} {h : b hom c}
+    → f ≡ g → h ∘ f ≡ h ∘ g
+  refl⟨∘⟩_ e = ∘-resp-≡ e refl
 
   infixl 2 connect
   connect : {a c : obj}

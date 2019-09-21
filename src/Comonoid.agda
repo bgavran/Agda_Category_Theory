@@ -41,14 +41,24 @@ record Cartesian
     copyAssoc  : {c : obj} → αₒ ∘ (δ ⊗ₘ id) ∘ δ {c = c}
                                  ≡ (id ⊗ₘ δ) ∘ δ {c = c}
 
-    deleteApply : {a b : obj} {f : cat [ a , b ] } → ε ≡ cat [ ε ∘ f ]
-    copyApply : {a b : obj} {f : cat [ a , b ] } → cat [ δ  ∘ f ] ≡ cat [ (f ⊗ₘ f) ∘ δ ]
+    deleteApply : {a b : obj} {f : cat [ a , b ] } → ε ≡ ε ∘ f
+    copyApply   : {a b : obj} {f : cat [ a , b ] } → δ ∘ f ≡ (f ⊗ₘ f) ∘ δ
 
   π₁ : {a b : obj} → cat [ a ⊗ₒ b , a ]
-  π₁ = cat [ ρₒ ∘ (id ⊗ₘ ε) ]
+  π₁ = ρₒ ∘ (id ⊗ₘ ε)
 
   π₂ : {a b : obj} → cat [ a ⊗ₒ b , b ]
-  π₂ = cat [ λₒ ∘ (ε ⊗ₘ id) ]
+  π₂ = λₒ ∘ (ε ⊗ₘ id)
+
+  tt : {a b : obj} → π₂ {a = a} {b = b} ≡ cat [ λₒ ∘ (ε ⊗ₘ id) ]
+  tt = begin
+       π₂
+    ≡⟨ refl ⟩
+      λₒ ∘ (ε ⊗ₘ id)
+    ∎
+
+  -- π₂delete : {a b c d : obj} {f : a hom b} {g : c hom d}
+  --   → cat [ π₂ ∘ (f ⊗ₘ g) ] ≡ ε ⊗ₘ g
 
 
 -- Did I define this to be a category actually?
