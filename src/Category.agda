@@ -9,6 +9,8 @@ open ≡-Reasoning
 record Cat (n m : Level) : Set (suc (n ⊔ m)) where
   constructor MkCat
   infixr 9 _∘_
+  infix 10  _[_,_] _[_∘_]
+
   field
     obj : Set n
     _hom_ : (a b : obj) → Set m
@@ -19,19 +21,48 @@ record Cat (n m : Level) : Set (suc (n ⊔ m)) where
       -> (a hom b)
       -> (a    hom    c)
 
-    left-id  : {a b : obj} {f : a hom b} → (    id ∘ f ≡ f)
-    right-id : {a b : obj} {f : a hom b} → (f ∘ id     ≡ f)
-    assoc : {a b c d : obj}
-      {f :             c hom d}
-      {g :       b hom c}
-      {h : a hom b}
-      → (f ∘ g) ∘ h ≡ f ∘ (g ∘ h)
-    ∘-resp-≡ : {a b c : obj} → {f g : a hom b} → {h i : b hom c}
-      → f ≡ g → h ≡ i → (h ∘ f ≡ i ∘ g)
+  _●_  : {a b c : obj}
+    -> (a hom b)
+    -> (      b hom c)
+    -> (a    hom    c)
+  _●_ f g = _∘_ g f
 
-  -- ∘-resp-≡ₗ : {a b c : obj} → {f g : a hom b} → {h : b hom c}
-  --   → f ≡ g → (h ∘ f ≡ h ∘ g)
-  -- ∘-resp-≡ₗ e = ∘-resp-≡ e refl
+  _[_,_] : obj -> obj -> Set m
+  _[_,_] = _hom_
+
+  _[_∘_] : {a b c : obj}
+    -> b hom c -> a hom b -> a hom c
+  _[_∘_] = _∘_
+
+
+  _[_●_] : {a b c : obj}
+    -> a hom b -> b hom c -> a hom c
+  _[_●_] = _●_
+
+
+  field
+    left-id  : {a b : obj} {f : a hom b} → (     f ● id ≡ f)
+    right-id : {a b : obj} {f : a hom b} → (id ● f      ≡ f)
+    assoc : {a b c d : obj}
+      {f : a hom b}
+      {g :       b hom c}
+      {h :             c hom d}
+      → (f ● g) ● h ≡ f ● (g ● h)
+    ∘-resp-≡ : {a b c : obj} → {f g : a hom b} → {h i : b hom c}
+      → f ≡ g
+      → h ≡ i
+      → (f ● h ≡ g ● i)
+
+
+  ∘-resp-≡ₗ : {a b c : obj} → {f g : a hom b} → {h : b hom c}
+    → f ≡ g
+    → f ● h ≡ g ● h
+  ∘-resp-≡ₗ e = ∘-resp-≡ e refl
+
+  ∘-resp-≡ᵣ : {a b c : obj} → {f : a hom b} → {g h : b hom c}
+    → g ≡ h
+    → f ● g ≡ f ● h
+  ∘-resp-≡ᵣ e = ∘-resp-≡ refl e
 
   dom : {a b : obj} -> (a hom b) -> obj
   dom {a} _ = a
@@ -52,13 +83,17 @@ record Cat (n m : Level) : Set (suc (n ⊔ m)) where
     }
 
   refl⟨∘⟩_ : {a b c : obj} {f g : a hom b} {h : b hom c}
-    → f ≡ g → h ∘ f ≡ h ∘ g
-  refl⟨∘⟩_ e = ∘-resp-≡ e refl
+    → f ≡ g → f ● h ≡ g ● h
+  refl⟨∘⟩ e = ∘-resp-≡ e refl
+
+  _⟨∘⟩refl : {a b c : obj} {f : a hom b} {g h : b hom c}
+    → g ≡ h → f ● g ≡ f ● h
+  e ⟨∘⟩refl = ∘-resp-≡ refl e
 
   infixl 2 connect
   connect : {a c : obj}
-    → (b : obj) → b hom c → a hom b → a hom c
-  connect b g f  = g ∘ f
+    → (b : obj) → a hom b → b hom c → a hom c
+  connect b f g  = f ● g
   syntax connect b g f = f →⟨ b ⟩ g
 
   infix 1 begin→⟨_⟩_
@@ -78,7 +113,7 @@ record Cat (n m : Level) : Set (suc (n ⊔ m)) where
     : Set m where
     constructor MkCommSq
     field
-      eqPaths : g ∘ f ≡ i ∘ h
+      eqPaths : f ● g ≡ h ● i
 
 
   private
@@ -87,6 +122,7 @@ record Cat (n m : Level) : Set (suc (n ⊔ m)) where
       f g h i g' h' i' : a hom b
 
   -- not really used yet
+  {-
   pushComm : CommutativeSquare f g h i
     → CommutativeSquare f (g' ∘ g) h (g' ∘ i)
   pushComm {f = f} {g = g} {h = h} {i = i} {g' = g'} (MkCommSq eqPaths)
@@ -109,6 +145,7 @@ record Cat (n m : Level) : Set (suc (n ⊔ m)) where
         (i' ∘ h') ∘ h       ≡⟨ assoc ⟩
         i' ∘ (h' ∘ h)
       ∎)
+   -}
 
   {-
 
@@ -127,17 +164,17 @@ record Cat (n m : Level) : Set (suc (n ⊔ m)) where
   glue
     : CommutativeSquare f g h i
     → CommutativeSquare i g' h' i'
-    → CommutativeSquare f (g' ∘ g) (h' ∘ h) i'
+    → CommutativeSquare f (g ● g') (h ● h') i'
   glue {f = f} {g = g} {h = h} {i} {g' = g'} {h' = h'} {i' = i'}
     (MkCommSq eqPaths₁) (MkCommSq eqPaths₂)
     = MkCommSq (
       begin
-         (g' ∘ g) ∘ f       ≡⟨ assoc ⟩
-         g' ∘ (g ∘ f)       ≡⟨ cong (λ x → (g' ∘ x)) eqPaths₁ ⟩
-         g' ∘ (i ∘ h)       ≡⟨ sym assoc ⟩
-         (g' ∘ i) ∘ h       ≡⟨ cong (λ x → (x ∘ h)) eqPaths₂ ⟩
-         (i' ∘ h') ∘ h      ≡⟨  assoc  ⟩
-         i' ∘ (h' ∘ h)
+         f ● (g ● g')       ≡⟨ sym assoc ⟩
+         (f ● g) ● g'       ≡⟨ cong (λ x → (g' ∘ x)) eqPaths₁ ⟩
+         (h ● i) ● g'       ≡⟨ assoc ⟩
+         h ● (i ● g')       ≡⟨ cong (λ x → (x ∘ h)) eqPaths₂ ⟩
+         h ● (h' ● i')      ≡⟨ sym assoc  ⟩
+         (h ● h') ● i'
       ∎
     )
     -- c1 c2 = let gg = pushComm {g' = g'} c1
@@ -150,15 +187,7 @@ record Cat (n m : Level) : Set (suc (n ⊔ m)) where
     field
       forward : a hom b
       inverse : b hom a
-      leftInverseLaw  : forward ∘ inverse ≡ id
-      rightInverseLaw : inverse ∘ forward ≡ id
+      leftInverseLaw  : inverse ● forward ≡ id
+      rightInverseLaw : forward ● inverse ≡ id
   syntax Isomorphism a b = a ≅ b
 
-infix 10  _[_,_] _[_∘_]
-
-_[_,_] : {n m : Level} -> (cat : Cat n m) -> Cat.obj cat -> Cat.obj cat -> Set m
-_[_,_] = Cat._hom_
-
-_[_∘_] : {n m : Level} -> (cat : Cat n m) -> {a b c : Cat.obj cat}
-  -> cat [ b , c ] -> cat [ a , b ] -> cat [ a , c ]
-_[_∘_] = Cat._∘_
