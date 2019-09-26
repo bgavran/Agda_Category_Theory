@@ -9,6 +9,7 @@ open ≡-Reasoning
 record Cat (n m : Level) : Set (suc (n ⊔ m)) where
   constructor MkCat
   infixr 9 _∘_
+  infixl 9 _●_ -- associate to the left because of reversal of the arguments
   infix 10  _[_,_] _[_∘_]
 
   field
@@ -54,16 +55,6 @@ record Cat (n m : Level) : Set (suc (n ⊔ m)) where
       → (f ● h ≡ g ● i)
 
 
-  ∘-resp-≡ₗ : {a b c : obj} → {f g : a hom b} → {h : b hom c}
-    → f ≡ g
-    → f ● h ≡ g ● h
-  ∘-resp-≡ₗ e = ∘-resp-≡ e refl
-
-  ∘-resp-≡ᵣ : {a b c : obj} → {f : a hom b} → {g h : b hom c}
-    → g ≡ h
-    → f ● g ≡ f ● h
-  ∘-resp-≡ᵣ e = ∘-resp-≡ refl e
-
   dom : {a b : obj} -> (a hom b) -> obj
   dom {a} _ = a
 
@@ -82,19 +73,19 @@ record Cat (n m : Level) : Set (suc (n ⊔ m)) where
     ; ∘-resp-≡ = flip ∘-resp-≡
     }
 
-  refl⟨∘⟩_ : {a b c : obj} {f g : a hom b} {h : b hom c}
+  _⟨●⟩refl : {a b c : obj} {f g : a hom b} {h : b hom c}
     → f ≡ g → f ● h ≡ g ● h
-  refl⟨∘⟩ e = ∘-resp-≡ e refl
+  e ⟨●⟩refl = ∘-resp-≡ e refl
 
-  _⟨∘⟩refl : {a b c : obj} {f : a hom b} {g h : b hom c}
+  refl⟨●⟩_ : {a b c : obj} {f : a hom b} {g h : b hom c}
     → g ≡ h → f ● g ≡ f ● h
-  e ⟨∘⟩refl = ∘-resp-≡ refl e
+  refl⟨●⟩ e = ∘-resp-≡ refl e
 
   infixl 2 connect
   connect : {a c : obj}
     → (b : obj) → a hom b → b hom c → a hom c
   connect b f g  = f ● g
-  syntax connect b g f = f →⟨ b ⟩ g
+  syntax connect b f g = f →⟨ b ⟩ g
 
   infix 1 begin→⟨_⟩_
   begin→⟨_⟩_ : (a : obj) → {b : obj} → a hom b → a hom b
@@ -190,4 +181,37 @@ record Cat (n m : Level) : Set (suc (n ⊔ m)) where
       leftInverseLaw  : inverse ● forward ≡ id
       rightInverseLaw : forward ● inverse ≡ id
   syntax Isomorphism a b = a ≅ b
+  open Isomorphism
+
+  _●≅_ : {a b c : obj}
+    → Isomorphism a b → Isomorphism b c → Isomorphism a c
+  f ●≅ g = MkIso
+    (forward f ● forward g)
+    (inverse g ● inverse f)
+    (begin
+      (inverse g ● inverse f) ● (forward f ● forward g)
+     ≡⟨ sym assoc  ⟩
+      ((inverse g ● inverse f) ● forward f) ● forward g
+     ≡⟨ assoc ⟨●⟩refl  ⟩
+      (inverse g ● (inverse f ● forward f)) ● forward g
+     ≡⟨ (refl⟨●⟩ leftInverseLaw f) ⟨●⟩refl ⟩
+      (inverse g ● id) ● forward g
+     ≡⟨ left-id ⟨●⟩refl  ⟩
+      inverse g ● forward g
+     ≡⟨ leftInverseLaw g  ⟩
+      id
+     ∎ )
+     (begin
+        (forward f ● forward g) ● (inverse g ● inverse f)
+     ≡⟨ sym assoc  ⟩
+        ((forward f ● forward g) ● inverse g) ● inverse f
+     ≡⟨ assoc ⟨●⟩refl  ⟩
+        (forward f ● (forward g ● inverse g)) ● inverse f
+     ≡⟨ (refl⟨●⟩ rightInverseLaw g) ⟨●⟩refl ⟩
+        (forward f ● id) ● inverse f
+     ≡⟨ left-id ⟨●⟩refl  ⟩
+        forward f ● inverse f
+     ≡⟨ rightInverseLaw f   ⟩
+         id
+     ∎ )
 
