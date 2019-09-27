@@ -17,16 +17,17 @@ record Cat (n m : Level) : Set (suc (n ⊔ m)) where
     _hom_ : (a b : obj) → Set m
 
     id : {a : obj} -> a hom a
-    _∘_  : {a b c : obj}
-      -> (      b hom c)
+    _●_  : {a b c : obj}
       -> (a hom b)
+      -> (      b hom c)
       -> (a    hom    c)
 
-  _●_  : {a b c : obj}
-    -> (a hom b)
+
+  _∘_  : {a b c : obj}
     -> (      b hom c)
+    -> (a hom b)
     -> (a    hom    c)
-  _●_ f g = _∘_ g f
+  _∘_ g f = _●_ f g
 
   _[_,_] : obj -> obj -> Set m
   _[_,_] = _hom_
@@ -49,7 +50,7 @@ record Cat (n m : Level) : Set (suc (n ⊔ m)) where
       {g :       b hom c}
       {h :             c hom d}
       → (f ● g) ● h ≡ f ● (g ● h)
-    ∘-resp-≡ : {a b c : obj} → {f g : a hom b} → {h i : b hom c}
+    ●-resp-≡ : {a b c : obj} → {f g : a hom b} → {h i : b hom c}
       → f ≡ g
       → h ≡ i
       → (f ● h ≡ g ● i)
@@ -66,20 +67,20 @@ record Cat (n m : Level) : Set (suc (n ⊔ m)) where
     { obj = obj
     ; _hom_ = flip _hom_
     ; id = id
-    ; _∘_ = flip _∘_
+    ; _●_ = flip _●_
     ; left-id = right-id
     ; right-id = left-id
     ; assoc = sym assoc
-    ; ∘-resp-≡ = flip ∘-resp-≡
+    ; ●-resp-≡ = flip ●-resp-≡
     }
 
   _⟨●⟩refl : {a b c : obj} {f g : a hom b} {h : b hom c}
     → f ≡ g → f ● h ≡ g ● h
-  e ⟨●⟩refl = ∘-resp-≡ e refl
+  e ⟨●⟩refl = ●-resp-≡ e refl
 
   refl⟨●⟩_ : {a b c : obj} {f : a hom b} {g h : b hom c}
     → g ≡ h → f ● g ≡ f ● h
-  refl⟨●⟩ e = ∘-resp-≡ refl e
+  refl⟨●⟩ e = ●-resp-≡ refl e
 
   infixl 2 connect
   connect : {a c : obj}
