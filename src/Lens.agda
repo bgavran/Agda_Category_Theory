@@ -53,6 +53,8 @@ _lensHom_ (s , t) (a , b) = Lens s t a b
 lensId : {a : obj × obj} → a lensHom a
 lensId = MkLens id π₂
 
+
+-- ((δ ⊗ₘ id) ● ((id ⊗ₘ get₁) ⊗ₘ id ) ● αₘ ● (id ⊗ₘ put₂) ● put₁)
 _●ₗ_ : {a b c : obj × obj}
   → a lensHom b
   →           b lensHom c
@@ -99,6 +101,18 @@ lensLeftId {a = (a , a')} {b = (b , b')} {MkLens get put} = cong₂ MkLens left-
 
 
 
+lensAssoc : {a b c d : obj × obj}
+  {f : a lensHom b}
+  {g :           b lensHom c}
+  {h :                     c lensHom d}
+  → ((f ●ₗ g) ●ₗ h) ≡ (f ●ₗ (g ●ₗ h))
+lensAssoc {f = (MkLens get₁ put₁)} {g = (MkLens get₂ put₂)} {h = (MkLens get₃ put₃)} = cong₂ MkLens assoc
+  (begin
+      (δ ⊗ₘ id) ● (id ⊗ₘ (get₁ ● get₂) ⊗ₘ id) ● αₘ ● (id ⊗ₘ put₃) ● ((δ ⊗ₘ id) ● ((id ⊗ₘ get₁) ⊗ₘ id ) ● αₘ ● (id ⊗ₘ put₂) ● put₁)
+   ≡⟨  {!!}  ⟩
+      (δ ⊗ₘ id) ● ((id ⊗ₘ get₁) ⊗ₘ id) ● αₘ ● (id ⊗ₘ ((δ ⊗ₘ id) ● ((id ⊗ₘ get₂) ⊗ₘ id ) ● αₘ ● (id ⊗ₘ put₃) ● put₂)) ● put₁
+   ∎)
+
 lensCategory : Cat n m
 lensCategory = MkCat
   (obj × obj)
@@ -107,5 +121,5 @@ lensCategory = MkCat
   _●ₗ_
   lensLeftId
   {!!}
-  {!!}
+  lensAssoc
   {!!}
