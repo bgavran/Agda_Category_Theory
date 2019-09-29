@@ -24,6 +24,7 @@ private
   variable
     n' m' n'' m'' : Level
 
+open _Functor_
 module C = Cat cat
 open C
 module LM = Monoidal.Monoidal mc
@@ -85,10 +86,12 @@ record Cartesian : (Set (n ⊔ m)) where
       (δ ⊗ₘ id) ● ((id ⊗ₘ ε) ⊗ₘ id) ● (ρₘ ⊗ₘ id)
     ≡⟨  sym distribute⊗₃   ⟩
       (δ ● (id ⊗ₘ ε) ● ρₘ) ⊗ₘ ((id ● id) ● id)
-    ≡⟨  ⊗-resp-≡ {!!} left-id   ⟩
-      (δ ● (id ⊗ₘ ε) ● ρₘ) ⊗ₘ (id ● id)
-    ≡⟨  {!!}   ⟩
-      id
+    ≡⟨  ⊗-resp-≡ {!copyDeleteρ!} left-id   ⟩
+        id ⊗ₘ (id ● id)
+    ≡⟨  ⊗-resp-≡ᵣ left-id   ⟩
+        id ⊗ₘ id
+    ≡⟨  idLaw ⊗   ⟩
+       id
     ∎
 
 

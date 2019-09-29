@@ -68,37 +68,46 @@ _●ₗ_ {a = (a , a')} {b = (b , b')} {c = (c , c')}
        id ⊗ₘ put₂          →⟨  a ⊗ₒ     b'       ⟩
        put₁                 →⟨  a'                 ⟩end )
 
+lensLeftIdHelper : {a b x : obj} {f : a hom x}
+  → (δ ⊗ₘ id {a = b}) ● ((id ⊗ₘ f) ⊗ₘ id) ●  αₘ ● (id ⊗ₘ π₂) ≡ id
+lensLeftIdHelper {f = f} =
+    (begin
+        (δ ⊗ₘ id) ● ((id ⊗ₘ f) ⊗ₘ id) ●  αₘ ● (id ⊗ₘ π₂)
+    ≡⟨   (assocApply α□) ⟨●⟩refl ⟩
+        ((δ ⊗ₘ id) ● αₘ ● (id ⊗ₘ (f ⊗ₘ id))) ● (id ⊗ₘ π₂)
+    ≡⟨   assoc  ⟩
+        (δ ⊗ₘ id) ● αₘ ● ((id ⊗ₘ (f ⊗ₘ id)) ● (id ⊗ₘ π₂))
+    ≡⟨   (refl⟨●⟩ sym distribute⊗) ⟩
+        (δ ⊗ₘ id) ● αₘ ● ((id ● id) ⊗ₘ ( (f ⊗ₘ id) ● π₂))
+    ≡⟨⟩
+        (δ ⊗ₘ id) ● αₘ ● ((id ● id) ⊗ₘ ( (f ⊗ₘ id) ● ((ε ⊗ₘ id) ● λₘ)))
+    ≡⟨   (refl⟨●⟩ ⊗-resp-≡ᵣ (sym assoc) ) ⟩
+        (δ ⊗ₘ id) ● αₘ ● ((id ● id) ⊗ₘ ( (f ⊗ₘ id) ● (ε ⊗ₘ id) ● λₘ))
+    ≡⟨   (refl⟨●⟩ ⊗-resp-≡ᵣ (sym distribute⊗ ⟨●⟩refl) ) ⟩
+        (δ ⊗ₘ id) ● αₘ ● ((id ● id) ⊗ₘ ( (f ● ε) ⊗ₘ (id ● id) ● λₘ ))
+    ≡⟨  refl⟨●⟩ ⊗-resp-≡ᵣ ( ⊗-resp-≡ (sym deleteApply) (left-id) ⟨●⟩refl) ⟩
+        (δ ⊗ₘ id) ● αₘ ● ((id ● id) ⊗ₘ ( (ε ⊗ₘ id) ● λₘ ))
+    ≡⟨    (refl⟨●⟩ distribute⊗)   ⟩
+        (δ ⊗ₘ id) ● αₘ ● ((id ⊗ₘ (ε ⊗ₘ id)) ● ( id ⊗ₘ λₘ ))
+    ≡⟨   sym assoc     ⟩
+        (δ ⊗ₘ id) ● αₘ ●  (id ⊗ₘ (ε ⊗ₘ id)) ● (id ⊗ₘ λₘ)
+    ≡⟨  strangeLaw  ⟩
+        id
+    ∎ )
 
 lensLeftId : {a b : obj × obj} {f : a lensHom b}
   → f ●ₗ lensId ≡ f
 lensLeftId {a = (a , a')} {b = (b , b')} {MkLens get put} = cong₂ MkLens left-id
    (begin
-        (δ ⊗ₘ id) ● ((id ⊗ₘ get) ⊗ₘ id) ●  αₘ ● (id ⊗ₘ π₂)  ● put
-    ≡⟨   (assocApply α□) ⟨●⟩refl ⟨●⟩refl ⟩
-        (δ ⊗ₘ id) ● αₘ ● (id ⊗ₘ (get ⊗ₘ id)) ● (id ⊗ₘ π₂) ● put
-    ≡⟨⟩
-        ((δ ⊗ₘ id) ● αₘ ● (id ⊗ₘ (get ⊗ₘ id))) ● (id ⊗ₘ ((ε ⊗ₘ id) ● λₘ)) ● put
-    ≡⟨   assoc ⟨●⟩refl   ⟩
-        (δ ⊗ₘ id) ● αₘ ● ((id ⊗ₘ (get ⊗ₘ id)) ● (id ⊗ₘ ((ε ⊗ₘ id) ● λₘ))) ● put
-    ≡⟨   (refl⟨●⟩ sym distribute⊗) ⟨●⟩refl   ⟩
-        (δ ⊗ₘ id) ● αₘ ● ((id ● id) ⊗ₘ ( (get ⊗ₘ id) ● ((ε ⊗ₘ id) ● λₘ))) ● put
-    ≡⟨   (refl⟨●⟩ ⊗-resp-≡ᵣ (sym assoc) ) ⟨●⟩refl  ⟩
-        (δ ⊗ₘ id) ● αₘ ● (  (id ● id)  ⊗ₘ ( (get ⊗ₘ id) ● (ε ⊗ₘ id) ● λₘ)) ● put
-    ≡⟨   (refl⟨●⟩ ⊗-resp-≡ᵣ (sym distribute⊗ ⟨●⟩refl) ) ⟨●⟩refl  ⟩
-        (δ ⊗ₘ id) ● αₘ ● (  (id ● id)    ⊗ₘ ( (get ● ε) ⊗ₘ (id ● id) ● λₘ ))  ● put
-    ≡⟨   (refl⟨●⟩ ⊗-resp-≡ᵣ ( ⊗-resp-≡ₗ (sym deleteApply) ⟨●⟩refl) ) ⟨●⟩refl  ⟩
-        (δ ⊗ₘ id) ● αₘ ● (  (id ● id)     ⊗ₘ ( ε ⊗ₘ (id ● id) ● λₘ ))  ● put
-    ≡⟨   (refl⟨●⟩ ⊗-resp-≡ᵣ ( ⊗-resp-≡ᵣ (left-id) ⟨●⟩refl) ) ⟨●⟩refl  ⟩
-        (δ ⊗ₘ id) ● αₘ ● (  (id ● id)  ⊗ₘ ( (ε ⊗ₘ id) ● λₘ )) ● put
-    ≡⟨    (refl⟨●⟩ distribute⊗) ⟨●⟩refl     ⟩
-        (δ ⊗ₘ id) ● αₘ ● ((id ⊗ₘ (ε ⊗ₘ id)) ● ( id ⊗ₘ λₘ )) ● put
-    ≡⟨   sym assoc ⟨●⟩refl    ⟩
-        (δ ⊗ₘ id) ● αₘ ●  (id ⊗ₘ (ε ⊗ₘ id)) ● (id ⊗ₘ λₘ) ● put
-    ≡⟨  strangeLaw ⟨●⟩refl      ⟩
-        id ● put
-    ≡⟨  right-id ⟩
-        put
-    ∎ )
+       (δ ⊗ₘ id) ● ((id ⊗ₘ get) ⊗ₘ id) ●  αₘ ● (id ⊗ₘ π₂) ● put
+   ≡⟨  lensLeftIdHelper ⟨●⟩refl   ⟩
+       id ● put
+   ≡⟨  right-id   ⟩
+       put
+   ∎)
+
+
+
 
 lensCategory : Cat n m
 lensCategory = MkCat
