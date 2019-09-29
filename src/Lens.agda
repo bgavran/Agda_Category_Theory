@@ -79,27 +79,9 @@ lensLeftIdHelper {f = f} =
         (δ ⊗ₘ id) ● αₘ ● ((id ⊗ₘ (f ⊗ₘ id)) ● (id ⊗ₘ π₂))
     ≡⟨   (refl⟨●⟩ sym distribute⊗) ⟩
         (δ ⊗ₘ id) ● αₘ ● ((id ● id) ⊗ₘ ( (f ⊗ₘ id) ● π₂))
-    ≡⟨  refl⟨●⟩ ( ⊗-resp-≡ᵣ π₂law ) ⟩
-        (δ ⊗ₘ id) ● αₘ ● ((id ● id) ⊗ₘ π₂)
-    ≡⟨⟩
-        (δ ⊗ₘ id) ● αₘ ● ((id ● id) ⊗ₘ ((ε ⊗ₘ id) ● λₘ))
-    ≡⟨   refl⟨●⟩ distribute⊗    ⟩
-        (δ ⊗ₘ id) ● αₘ ● ((id ⊗ₘ (ε ⊗ₘ id)) ● (id ⊗ₘ λₘ))
-    ≡⟨   sym assoc     ⟩ 
-        (δ ⊗ₘ id) ● αₘ ● (id ⊗ₘ (ε ⊗ₘ id)) ● (id ⊗ₘ λₘ)
-    ≡⟨    (sym (assocApply α□) ⟨●⟩refl)     ⟩
-        (δ ⊗ₘ id) ● ((id ⊗ₘ ε) ⊗ₘ id) ● αₘ ● (id ⊗ₘ λₘ)
-    ≡⟨    assoc  ⟩
-        (δ ⊗ₘ id) ● ((id ⊗ₘ ε) ⊗ₘ id) ● (αₘ ● (id ⊗ₘ λₘ))
-    ≡⟨    refl⟨●⟩ ▵-identity  ⟩
-        (δ ⊗ₘ id) ● ((id ⊗ₘ ε) ⊗ₘ id) ● (ρₘ ⊗ₘ id)
-    ≡⟨  sym distribute⊗₃   ⟩
-        (δ ● (id ⊗ₘ ε) ● ρₘ) ⊗ₘ ((id ● id) ● id)
-    ≡⟨  ⊗-resp-≡ copyDeleteρ left-id   ⟩
-        id ⊗ₘ (id ● id)
-    ≡⟨  ⊗-resp-≡ᵣ left-id   ⟩
-        id ⊗ₘ id
-    ≡⟨  idLaw ⊗   ⟩
+    ≡⟨  refl⟨●⟩ ( ⊗-resp-≡ left-id π₂law ) ⟩
+        (δ ⊗ₘ id) ● αₘ ● (id ⊗ₘ π₂)
+    ≡⟨   copyαπ₂≡id   ⟩
         id
     ∎ )
 

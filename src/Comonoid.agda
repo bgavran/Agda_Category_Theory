@@ -109,6 +109,53 @@ record Cartesian : (Set (n ⊔ m)) where
        (ε ⊗ₘ id) ● λₘ
     ∎
 
+  ▵-identityπ : {a b c : obj}
+    → αₘ {a = a} {b = b} {c = c} ● (id ⊗ₘ π₂) ≡ π₁ ⊗ₘ id
+  ▵-identityπ =
+    begin
+        αₘ ● (id ⊗ₘ π₂)
+    ≡⟨⟩
+        αₘ ● (    id    ⊗ₘ ((ε ⊗ₘ id) ● λₘ))
+    ≡⟨   refl⟨●⟩ ⊗-resp-≡ₗ(sym left-id)   ⟩
+        αₘ ● ((id ● id) ⊗ₘ ((ε ⊗ₘ id) ● λₘ))
+    ≡⟨  refl⟨●⟩ distribute⊗  ⟩
+        αₘ ● ((id ⊗ₘ (ε ⊗ₘ id)) ● (id ⊗ₘ λₘ))
+    ≡⟨  sym assoc  ⟩
+        (αₘ ● (id ⊗ₘ (ε ⊗ₘ id))) ● (id ⊗ₘ λₘ)
+    ≡⟨      sym α□ ⟨●⟩refl     ⟩
+        ((id ⊗ₘ ε) ⊗ₘ id) ● αₘ ● (id ⊗ₘ λₘ)
+    ≡⟨  assoc ⟩
+        ((id ⊗ₘ ε) ⊗ₘ id) ● (αₘ ● (id ⊗ₘ λₘ))
+    ≡⟨  refl⟨●⟩ ▵-identity  ⟩
+        ((id ⊗ₘ ε) ⊗ₘ id) ● (ρₘ ⊗ₘ id)
+    ≡⟨  sym distribute⊗  ⟩
+        ((id ⊗ₘ ε) ● ρₘ) ⊗ₘ (id ● id)
+    ≡⟨  ⊗-resp-≡ᵣ left-id    ⟩
+        π₁ ⊗ₘ id
+    ∎
+
+  copyαπ₂≡id : {a b : obj}
+    → (δ {c = a} ⊗ₘ id {a = b}) ● αₘ ● (id ⊗ₘ π₂) ≡ id
+  copyαπ₂≡id =
+    begin
+       (δ ⊗ₘ id) ● αₘ ● (id ⊗ₘ π₂)
+    ≡⟨  assoc  ⟩
+       (δ ⊗ₘ id) ● (αₘ ● (id ⊗ₘ π₂))
+    ≡⟨  refl⟨●⟩ ▵-identityπ  ⟩
+       (δ ⊗ₘ id) ● (π₁ ⊗ₘ id)
+    ≡⟨⟩
+       (δ ⊗ₘ id) ● (((id ⊗ₘ ε) ● ρₘ) ⊗ₘ id)
+    ≡⟨  sym distribute⊗  ⟩
+       (δ ● ((id ⊗ₘ ε) ● ρₘ)) ⊗ₘ (id ● id)
+    ≡⟨  ⊗-resp-≡ (sym assoc) left-id  ⟩
+       (δ ● (id ⊗ₘ ε) ● ρₘ) ⊗ₘ id
+    ≡⟨  ⊗-resp-≡ₗ copyDeleteρ ⟩
+         id ⊗ₘ id
+    ≡⟨  idLaw ⊗    ⟩
+        id
+    ∎
+
+
   strangeLaw : {a b : obj}
     → (δ {c = a} ⊗ₘ id {a = b}) ● αₘ ●  (id ⊗ₘ (ε ⊗ₘ id)) ● (id ⊗ₘ λₘ) ≡ id
   strangeLaw {b = b} =
