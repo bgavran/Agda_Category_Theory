@@ -1,4 +1,5 @@
 {-# OPTIONS --allow-unsolved-metas #-}
+
 module Product where
 
 open import Data.Product
@@ -17,7 +18,7 @@ open _Functor_
 private
   variable
     n m n' m' : Level
-    c₁ c₂ d₁ d₂ : Cat n m
+    c₁ c₂ c₃ d₁ d₂ : Cat n m
 
 _X_ : (Cat n m) → (Cat n' m') → Cat (n ⊔ n') (m ⊔ m')
 obj (c₁ X c₂) = (obj c₁ × obj c₂)
@@ -29,22 +30,17 @@ _●_ (c₁ X c₂) = zip (_●_ c₁) (_●_ c₂)
 left-id (c₁ X c₂) = cong₂ _,_ (left-id c₁) (left-id c₂)
 right-id (c₁ X c₂) = cong₂ _,_ (right-id c₁) (right-id c₂)
 assoc (c₁ X c₂) = cong₂ _,_ (assoc c₁) (assoc c₂)
-●-resp-≡ (c₁ X c₂) x y = let x₁ = cong proj₁ x
-                             y₁ = cong proj₁ y
-                             x₂ = cong proj₂ x
-                             y₂ = cong proj₂ y
-                         in cong₂ (_,_) (●-resp-≡ c₁ x₁ y₁) (●-resp-≡ c₂ x₂ y₂)
+●-resp-≡ (c₁ X c₂) = {!!} -- x y = cong₂ (_,_) -- (●-resp-≡ c₁ (cong proj₁ x) (cong proj₁ y))
+                                            -- (●-resp-≡ c₂ (cong proj₂ x) (cong proj₂ y))
 
-productAssociatorₗ : {cat1 : Cat n m} → {cat2 : Cat n m} → {cat3 : Cat n m}
-  → ((cat1 X cat2) X cat3) Functor (cat1 X (cat2 X cat3))
+productAssociatorₗ : ((c₁ X c₂) X c₃) Functor (c₁ X (c₂ X c₃))
 productAssociatorₗ = MkFunctor
   (< proj₁ ∙ proj₁ , < proj₂ ∙ proj₁ , proj₂ > > )
   (< proj₁ ∙ proj₁ , < proj₂ ∙ proj₁ , proj₂ > > )
   refl
   (λ _ _ → refl)
 
-productAssociatorᵣ : {cat1 : Cat n m} → {cat2 : Cat n m} → {cat3 : Cat n m}
-  → (cat1 X (cat2 X cat3)) Functor ((cat1 X cat2) X cat3)
+productAssociatorᵣ : (c₁ X (c₂ X c₃)) Functor ((c₁ X c₂) X c₃)
 productAssociatorᵣ = MkFunctor
   < < proj₁ , proj₁ ∙ proj₂ > , proj₂ ∙ proj₂ >
   < < proj₁ , proj₁ ∙ proj₂ > , proj₂ ∙ proj₂ >
@@ -60,16 +56,15 @@ compLaw (F 𝕏 G) (f₁ , f₂) (g₁ , g₂) = cong₂ _,_ (compLaw F f₁ g�
 
 
 
-_/\_ : {cat1 cat2 cat3 : Cat n m}
-  → cat1 Functor  cat2
-  → cat1 Functor         cat3
-  → cat1 Functor (cat2 X cat3)
+_/\_ : c₁ Functor  c₂
+     → c₁ Functor       c₃
+     → c₁ Functor (c₂ X c₃)
 mapObj (F /\ G) = λ a → mapObj F a , mapObj G a
 mapMor (F /\ G) = λ f → mapMor F f , mapMor G f
 idLaw (F /\ G) = cong₂ _,_ (idLaw F) (idLaw G)
 compLaw (F /\ G) f g = cong₂ _,_ (compLaw F f g) (compLaw G f g)
 
-swapFunctor : {cat1 cat2 : Cat n m} → (cat1 X cat2) Functor (cat2 X cat1)
+swapFunctor : (c₁ X c₂) Functor (c₂ X c₁)
 mapObj swapFunctor = swap
 mapMor swapFunctor = swap
 idLaw swapFunctor = refl

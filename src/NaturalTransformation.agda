@@ -15,10 +15,6 @@ module NaturalTransformation
 
 open Cat
 
-private
-  variable
-    n'' m'' : Level
-
 record _NatTrans_ (fun1 fun2 : cat1 Functor cat2) : Set (n ⊔ m ⊔ n' ⊔ m') where
   constructor MkNatTrans
   module fun1 = _Functor_ fun1
@@ -48,14 +44,27 @@ idNatTrans {fun1 = fun1}
       cat2 [ id cat2 ● mapMor f ]
     ∎)
 
-_∘ᵥ_ : {f g h : cat1 Functor cat2}
-  →            g NatTrans h
+_●ᵥ_ : {f g h : cat1 Functor cat2}
   → f NatTrans g
+  →            g NatTrans h
   → f      NatTrans       h
-_∘ᵥ_ (MkNatTrans η₂ naturality₂) (MkNatTrans η₁ naturality₁)
-  = MkNatTrans (cat2 [ η₁ ● η₂ ] ) (Cat.glue cat2 naturality₁ naturality₂)
+_●ᵥ_ (MkNatTrans η₁ naturality₁) (MkNatTrans η₂ naturality₂)
+  = MkNatTrans (cat2 [ η₁ ● η₂ ]) (Cat.glue cat2 naturality₁ naturality₂)
 
 
+
+natTransLeftId : {f g : cat1 Functor cat2} {α : f NatTrans g}
+  → α ●ᵥ idNatTrans ≡ α
+natTransLeftId {f = f} {g = g} {α  = (MkNatTrans ηₗ naturalityₗ)} = {!!}
+  -- (begin
+  --     (α ●ᵥ idNatTrans)
+  -- ≡⟨  {!!}  ⟩
+  --     α
+  -- ∎)
+
+-- TODO figure out how to do this also (taken from agda-categories)
+-- -- The reason the proofs below are so easy is that _∘ᵥ_ 'computes' all the way down into
+-- -- expressions in D, from which the properties follow.
 
 -- actually should be called naturalTransformation category
 functorCategory : Cat (n ⊔ n' ⊔ m ⊔ m') (n ⊔ n' ⊔ m ⊔ m')
@@ -63,15 +72,8 @@ functorCategory = MkCat
   (cat1 Functor cat2)
   _NatTrans_
   idNatTrans
-  _∘ᵥ_
-  (let gg = Cat.left-id cat2 in {!!})
+  _●ᵥ_
+  (let t = left-id cat2 in {!!})
   {!!}
   {!!}
   {!!}
-  where
-  open Cat
-  module cat2 = Cat cat2
-  open cat2
-
--- Goal: {a b : cat1 Functor cat2} {f : a NatTrans b} →
--- (idNatTrans ∘ₕ f) ≡ f

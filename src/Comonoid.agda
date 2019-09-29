@@ -1,4 +1,4 @@
-module Comonoid where
+{-# OPTIONS --allow-unsolved-metas #-}
 
 open import Level
 open import Function using (flip)
@@ -14,51 +14,82 @@ open import NaturalTransformation
 open import Monoidal
 open import SymmetricMonoidal
 
-private
-  variable
-    n m n' m' n'' m'' : Level
-
-record Cartesian
+module Comonoid
+  {n m}
   {cat : Cat n m}
   {mc : Monoidal cat}
-  (smc : SymmetricMonoidal mc)
-  : (Set (n ⊔ m)) where
+  (smc : SymmetricMonoidal mc)where
+
+private
+  variable
+    n' m' n'' m'' : Level
+
+module C = Cat cat
+open C
+module LM = Monoidal.Monoidal mc
+open LM
+module S = SymmetricMonoidal.SymmetricMonoidal smc
+open S
+
+record Cartesian : (Set (n ⊔ m)) where
   constructor MkComonoid
-  module C = Cat cat
-  open C
-  module M = Monoidal.Monoidal mc
-  open M
-  module S = SymmetricMonoidal.SymmetricMonoidal smc
-  open S
 
   field
     -- TODO these should actually be monoidal natural transformations?
-    δ : {c : obj} → cat [ c , c ⊗ₒ c ] -- multiplication
-    ε : {c : obj} → cat [ c , 𝟙 ]       -- counit
+    δ : {c : obj} → c hom (c ⊗ₒ c) -- multiplication
+    ε : {c : obj} → c hom 𝟙         -- counit
 
-    copySwap   : {c : obj} → (σₒ ∘ δ) ≡ δ {c = c}
-    copyDelete : {c : obj} → λₒ {a = c} ∘ (ε ⊗ₘ id) ∘ δ ≡ id
-    copyAssoc  : {c : obj} → αₒ ∘ (δ ⊗ₘ id) ∘ δ {c = c}
-                                 ≡ (id ⊗ₘ δ) ∘ δ {c = c}
+    copySwap   : {c : obj} → (δ ● σₘ)
+                           ≡ δ {c = c}
+    copyDeleteλ : {c : obj} → δ {c = c} ● (ε ⊗ₘ id) ● λₘ
+                           ≡ id
+    copyAssoc  : {c : obj} → δ {c = c} ● (δ ⊗ₘ id) ● αₘ
+                           ≡ δ {c = c} ● (id ⊗ₘ δ)
+    deleteApply : {a b : obj} {f : a hom b} → ε ≡ f ● ε
+    copyApply   : {a b : obj} {f : a hom b} → f ● δ ≡ δ ● (f ⊗ₘ f)
 
-    deleteApply : {a b : obj} {f : cat [ a , b ] } → ε ≡ ε ∘ f
-    copyApply   : {a b : obj} {f : cat [ a , b ] } → δ ∘ f ≡ (f ⊗ₘ f) ∘ δ
-
-  π₁ : {a b : obj} → cat [ a ⊗ₒ b , a ]
-  π₁ = ρₒ ∘ (id ⊗ₘ ε)
-
-  π₂ : {a b : obj} → cat [ a ⊗ₒ b , b ]
-  π₂ = λₒ ∘ (ε ⊗ₘ id)
-
-  tt : {a b : obj} → π₂ {a = a} {b = b} ≡ cat [ λₒ ∘ (ε ⊗ₘ id) ]
-  tt = begin
-       π₂
-    ≡⟨ refl ⟩
-      λₒ ∘ (ε ⊗ₘ id)
+  copyDeleteρ : {c : obj} → δ {c = c} ● (id ⊗ₘ ε) ● ρₘ ≡ id
+  copyDeleteρ =
+    begin
+       δ  ● (id ⊗ₘ ε) ● ρₘ
+    ≡⟨  (sym copySwap ⟨●⟩refl) ⟨●⟩refl  ⟩
+      (δ ● σₘ)  ● (id ⊗ₘ ε) ● ρₘ
+    ≡⟨  assoc ⟨●⟩refl  ⟩
+       δ ● (σₘ ● (id ⊗ₘ ε)) ● ρₘ
+    ≡⟨  (refl⟨●⟩ sym σ□) ⟨●⟩refl  ⟩
+       δ ● ((ε ⊗ₘ id) ● σₘ) ● ρₘ
+    ≡⟨  assocApply assoc  ⟩
+       δ ● (ε ⊗ₘ id) ● (σₘ ● ρₘ)
+    ≡⟨  refl⟨●⟩ (sym λ≡σ●ρ)  ⟩
+       δ ● (ε ⊗ₘ id) ● λₘ
+    ≡⟨ copyDeleteλ  ⟩
+        id
     ∎
 
-  -- π₂delete : {a b c d : obj} {f : a hom b} {g : c hom d}
-  --   → cat [ π₂ ∘ (f ⊗ₘ g) ] ≡ ε ⊗ₘ g
+  π₁ : {a b : obj} → (a ⊗ₒ b) hom a
+  π₁ = (id ⊗ₘ ε) ● ρₘ
+
+  π₂ : {a b : obj} → (a ⊗ₒ b) hom b
+  π₂ = (ε ⊗ₘ id) ● λₘ
+
+  strangeLaw : {a b : obj}
+    → (δ {c = a} ⊗ₘ id {a = b}) ● αₘ ●  (id ⊗ₘ (ε ⊗ₘ id)) ● (id ⊗ₘ λₘ) ≡ id
+  strangeLaw {b = b} =
+    begin
+      (δ ⊗ₘ id) ● αₘ ●  (id ⊗ₘ (ε ⊗ₘ id)) ● (id ⊗ₘ λₘ)
+    ≡⟨    (sym (assocApply (α□ {c = b})) ⟨●⟩refl)     ⟩
+      (δ ⊗ₘ id) ● ((id ⊗ₘ ε) ⊗ₘ id) ● αₘ ● (id ⊗ₘ λₘ)
+    ≡⟨    assoc  ⟩
+      (δ ⊗ₘ id) ● ((id ⊗ₘ ε) ⊗ₘ id) ● (αₘ ● (id ⊗ₘ λₘ))
+    ≡⟨    refl⟨●⟩ ▵-identity  ⟩
+      (δ ⊗ₘ id) ● ((id ⊗ₘ ε) ⊗ₘ id) ● (ρₘ ⊗ₘ id)
+    ≡⟨  sym distribute⊗₃   ⟩
+      (δ ● (id ⊗ₘ ε) ● ρₘ) ⊗ₘ ((id ● id) ● id)
+    ≡⟨  ⊗-resp-≡ {!!} left-id   ⟩
+      (δ ● (id ⊗ₘ ε) ● ρₘ) ⊗ₘ (id ● id)
+    ≡⟨  {!!}   ⟩
+      id
+    ∎
 
 
 -- Did I define this to be a category actually?
