@@ -73,20 +73,56 @@ record Cartesian : (Set (n ⊔ m)) where
   π₂ : {a b : obj} → (a ⊗ₒ b) hom b
   π₂ = (ε ⊗ₘ id) ● λₘ
 
+  π₂law : {a b c : obj} {f : a hom c}
+    → (f ⊗ₘ id {a = b}) ● π₂ ≡ π₂
+  π₂law {f = f} =
+    begin
+      (f ⊗ₘ id) ● π₂
+    ≡⟨⟩
+      (f ⊗ₘ id) ● ((ε ⊗ₘ id) ● λₘ)
+    ≡⟨ sym assoc ⟩
+      (f ⊗ₘ id) ● (ε ⊗ₘ id) ● λₘ
+    ≡⟨ sym distribute⊗ ⟨●⟩refl ⟩
+      (f ● ε) ⊗ₘ (id ● id) ● λₘ
+    ≡⟨ ⊗-resp-≡  (sym deleteApply) left-id ⟨●⟩refl ⟩
+      ε ⊗ₘ id ● λₘ
+    ≡⟨⟩
+       π₂
+    ∎
+
+  -- δ●π₂≡id : {a : obj}
+  --   → δ ● π₂
+
+
+  σ●π₁≡π₂ : {a b : obj}
+    → σₘ ● π₁ ≡ π₂ {a = a} {b = b}
+  σ●π₁≡π₂ =
+    begin
+       σₘ ● ((id ⊗ₘ ε) ● ρₘ)
+    ≡⟨  sym assoc  ⟩
+       σₘ ● (id ⊗ₘ ε) ● ρₘ
+    ≡⟨    (sym σ□) ⟨●⟩refl   ⟩
+       (ε ⊗ₘ id) ● σₘ ● ρₘ
+    ≡⟨    assoc   ⟩
+       (ε ⊗ₘ id) ● (σₘ ● ρₘ)
+    ≡⟨    refl⟨●⟩ (sym λ≡σ●ρ )   ⟩
+       (ε ⊗ₘ id) ● λₘ
+    ∎
+
   strangeLaw : {a b : obj}
     → (δ {c = a} ⊗ₘ id {a = b}) ● αₘ ●  (id ⊗ₘ (ε ⊗ₘ id)) ● (id ⊗ₘ λₘ) ≡ id
   strangeLaw {b = b} =
     begin
-      (δ ⊗ₘ id) ● αₘ ●  (id ⊗ₘ (ε ⊗ₘ id)) ● (id ⊗ₘ λₘ)
+        (δ ⊗ₘ id) ● αₘ ●  (id ⊗ₘ (ε ⊗ₘ id)) ● (id ⊗ₘ λₘ)
     ≡⟨    (sym (assocApply (α□ {c = b})) ⟨●⟩refl)     ⟩
-      (δ ⊗ₘ id) ● ((id ⊗ₘ ε) ⊗ₘ id) ● αₘ ● (id ⊗ₘ λₘ)
+        (δ ⊗ₘ id) ● ((id ⊗ₘ ε) ⊗ₘ id) ● αₘ ● (id ⊗ₘ λₘ)
     ≡⟨    assoc  ⟩
-      (δ ⊗ₘ id) ● ((id ⊗ₘ ε) ⊗ₘ id) ● (αₘ ● (id ⊗ₘ λₘ))
+        (δ ⊗ₘ id) ● ((id ⊗ₘ ε) ⊗ₘ id) ● (αₘ ● (id ⊗ₘ λₘ))
     ≡⟨    refl⟨●⟩ ▵-identity  ⟩
-      (δ ⊗ₘ id) ● ((id ⊗ₘ ε) ⊗ₘ id) ● (ρₘ ⊗ₘ id)
+        (δ ⊗ₘ id) ● ((id ⊗ₘ ε) ⊗ₘ id) ● (ρₘ ⊗ₘ id)
     ≡⟨  sym distribute⊗₃   ⟩
-      (δ ● (id ⊗ₘ ε) ● ρₘ) ⊗ₘ ((id ● id) ● id)
-    ≡⟨  ⊗-resp-≡ {!copyDeleteρ!} left-id   ⟩
+        (δ ● (id ⊗ₘ ε) ● ρₘ) ⊗ₘ ((id ● id) ● id)
+    ≡⟨  ⊗-resp-≡ copyDeleteρ left-id   ⟩
         id ⊗ₘ (id ● id)
     ≡⟨  ⊗-resp-≡ᵣ left-id   ⟩
         id ⊗ₘ id
