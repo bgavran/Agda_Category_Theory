@@ -78,6 +78,18 @@ record Cat (n m : Level) : Set (suc (n ⊔ m)) where
     → f ≡ g → f ● h ≡ g ● h
   e ⟨●⟩refl = ●-resp-≡ e refl
 
+  _⟨●⟩refl₂ : {a b c d : obj} {f g : a hom b} {h : b hom c} {i : c hom d}
+    → f ≡ g → (f ● h) ● i ≡ (g ● h) ● i
+  e ⟨●⟩refl₂ = e ⟨●⟩refl ⟨●⟩refl
+
+  _⟨●⟩refl₃ : {a b c d e : obj} {f g : a hom b} {h : b hom c} {i : c hom d} {j : d hom e}
+    → f ≡ g → ((f ● h) ● i) ● j ≡ ((g ● h) ● i) ● j
+  e ⟨●⟩refl₃ = e ⟨●⟩refl ⟨●⟩refl ⟨●⟩refl
+
+  _⟨●⟩refl₄ : {a b c d e x : obj} {f g : a hom b} {h : b hom c} {i : c hom d} {j : d hom e} {k : e hom x}
+    → f ≡ g → (((f ● h) ● i) ● j) ● k ≡ (((g ● h) ● i) ● j) ● k
+  e ⟨●⟩refl₄ = e ⟨●⟩refl ⟨●⟩refl ⟨●⟩refl ⟨●⟩refl
+
   refl⟨●⟩_ : {a b c : obj} {f : a hom b} {g h : b hom c}
     → g ≡ h → f ● g ≡ f ● h
   refl⟨●⟩ e = ●-resp-≡ refl e
@@ -173,4 +185,36 @@ record Cat (n m : Level) : Set (suc (n ⊔ m)) where
     --             hh = pullComm {h = h} c2
     --         in {!!}
 
+  assoc₂ : {a b c d e : obj}
+    {f : a hom b}
+    {g :       b hom c}
+    {h :             c hom d}
+    {i :                   d hom e}
+    → ((f ● g) ● h) ● i ≡ f ● (g ● (h ● i))
+  assoc₂ {f = f} {g = g} {h = h} {i = i} =
+    begin
+      ((f ● g) ● h) ● i
+    ≡⟨    assoc    ⟩
+      (f ● g) ● (h ● i)
+    ≡⟨    assoc    ⟩
+      (f ● (g ● (h ● i)))
+    ∎
+
+  assoc₃ : {a b c d e x : obj}
+    {f : a hom b}
+    {g :       b hom c}
+    {h :             c hom d}
+    {i :                   d hom e}
+    {j :                         e hom x}
+    → (((f ● g) ● h) ● i) ● j ≡ f ● (g ● (h ● (i ● j)))
+  assoc₃ {f = f} {g = g} {h = h} {i = i} {j = j} =
+    begin
+      (((f ● g) ● h) ● i) ● j
+    ≡⟨    assoc    ⟩
+      ((f ● g) ● h) ● (i ● j)
+    ≡⟨    assoc    ⟩
+      (f ● g) ● (h ● (i ● j))
+    ≡⟨    assoc    ⟩
+      f ● (g ● (h ● (i ● j)))
+    ∎
 

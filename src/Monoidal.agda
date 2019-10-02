@@ -208,12 +208,46 @@ record Monoidal : Set (n ⊔ m) where
        (x ● h) ● i
     ∎
 
-  assocMoveₗ : {a b c d e i l : obj}
-    → {x : l hom ((a ⊗ₒ b) ⊗ₒ c)}
-    → {f : a hom d} {g : b hom e} {h : c hom i}
-    → x ● ((f ⊗ₘ g) ⊗ₘ h) ● αₘ ≡ x ● αₘ ● (f ⊗ₘ (g ⊗ₘ h))
-  assocMoveₗ = assocApply α□
+  ⇆ : {a b c d : obj} {f : a hom b} {g : c hom d}
+    → (id ⊗ₘ g) ● (f ⊗ₘ id) ≡ (f ⊗ₘ id) ● (id ⊗ₘ g)
+  ⇆ {f = f} {g = g} =
+    begin
+      (id ⊗ₘ g) ● (f ⊗ₘ id)
+    ≡⟨  sym distribute⊗ ⟩
+      (id ● f) ⊗ₘ (g ● id)
+    ≡⟨  ⊗-resp-≡ right-id left-id  ⟩
+          f ⊗ₘ g
+    ≡⟨  ⊗-resp-≡ (sym left-id) (sym right-id)  ⟩
+      (f ● id) ⊗ₘ  (id ● g)
+    ≡⟨  distribute⊗  ⟩
+      (f ⊗ₘ id) ● (id ⊗ₘ g)
+    ∎
 
 
 
-   -- TODO coherence conditions
+  -- should be a useful combinator for sliding stuff through the associator
+  moveThroughAssoc : {a b c d e f g : obj}
+    {x : a hom (c ⊗ₒ d)} {y : b hom e} {z : c hom f} {w : (d ⊗ₒ e) hom g}
+    → (x ⊗ₘ y) ● αₘ ● (z ⊗ₘ w) ≡ ((x ● (z ⊗ₘ id)) ⊗ₘ y) ● αₘ ● (id ⊗ₘ w)
+  moveThroughAssoc {x = x} {y = y} {z = z} {w = w} =
+    begin
+      (x ⊗ₘ y) ● αₘ ● (z ⊗ₘ w)
+    ≡⟨  refl⟨●⟩ ⊗-resp-≡ (sym left-id) (sym right-id)   ⟩
+      (x ⊗ₘ y) ● αₘ ● ((z ● id) ⊗ₘ (id ● w))
+    ≡⟨  refl⟨●⟩ distribute⊗   ⟩
+      (x ⊗ₘ y) ● αₘ ● ((z ⊗ₘ id) ● (id ⊗ₘ w))
+    ≡⟨  refl⟨●⟩ (⊗-resp-≡ᵣ(sym (idLaw ⊗)) ⟨●⟩refl)   ⟩
+      (x ⊗ₘ y) ● αₘ ● ((z ⊗ₘ (id ⊗ₘ id)) ● (id ⊗ₘ w))
+    ≡⟨  sym assoc   ⟩
+      (x ⊗ₘ y) ● αₘ ● (z ⊗ₘ (id ⊗ₘ id)) ● (id ⊗ₘ w)
+    ≡⟨  assocApply (sym α□) ⟨●⟩refl   ⟩
+      (x ⊗ₘ y) ● ((z ⊗ₘ id) ⊗ₘ id) ● αₘ ● (id ⊗ₘ w)
+    ≡⟨  sym distribute⊗ ⟨●⟩refl₂  ⟩
+      ((x ● (z ⊗ₘ id)) ⊗ₘ (y ● id)) ● αₘ ● (id ⊗ₘ w)
+    ≡⟨  (⊗-resp-≡ᵣ left-id ) ⟨●⟩refl₂  ⟩
+      ((x ● (z ⊗ₘ id)) ⊗ₘ y) ● αₘ ● (id ⊗ₘ w)
+    ∎
+
+  --assocFn : {a b c d e : obj} {f : (c ⊗ₒ d) hom e}
+  --  → (id ⊗ₘ f) ● αₘ {a = a} {b = b} {c = e} ≡ {!!} -- (αₘ ● (id ⊗ₘ f))
+    --→ (id ⊗ₘ f) ● αₘ ≡ id  ⊗ₘ (αₘ ● (id ⊗ₘ f))
