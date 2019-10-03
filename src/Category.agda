@@ -54,6 +54,7 @@ record Cat (n m : Level) : Set (suc (n ⊔ m)) where
       → f ≡ g
       → h ≡ i
       → (f ● h ≡ g ● i)
+  syntax ●-resp-≡ l r = l ⟨●⟩ r
 
 
   dom : {a b : obj} -> (a hom b) -> obj
@@ -74,6 +75,7 @@ record Cat (n m : Level) : Set (suc (n ⊔ m)) where
     ; ●-resp-≡ = flip ●-resp-≡
     }
 
+   
   _⟨●⟩refl : {a b c : obj} {f g : a hom b} {h : b hom c}
     → f ≡ g → f ● h ≡ g ● h
   e ⟨●⟩refl = ●-resp-≡ e refl

@@ -181,21 +181,6 @@ record Monoidal : Set (n ⊔ m) where
   ⬠-identity = {!!}
 
 
-  distribute⊗ₗ : {a b c d e j : obj}
-    → (f : a hom e)
-    → (g : b hom d)
-    → (i : d hom j)
-    → f ⊗ₘ (g ● i) ≡ (id ⊗ₘ i) ∘ (f ⊗ₘ g )
-  distribute⊗ₗ f g i =
-    begin
-      f ⊗ₘ (g ● i)
-    ≡⟨  {!!}  ⟩ -- [ ⊗ ] -resp-≡ !!
-      (f ● id) ⊗ₘ (g ● i)
-    ≡⟨  {!!}  ⟩
-      (f ⊗ₘ g ) ● (id ⊗ₘ i)
-    ∎
-    --compLaw ⊗ (f , g) (id , i)
-
   assocApply : {a b c c' d : obj}
     → {x : a hom b} {f : b hom c} {g : c hom d} {h : b hom c'} {i : c' hom d}
     → f ● g ≡ h ● i
@@ -246,6 +231,41 @@ record Monoidal : Set (n ⊔ m) where
       ((x ● (z ⊗ₘ id)) ⊗ₘ (y ● id)) ● αₘ ● (id ⊗ₘ w)
     ≡⟨  (⊗-resp-≡ᵣ left-id ) ⟨●⟩refl₂  ⟩
       ((x ● (z ⊗ₘ id)) ⊗ₘ y) ● αₘ ● (id ⊗ₘ w)
+    ∎
+
+  factorId : {x a b c : obj}
+    {f : a hom b} {g : b hom c}
+    → (f ⊗ₘ id {a = x}) ● (g ⊗ₘ id) ≡ (f ● g) ⊗ₘ id
+  factorId {f = f} {g = g} =
+    begin
+       (f ⊗ₘ id) ● (g ⊗ₘ id)
+    ≡⟨  sym distribute⊗   ⟩
+       (f ● g) ⊗ₘ (id ● id)
+    ≡⟨  ⊗-resp-≡ᵣ left-id  ⟩
+       (f ● g) ⊗ₘ id
+    ∎
+  factorId₃ : {x a b c d : obj}
+    {f : a hom b} {g : b hom c} {h : c hom d}
+    → (f ⊗ₘ id {a = x}) ● (g ⊗ₘ id) ● (h ⊗ₘ id) ≡ (f ● g ● h) ⊗ₘ id
+  factorId₃ {f = f} {g = g} {h = h} =
+    begin
+       (f ⊗ₘ id) ● (g ⊗ₘ id) ● (h ⊗ₘ id)
+    ≡⟨  factorId ⟨●⟩refl  ⟩
+       ((f ● g) ⊗ₘ id) ● (h ⊗ₘ id)
+    ≡⟨  factorId  ⟩
+      (f ● g ● h) ⊗ₘ id
+    ∎
+
+  factorId₄ : {x a b c d e : obj}
+    {f : a hom b} {g : b hom c} {h : c hom d} {i : d hom e}
+    → (f ⊗ₘ id {a = x}) ● (g ⊗ₘ id) ● (h ⊗ₘ id) ● (i ⊗ₘ id) ≡ (f ● g ● h ● i) ⊗ₘ id
+  factorId₄ {f = f} {g = g} {h = h} {i = i} =
+    begin
+       (f ⊗ₘ id) ● (g ⊗ₘ id) ● (h ⊗ₘ id) ● (i ⊗ₘ id)
+    ≡⟨  factorId ⟨●⟩refl₂  ⟩
+       ((f ● g) ⊗ₘ id) ● (h ⊗ₘ id) ● (i ⊗ₘ id)
+    ≡⟨  factorId₃  ⟩
+       (f ● g ● h ● i) ⊗ₘ id
     ∎
 
   --assocFn : {a b c d e : obj} {f : (c ⊗ₒ d) hom e}

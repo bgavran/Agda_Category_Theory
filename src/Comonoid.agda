@@ -23,13 +23,13 @@ module Comonoid
 private
   variable
     n' m' n'' m'' : Level
+  module C = Cat cat
+  module LM = Monoidal.Monoidal mc
+  module S = SymmetricMonoidal.SymmetricMonoidal smc
 
 open _Functor_
-module C = Cat cat
 open C
-module LM = Monoidal.Monoidal mc
 open LM
-module S = SymmetricMonoidal.SymmetricMonoidal smc
 open S
 
 record Cartesian : (Set (n ⊔ m)) where
