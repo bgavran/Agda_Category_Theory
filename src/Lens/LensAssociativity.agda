@@ -1,5 +1,3 @@
-{-# OPTIONS --allow-unsolved-metas #-}
-
 open import Level
 open import Function using (flip)
 open import Data.Product
@@ -14,13 +12,14 @@ open import NaturalTransformation
 open import Monoidal
 open import SymmetricMonoidal
 open import Comonoid
+open import Lens.Lens using (Lens)
 
-module Lens
-  {n m }
-  {cat : Cat n m}
-  {mc : Monoidal cat}
-  {smc : SymmetricMonoidal mc}
-  (cart : Cartesian smc) where
+module Lens.LensAssociativity
+    {n m}
+    {cat : Cat n m}
+    {mc : Monoidal cat}
+    {smc : SymmetricMonoidal mc}
+    (cart : Cartesian smc) where
 
 private
   variable
@@ -29,6 +28,7 @@ private
   module mc = Monoidal.Monoidal mc
   module smc = SymmetricMonoidal.SymmetricMonoidal smc
   module cart = Comonoid.Cartesian cart
+  module lens = Lens.Lens (cart)
 
 open _Functor_
 open _NatTrans_
@@ -38,68 +38,7 @@ open cct
 open mc
 open smc
 open cart
-
-
-
--- TODO just get's should be morphisms in cart,not puts also?
--- for this I need the notion of a subcategory
-record Lens (s t a b : obj) : (Set m) where
-  constructor MkLens
-
-  field
-    get :    s      hom a
-    put : (s ⊗ₒ b) hom t
-
-_lensHom_ : (obj × obj) → (obj × obj) → Set m
-_lensHom_ (s , t) (a , b) = Lens s t a b
-
-lensId : {a : obj × obj} → a lensHom a
-lensId = MkLens id π₂
-
-
--- ((δ ⊗ₘ id) ● ((id ⊗ₘ get₁) ⊗ₘ id ) ● αₘ ● (id ⊗ₘ put₂) ● put₁)
-_●ₗ_ : {a b c : obj × obj}
-  → a lensHom b
-  →           b lensHom c
-  → a      lensHom      c
-_●ₗ_ {a = (a , a')} {b = (b , b')} {c = (c , c')}
-  (MkLens get₁ put₁) (MkLens get₂ put₂)
-  = MkLens
-    (get₁ ● get₂)
-    (                  begin→⟨     a      ⊗ₒ c'    ⟩
-        δ ⊗ₘ id            →⟨ (a ⊗ₒ a) ⊗ₒ c'    ⟩
-      (id ⊗ₘ get₁) ⊗ₘ id  →⟨ (a ⊗ₒ b) ⊗ₒ c'    ⟩
-         αₘ                 →⟨  a ⊗ₒ (b ⊗ₒ c')   ⟩
-       id ⊗ₘ put₂          →⟨  a ⊗ₒ     b'       ⟩
-       put₁                 →⟨  a'                 ⟩end )
-
-lensLeftId : {a b : obj × obj} {f : a lensHom b}
-  → f ●ₗ lensId ≡ f
-lensLeftId {a = (a , a')} {b = (b , b')} {MkLens get put} = cong₂ MkLens left-id
-   (begin
-       _ ● put
-   ≡⟨
-       (begin
-          (δ ⊗ₘ id) ● ((id ⊗ₘ get) ⊗ₘ id) ●  αₘ ● _
-       ≡⟨   (assocApply α□) ⟨●⟩refl ⟩
-          ((δ ⊗ₘ id) ● αₘ ● (id ⊗ₘ (get ⊗ₘ id))) ● _
-       ≡⟨   assoc  ⟩
-          (δ ⊗ₘ id) ● αₘ ● ((id ⊗ₘ (get ⊗ₘ id)) ● (id ⊗ₘ π₂))
-       ≡⟨   (refl⟨●⟩ sym distribute⊗) ⟩
-          (δ ⊗ₘ id) ● αₘ ● ((id ● id) ⊗ₘ ( (get ⊗ₘ id) ● π₂))
-       ≡⟨  refl⟨●⟩ ( ⊗-resp-≡ left-id π₂law ) ⟩
-          (δ ⊗ₘ id) ● αₘ ● (id ⊗ₘ π₂)
-       ≡⟨   copyαπ₂≡id   ⟩
-          id
-       ∎ )
-
-        ⟨●⟩refl   ⟩
-       id ● put
-   ≡⟨  right-id   ⟩
-       put
-   ∎)
-
-
+open lens
 
 
 lensAssoc : {a b c d : obj × obj}
@@ -240,14 +179,3 @@ lensAssoc {f = (MkLens get₁ put₁)} {g = (MkLens get₂ put₂)} {h = (MkLens
       (δ ⊗ₘ id) ● ((id ⊗ₘ get₁) ⊗ₘ id) ● αₘ ● (id ⊗ₘ ((δ ⊗ₘ id) ● ((id ⊗ₘ get₂) ⊗ₘ id ) ● αₘ ● (id ⊗ₘ put₃) ● put₂)) ● put₁
    ∎)
    -- we somehow automatically compute this with our brain
-
-lensCategory : Cat n m
-lensCategory = MkCat
-  (obj × obj)
-  _lensHom_
-  (MkLens id π₂)
-  _●ₗ_
-  lensLeftId
-  {!!}
-  lensAssoc
-  {!!}

@@ -24,12 +24,12 @@ private
   variable
     n' m' n'' m'' : Level
   module C = Cat cat
-  module LM = Monoidal.Monoidal mc
+  module M = Monoidal.Monoidal mc
   module S = SymmetricMonoidal.SymmetricMonoidal smc
 
 open _Functor_
 open C
-open LM
+open M
 open S
 
 record Cartesian : (Set (n ⊔ m)) where
