@@ -56,13 +56,14 @@ compLaw (F 𝕏 G) (f₁ , f₂) (g₁ , g₂) = cong₂ _,_ (compLaw F f₁ g�
 
 
 
-_/\_ : c₁ Functor  c₂
+-- the symbol should be read top to bottom, as if branching
+_\/_ : c₁ Functor  c₂
      → c₁ Functor       c₃
      → c₁ Functor (c₂ X c₃)
-mapObj (F /\ G) = λ a → mapObj F a , mapObj G a
-mapMor (F /\ G) = λ f → mapMor F f , mapMor G f
-idLaw (F /\ G) = cong₂ _,_ (idLaw F) (idLaw G)
-compLaw (F /\ G) f g = cong₂ _,_ (compLaw F f g) (compLaw G f g)
+mapObj (F \/ G) = λ a → mapObj F a , mapObj G a
+mapMor (F \/ G) = λ f → mapMor F f , mapMor G f
+idLaw (F \/ G) = cong₂ _,_ (idLaw F) (idLaw G)
+compLaw (F \/ G) f g = cong₂ _,_ (compLaw F f g) (compLaw G f g)
 
 swapFunctor : (c₁ X c₂) Functor (c₂ X c₁)
 mapObj swapFunctor = swap

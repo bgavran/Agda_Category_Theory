@@ -41,6 +41,7 @@ open cart
 open lens
 
 
+-- total 129 lines
 lensAssoc : {a b c d : obj × obj}
   {f : a lensHom b}
   {g :           b lensHom c}
@@ -88,15 +89,15 @@ lensAssoc {f = (MkLens get₁ put₁)} {g = (MkLens get₂ put₂)} {h = (MkLens
                    (δ ⊗ₘ id) ● ((id ⊗ₘ (get₁ ● get₂)) ⊗ₘ id) ● ((δ ⊗ₘ id) ⊗ₘ id) ● αₘ ● ((id ⊗ₘ get₁) ⊗ₘ (id ⊗ₘ id)) ● αₘ
                 ≡⟨  (assocApply (sym α□) ) ⟨●⟩refl ⟩
                    ((δ ⊗ₘ id) ● ((id ⊗ₘ (get₁ ● get₂)) ⊗ₘ id) ● ((δ ⊗ₘ id) ⊗ₘ id) ● (((id ⊗ₘ get₁) ⊗ₘ id) ⊗ₘ id)) ● αₘ ● αₘ
-                ≡⟨  assoc  ⟩
-                   ((δ ⊗ₘ id) ● ((id ⊗ₘ (get₁ ● get₂)) ⊗ₘ id) ● ((δ ⊗ₘ id) ⊗ₘ id) ● (((id ⊗ₘ get₁) ⊗ₘ id) ⊗ₘ id)) ● (αₘ ● αₘ)
-                ≡⟨ (factorId₄) ⟨●⟩ ⬠-identity   ⟩
+                ≡⟨  trans assoc ((factorId₄) ⟨●⟩ ⬠-identity) ⟩
                    ( (δ ● (id ⊗ₘ (get₁ ● get₂)) ● (δ ⊗ₘ id) ● ((id ⊗ₘ get₁) ⊗ₘ id))      ⊗ₘ id)  ● ((αₘ ⊗ₘ id) ● αₘ ● (id ⊗ₘ αₘ))
                 ≡⟨   trans (sym assoc)  (sym assoc ⟨●⟩refl)  ⟩
                    ( (δ ● (id ⊗ₘ (get₁ ● get₂)) ● (δ ⊗ₘ id) ● ((id ⊗ₘ get₁) ⊗ₘ id))      ⊗ₘ id)  ● (αₘ ⊗ₘ id) ● αₘ ● (id ⊗ₘ αₘ)
                 ≡⟨   factorId ⟨●⟩refl₂  ⟩
                    ( (δ ● (id ⊗ₘ (get₁ ● get₂)) ● (δ ⊗ₘ id) ● ((id ⊗ₘ get₁) ⊗ₘ id) ● αₘ) ⊗ₘ id) ● αₘ ● (id ⊗ₘ αₘ)
                    -- now factoring our the identity wire on the bottom
+                   -- This is the meat of this proof, using two facts: associativity of copy and the fact that get can slide through copy
+                   -- everything before this was just so we can factor out the repeated parts
                 ≡⟨   ⊗-resp-≡ₗ (begin
                                     δ ● (id ⊗ₘ (get₁ ● get₂)) ● (δ ⊗ₘ id) ● ((id ⊗ₘ get₁) ⊗ₘ id) ● αₘ
                                   ≡⟨  trans (assoc ⟨●⟩refl) assoc ⟨●⟩refl  ⟩
@@ -115,9 +116,7 @@ lensAssoc {f = (MkLens get₁ put₁)} {g = (MkLens get₂ put₂)} {h = (MkLens
                                     δ ● ((δ ⊗ₘ id) ● ((id ⊗ₘ get₁) ⊗ₘ get₁) ● ((id ⊗ₘ id) ⊗ₘ get₂)) ● αₘ
                                   ≡⟨  trans (sym assoc) ((sym assoc) ⟨●⟩refl) ⟨●⟩refl  ⟩
                                     δ ● (δ ⊗ₘ id) ● ((id ⊗ₘ get₁) ⊗ₘ get₁) ● ((id ⊗ₘ id) ⊗ₘ get₂) ● αₘ
-                                  ≡⟨  assocApply α□  ⟩
-                                    δ ● (δ ⊗ₘ id) ● ((id ⊗ₘ get₁) ⊗ₘ get₁) ● αₘ ● (id ⊗ₘ (id ⊗ₘ get₂))
-                                  ≡⟨  assocApply α□ ⟨●⟩refl  ⟩
+                                  ≡⟨  trans (assocApply α□) (assocApply α□ ⟨●⟩refl)  ⟩
                                     δ ● (δ ⊗ₘ id) ● αₘ ● (id ⊗ₘ (get₁ ⊗ₘ get₁)) ● (id ⊗ₘ (id ⊗ₘ get₂))
                                   ≡⟨  copyAssoc ⟨●⟩refl₂  ⟩
                                     (δ ● (id ⊗ₘ δ)) ● (id ⊗ₘ (get₁ ⊗ₘ get₁)) ● (id ⊗ₘ (id ⊗ₘ get₂))
@@ -127,12 +126,10 @@ lensAssoc {f = (MkLens get₁ put₁)} {g = (MkLens get₂ put₂)} {h = (MkLens
                                     δ ● ((id ● id) ⊗ₘ (δ ● (get₁ ⊗ₘ get₁))) ● (id ⊗ₘ (id ⊗ₘ get₂))
                                  ≡⟨  (refl⟨●⟩ (⊗-resp-≡ᵣ (sym copyApply))) ⟨●⟩refl  ⟩
                                     δ ● ((id ● id) ⊗ₘ (get₁ ● δ)) ● (id ⊗ₘ (id ⊗ₘ get₂))
-                                 ≡⟨  (refl⟨●⟩ distribute⊗) ⟨●⟩refl  ⟩
-                                    δ ● ((id ⊗ₘ get₁) ● (id ⊗ₘ δ)) ● (id ⊗ₘ (id ⊗ₘ get₂))
-                                  ≡⟨  sym assoc ⟨●⟩refl  ⟩
+                                 ≡⟨  trans (refl⟨●⟩ distribute⊗) (sym assoc) ⟨●⟩refl  ⟩
                                     δ ● (id ⊗ₘ get₁) ● (id ⊗ₘ δ) ● (id ⊗ₘ (id ⊗ₘ get₂))
                                  ∎) ⟨●⟩refl₂   ⟩
-
+                      -- this is the end of the meat of the proof
                    ((δ ● (id ⊗ₘ get₁) ● (id ⊗ₘ δ) ● (id ⊗ₘ (id ⊗ₘ get₂))) ⊗ₘ id  ) ● αₘ ● (id ⊗ₘ αₘ)
                 ≡⟨    sym factorId₄ ⟨●⟩refl₂   ⟩
                    (δ ⊗ₘ id) ● ((id ⊗ₘ get₁) ⊗ₘ id) ● ((id ⊗ₘ δ) ⊗ₘ id) ● ((id ⊗ₘ (id ⊗ₘ get₂)) ⊗ₘ id ) ● αₘ ● (id ⊗ₘ αₘ)
@@ -140,26 +137,17 @@ lensAssoc {f = (MkLens get₁ put₁)} {g = (MkLens get₂ put₂)} {h = (MkLens
                    (δ ⊗ₘ id) ● ((id ⊗ₘ get₁) ⊗ₘ id) ● ((id ⊗ₘ δ) ⊗ₘ id) ● αₘ ● (id ⊗ₘ ((id ⊗ₘ get₂) ⊗ₘ id )) ● (id ⊗ₘ αₘ)
                 ≡⟨     assocApply α□ ⟨●⟩refl₂   ⟩
                    (δ ⊗ₘ id) ● ((id ⊗ₘ get₁) ⊗ₘ id) ● αₘ ● (id ⊗ₘ (δ ⊗ₘ id)) ● (id ⊗ₘ ((id ⊗ₘ get₂) ⊗ₘ id )) ● (id ⊗ₘ αₘ)
-                ≡⟨     assoc ⟨●⟩refl   ⟩
-                   (δ ⊗ₘ id) ● ((id ⊗ₘ get₁) ⊗ₘ id) ● αₘ ● ((id ⊗ₘ (δ ⊗ₘ id)) ● (id ⊗ₘ ((id ⊗ₘ get₂) ⊗ₘ id ))) ● (id ⊗ₘ αₘ)
-                ≡⟨     assoc   ⟩
+                ≡⟨     trans (assoc ⟨●⟩refl) assoc   ⟩
                    (δ ⊗ₘ id) ● ((id ⊗ₘ get₁) ⊗ₘ id) ● αₘ ● (((id ⊗ₘ (δ ⊗ₘ id)) ● (id ⊗ₘ ((id ⊗ₘ get₂) ⊗ₘ id ))) ● (id ⊗ₘ αₘ))
-                ≡⟨     refl⟨●⟩ (sym distribute⊗ ⟨●⟩refl)   ⟩
-                   (δ ⊗ₘ id) ● ((id ⊗ₘ get₁) ⊗ₘ id) ● αₘ ● (((id ● id) ⊗ₘ ((δ ⊗ₘ id) ● ((id ⊗ₘ get₂) ⊗ₘ id ))) ● (id ⊗ₘ αₘ))
-                ≡⟨     refl⟨●⟩ (⊗-resp-≡ₗ left-id ⟨●⟩refl)   ⟩
+                ≡⟨     refl⟨●⟩ (trans (sym distribute⊗) (⊗-resp-≡ₗ left-id) ⟨●⟩refl)   ⟩
                    (δ ⊗ₘ id) ● ((id ⊗ₘ get₁) ⊗ₘ id) ● αₘ ● ((id ⊗ₘ ((δ ⊗ₘ id) ● ((id ⊗ₘ get₂) ⊗ₘ id ))) ● (id ⊗ₘ αₘ))
-                ≡⟨     refl⟨●⟩ sym distribute⊗   ⟩
-                   (δ ⊗ₘ id) ● ((id ⊗ₘ get₁) ⊗ₘ id) ● αₘ ● ((id ● id) ⊗ₘ ((δ ⊗ₘ id) ● ((id ⊗ₘ get₂) ⊗ₘ id ) ● αₘ))
-                ≡⟨     refl⟨●⟩ ⊗-resp-≡ₗ (left-id)   ⟩
+                ≡⟨     refl⟨●⟩ (trans (sym distribute⊗) (⊗-resp-≡ₗ (left-id)))   ⟩
                    (δ ⊗ₘ id) ● ((id ⊗ₘ get₁) ⊗ₘ id) ● αₘ ● (id ⊗ₘ ((δ ⊗ₘ id) ● ((id ⊗ₘ get₂) ⊗ₘ id ) ● αₘ))
                 ∎)
 
-
                    ⟨●⟩refl  ⟩
                 ((δ ⊗ₘ id) ● ((id ⊗ₘ get₁) ⊗ₘ id) ● αₘ ● (id ⊗ₘ ((δ ⊗ₘ id) ● ((id ⊗ₘ get₂) ⊗ₘ id ) ● αₘ))) ● (id ⊗ₘ (id ⊗ₘ put₃))
-             ≡⟨  assoc   ⟩
-               (δ ⊗ₘ id) ● ((id ⊗ₘ get₁) ⊗ₘ id) ● αₘ ● ((id ⊗ₘ ((δ ⊗ₘ id) ● ((id ⊗ₘ get₂) ⊗ₘ id ) ● αₘ)) ● (id ⊗ₘ (id ⊗ₘ put₃)))
-             ≡⟨   refl⟨●⟩ sym distribute⊗  ⟩
+             ≡⟨  trans assoc (refl⟨●⟩ sym distribute⊗)  ⟩
                 (δ ⊗ₘ id) ● ((id ⊗ₘ get₁) ⊗ₘ id) ● αₘ ● ((id ● id) ⊗ₘ (((δ ⊗ₘ id) ● ((id ⊗ₘ get₂) ⊗ₘ id ) ● αₘ) ● (id ⊗ₘ put₃)))
              ≡⟨   refl⟨●⟩ ⊗-resp-≡ₗ (left-id)  ⟩
                 (δ ⊗ₘ id) ● ((id ⊗ₘ get₁) ⊗ₘ id) ● αₘ ● (id ⊗ₘ ((δ ⊗ₘ id) ● ((id ⊗ₘ get₂) ⊗ₘ id ) ● αₘ ● (id ⊗ₘ put₃)))
@@ -167,9 +155,7 @@ lensAssoc {f = (MkLens get₁ put₁)} {g = (MkLens get₂ put₂)} {h = (MkLens
 
          ⟨●⟩refl  ⟩
             (δ ⊗ₘ id) ● ((id ⊗ₘ get₁) ⊗ₘ id) ● αₘ ● (id ⊗ₘ ((δ ⊗ₘ id) ● ((id ⊗ₘ get₂) ⊗ₘ id ) ● αₘ ● (id ⊗ₘ put₃))) ● (id ⊗ₘ put₂)
-         ≡⟨ assoc  ⟩
-            (δ ⊗ₘ id) ● ((id ⊗ₘ get₁) ⊗ₘ id) ● αₘ ● ((id ⊗ₘ ((δ ⊗ₘ id) ● ((id ⊗ₘ get₂) ⊗ₘ id ) ● αₘ ● (id ⊗ₘ put₃))) ● (id ⊗ₘ put₂))
-         ≡⟨  refl⟨●⟩ sym distribute⊗   ⟩
+         ≡⟨ trans assoc (refl⟨●⟩ sym distribute⊗) ⟩
             (δ ⊗ₘ id) ● ((id ⊗ₘ get₁) ⊗ₘ id) ● αₘ ● ((id ● id) ⊗ₘ ((δ ⊗ₘ id) ● ((id ⊗ₘ get₂) ⊗ₘ id ) ● αₘ ● (id ⊗ₘ put₃) ● put₂))
          ≡⟨  refl⟨●⟩ ⊗-resp-≡ₗ left-id   ⟩
             (δ ⊗ₘ id) ● ((id ⊗ₘ get₁) ⊗ₘ id) ● αₘ ● (id ⊗ₘ ((δ ⊗ₘ id) ● ((id ⊗ₘ get₂) ⊗ₘ id ) ● αₘ ● (id ⊗ₘ put₃) ● put₂))
@@ -178,4 +164,4 @@ lensAssoc {f = (MkLens get₁ put₁)} {g = (MkLens get₂ put₂)} {h = (MkLens
    ⟨●⟩refl  ⟩
       (δ ⊗ₘ id) ● ((id ⊗ₘ get₁) ⊗ₘ id) ● αₘ ● (id ⊗ₘ ((δ ⊗ₘ id) ● ((id ⊗ₘ get₂) ⊗ₘ id ) ● αₘ ● (id ⊗ₘ put₃) ● put₂)) ● put₁
    ∎)
-   -- we somehow automatically compute this with our brain
+   -- it's remarkable that we somehow au

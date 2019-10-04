@@ -73,26 +73,55 @@ record Cartesian : (Set (n ⊔ m)) where
   π₂ : {a b : obj} → (a ⊗ₒ b) hom b
   π₂ = (ε ⊗ₘ id) ● λₘ
 
-  π₂law : {a b c : obj} {f : a hom c}
-    → (f ⊗ₘ id {a = b}) ● π₂ ≡ π₂
-  π₂law {f = f} =
+  π₂law : {a b c d : obj} {f : a hom b} {g : c hom d}
+    → (f ⊗ₘ g) ● π₂ ≡ π₂ ● g
+  π₂law {f = f} {g = g} =
     begin
-      (f ⊗ₘ id) ● π₂
+      (f ⊗ₘ g) ● π₂
     ≡⟨⟩
-      (f ⊗ₘ id) ● ((ε ⊗ₘ id) ● λₘ)
+      (f ⊗ₘ g) ● ((ε ⊗ₘ id) ● λₘ)
     ≡⟨ sym assoc ⟩
-      (f ⊗ₘ id) ● (ε ⊗ₘ id) ● λₘ
+      (f ⊗ₘ g) ● (ε ⊗ₘ id) ● λₘ
     ≡⟨ sym distribute⊗ ⟨●⟩refl ⟩
-      (f ● ε) ⊗ₘ (id ● id) ● λₘ
+      (f ● ε) ⊗ₘ (g ● id) ● λₘ
     ≡⟨ ⊗-resp-≡  (sym deleteApply) left-id ⟨●⟩refl ⟩
-      ε ⊗ₘ id ● λₘ
+      (ε ⊗ₘ g) ● λₘ
+    ≡⟨ ⊗-resp-≡ (sym left-id) (sym right-id) ⟨●⟩refl   ⟩
+      ((ε ● id) ⊗ₘ  (id ● g)) ● λₘ
+    ≡⟨ distribute⊗ ⟨●⟩refl   ⟩
+      (ε ⊗ₘ id) ●  (id ⊗ₘ g) ● λₘ
+    ≡⟨ trans assoc (refl⟨●⟩ λ□)  ⟩
+      (ε ⊗ₘ id) ● (λₘ ● g)
+    ≡⟨ sym assoc  ⟩
+      (ε ⊗ₘ id) ● λₘ ● g
     ≡⟨⟩
-       π₂
+       π₂ ● g
     ∎
 
-  -- δ●π₂≡id : {a : obj}
-  --   → δ ● π₂
-
+  α●π₂≡π₂⊗id : {a b c : obj}
+    → αₘ {a = a} {b = b} {c = c} ● π₂ ≡ π₂ ⊗ₘ id
+  α●π₂≡π₂⊗id =
+     begin
+        αₘ ● π₂
+     ≡⟨⟩
+        αₘ ● ((ε ⊗ₘ id) ● λₘ)
+     ≡⟨    sym assoc   ⟩
+        αₘ ● (ε ⊗ₘ id) ● λₘ
+     ≡⟨   (refl⟨●⟩ ⊗-resp-≡ᵣ (sym (idLaw ⊗))) ⟨●⟩refl   ⟩
+        αₘ ● (ε ⊗ₘ (id ⊗ₘ id)) ● λₘ
+     ≡⟨   sym α□ ⟨●⟩refl   ⟩
+       ((ε ⊗ₘ id) ⊗ₘ id) ● αₘ ● λₘ
+     ≡⟨   assoc   ⟩
+       ((ε ⊗ₘ id) ⊗ₘ id) ● (αₘ ● λₘ)
+     ≡⟨   refl⟨●⟩ sym λ⊗id≡α●λ  ⟩
+       ((ε ⊗ₘ id) ⊗ₘ id) ● (λₘ ⊗ₘ id)
+     ≡⟨   sym distribute⊗   ⟩
+       ((ε ⊗ₘ id) ● λₘ) ⊗ₘ (id ● id)
+     ≡⟨  ⊗-resp-≡ᵣ(left-id)  ⟩
+       ((ε ⊗ₘ id) ● λₘ) ⊗ₘ id
+     ≡⟨⟩
+        π₂ ⊗ₘ id
+     ∎
 
   σ●π₁≡π₂ : {a b : obj}
     → σₘ ● π₁ ≡ π₂ {a = a} {b = b}
@@ -155,27 +184,40 @@ record Cartesian : (Set (n ⊔ m)) where
         id
     ∎
 
-
-  strangeLaw : {a b : obj}
-    → (δ {c = a} ⊗ₘ id {a = b}) ● αₘ ●  (id ⊗ₘ (ε ⊗ₘ id)) ● (id ⊗ₘ λₘ) ≡ id
-  strangeLaw {b = b} =
+  δ●π₂≡id : {c : obj}
+    → δ {c = c} ● π₂ ≡ id
+  δ●π₂≡id =
     begin
-        (δ ⊗ₘ id) ● αₘ ●  (id ⊗ₘ (ε ⊗ₘ id)) ● (id ⊗ₘ λₘ)
-    ≡⟨    (sym (assocApply (α□ {c = b})) ⟨●⟩refl)     ⟩
-        (δ ⊗ₘ id) ● ((id ⊗ₘ ε) ⊗ₘ id) ● αₘ ● (id ⊗ₘ λₘ)
-    ≡⟨    assoc  ⟩
-        (δ ⊗ₘ id) ● ((id ⊗ₘ ε) ⊗ₘ id) ● (αₘ ● (id ⊗ₘ λₘ))
-    ≡⟨    refl⟨●⟩ ▵-identity  ⟩
-        (δ ⊗ₘ id) ● ((id ⊗ₘ ε) ⊗ₘ id) ● (ρₘ ⊗ₘ id)
-    ≡⟨  sym distribute⊗₃   ⟩
-        (δ ● (id ⊗ₘ ε) ● ρₘ) ⊗ₘ ((id ● id) ● id)
-    ≡⟨  ⊗-resp-≡ copyDeleteρ left-id   ⟩
-        id ⊗ₘ (id ● id)
-    ≡⟨  ⊗-resp-≡ᵣ left-id   ⟩
-        id ⊗ₘ id
-    ≡⟨  idLaw ⊗   ⟩
+      δ ● π₂
+    ≡⟨⟩
+      δ ● ((ε ⊗ₘ id) ● λₘ)
+    ≡⟨  sym assoc  ⟩
+      δ ● (ε ⊗ₘ id) ● λₘ
+    ≡⟨  copyDeleteλ  ⟩
        id
     ∎
+
+
+  --strangeLaw : {a b : obj}
+  --  → (δ {c = a} ⊗ₘ id {a = b}) ● αₘ ●  (id ⊗ₘ (ε ⊗ₘ id)) ● (id ⊗ₘ λₘ) ≡ id
+  --strangeLaw {b = b} =
+  --  begin
+  --      (δ ⊗ₘ id) ● αₘ ●  (id ⊗ₘ (ε ⊗ₘ id)) ● (id ⊗ₘ λₘ)
+  --  ≡⟨    (sym (assocApply (α□ {c = b})) ⟨●⟩refl)     ⟩
+  --      (δ ⊗ₘ id) ● ((id ⊗ₘ ε) ⊗ₘ id) ● αₘ ● (id ⊗ₘ λₘ)
+  --  ≡⟨    assoc  ⟩
+  --      (δ ⊗ₘ id) ● ((id ⊗ₘ ε) ⊗ₘ id) ● (αₘ ● (id ⊗ₘ λₘ))
+  --  ≡⟨    refl⟨●⟩ ▵-identity  ⟩
+  --      (δ ⊗ₘ id) ● ((id ⊗ₘ ε) ⊗ₘ id) ● (ρₘ ⊗ₘ id)
+  --  ≡⟨  sym distribute⊗₃   ⟩
+  --      (δ ● (id ⊗ₘ ε) ● ρₘ) ⊗ₘ ((id ● id) ● id)
+  --  ≡⟨  ⊗-resp-≡ copyDeleteρ left-id   ⟩
+  --      id ⊗ₘ (id ● id)
+  --  ≡⟨  ⊗-resp-≡ᵣ left-id   ⟩
+  --      id ⊗ₘ id
+  --  ≡⟨  idLaw ⊗   ⟩
+  --     id
+  --  ∎
 
 
 -- Did I define this to be a category actually?

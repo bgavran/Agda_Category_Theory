@@ -43,10 +43,10 @@ record Monoidal : Set (n ⊔ m) where
   [x⊗y]⊗z = (productAssociatorᵣ ●F (⊗ 𝕏 idFunctor {cat = cat}))  ●F ⊗
 
   [𝟙⊗x] : cat Functor cat
-  [𝟙⊗x] = (constFunctor 𝟙 /\ idFunctor {cat = cat}) ●F (⊗)
+  [𝟙⊗x] = (constFunctor 𝟙 \/ idFunctor {cat = cat}) ●F (⊗)
 
   [x⊗𝟙] : cat Functor cat
-  [x⊗𝟙] = (idFunctor /\ constFunctor 𝟙) ●F ⊗
+  [x⊗𝟙] = (idFunctor \/ constFunctor 𝟙) ●F ⊗
 
   field
     associator  : _≅_ {cat = functorCategory} [x⊗y]⊗z x⊗[y⊗z]
@@ -66,6 +66,8 @@ record Monoidal : Set (n ⊔ m) where
 
 
 
+  -- subscript ₘ stands for "morphism" and □ is supposed to evoke
+  -- the fact that there exist naturality squares for associators and left/right unitors
   λₘ : {a : obj}
     → (𝟙 ⊗ₒ a) hom  a
   λₘ = η (forward leftUnitor)
@@ -86,13 +88,13 @@ record Monoidal : Set (n ⊔ m) where
     hom ((a ⊗ₒ b) ⊗ₒ c)
   αₘ' = η (inverse associator)
 
-  λ□ : {a : obj} {f : cat [ a , a ]}
-    → mapMor ((constFunctor 𝟙 /\ idFunctor) ●F ⊗) f ● λₘ
+  λ□ : {a b : obj} {f : cat [ a , b ]}
+    → mapMor ((constFunctor 𝟙 \/ idFunctor) ●F ⊗) f ● λₘ
     ≡ λₘ ● f
   λ□ = eqPaths (naturality (forward leftUnitor))
 
-  ρ□ : {a : obj} {f : cat [ a , a ]}
-    → mapMor ((idFunctor /\ constFunctor 𝟙) ●F ⊗) f ● ρₘ
+  ρ□ : {a b : obj} {f : cat [ a , b ]}
+    → mapMor ((idFunctor \/ constFunctor 𝟙) ●F ⊗) f ● ρₘ
     ≡ ρₘ ● f
   ρ□ = eqPaths (naturality (forward rightUnitor))
 
@@ -193,6 +195,7 @@ record Monoidal : Set (n ⊔ m) where
        (x ● h) ● i
     ∎
 
+
   ⇆ : {a b c d : obj} {f : a hom b} {g : c hom d}
     → (id ⊗ₘ g) ● (f ⊗ₘ id) ≡ (f ⊗ₘ id) ● (id ⊗ₘ g)
   ⇆ {f = f} {g = g} =
@@ -211,10 +214,11 @@ record Monoidal : Set (n ⊔ m) where
 
 
   -- should be a useful combinator for sliding stuff through the associator
-  moveThroughAssoc : {a b c d e f g : obj}
+  -- this is the top version
+  moveThroughAssocᵗ : {a b c d e f g : obj}
     {x : a hom (c ⊗ₒ d)} {y : b hom e} {z : c hom f} {w : (d ⊗ₒ e) hom g}
     → (x ⊗ₘ y) ● αₘ ● (z ⊗ₘ w) ≡ ((x ● (z ⊗ₘ id)) ⊗ₘ y) ● αₘ ● (id ⊗ₘ w)
-  moveThroughAssoc {x = x} {y = y} {z = z} {w = w} =
+  moveThroughAssocᵗ {x = x} {y = y} {z = z} {w = w} =
     begin
       (x ⊗ₘ y) ● αₘ ● (z ⊗ₘ w)
     ≡⟨  refl⟨●⟩ ⊗-resp-≡ (sym left-id) (sym right-id)   ⟩
@@ -232,6 +236,9 @@ record Monoidal : Set (n ⊔ m) where
     ≡⟨  (⊗-resp-≡ᵣ left-id ) ⟨●⟩refl₂  ⟩
       ((x ● (z ⊗ₘ id)) ⊗ₘ y) ● αₘ ● (id ⊗ₘ w)
     ∎
+
+  --moveThroughAssocᵇ :
+  --  → (x ⊗ₘ y) ● αₘ ● (z ⊗ₘ w) ≡ (id ⊗ₘ y) ● α ● (())
 
   factorId : {x a b c : obj}
     {f : a hom b} {g : b hom c}
@@ -268,6 +275,13 @@ record Monoidal : Set (n ⊔ m) where
        (f ● g ● h ● i) ⊗ₘ id
     ∎
 
-  --assocFn : {a b c d e : obj} {f : (c ⊗ₒ d) hom e}
-  --  → (id ⊗ₘ f) ● αₘ {a = a} {b = b} {c = e} ≡ {!!} -- (αₘ ● (id ⊗ₘ f))
-    --→ (id ⊗ₘ f) ● αₘ ≡ id  ⊗ₘ (αₘ ● (id ⊗ₘ f))
+  -- this should follow from the pentagon in a similar vein to showing λ≡σ●ρ for SMC's
+  -- it seems difficult to prove
+  λ⊗id≡α●λ : {b c : obj}
+    → λₘ {a = b} ⊗ₘ id {a = c} ≡ αₘ ● λₘ {a = (b ⊗ₒ c)}
+  λ⊗id≡α●λ =
+    begin
+      λₘ ⊗ₘ id
+    ≡⟨ {!!} ⟩
+      αₘ ● λₘ
+    ∎

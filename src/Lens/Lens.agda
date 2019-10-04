@@ -38,12 +38,11 @@ open smc
 open cart
 
 
--- TODO just get's should be morphisms in cart,not puts also?
 record Lens (s t a b : obj) : (Set m) where
   constructor MkLens
 
   field
-    get :    s      hom a
+    get :    s      hom a -- TODO make this even stronger by enforcing only "get" to be a comonoid homomorphism
     put : (s ⊗ₒ b) hom t
 
 _lensHom_ : (obj × obj) → (obj × obj) → Set m

@@ -75,7 +75,7 @@ record Cat (n m : Level) : Set (suc (n ⊔ m)) where
     ; ●-resp-≡ = flip ●-resp-≡
     }
 
-   
+
   _⟨●⟩refl : {a b c : obj} {f g : a hom b} {h : b hom c}
     → f ≡ g → f ● h ≡ g ● h
   e ⟨●⟩refl = ●-resp-≡ e refl
@@ -219,4 +219,3 @@ record Cat (n m : Level) : Set (suc (n ⊔ m)) where
     ≡⟨    assoc    ⟩
       f ● (g ● (h ● (i ● j)))
     ∎
-
