@@ -1,5 +1,3 @@
-{-# OPTIONS --allow-unsolved-metas #-}
-
 open import Level
 open import Function using (flip)
 open import Data.Product

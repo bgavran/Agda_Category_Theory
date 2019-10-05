@@ -96,6 +96,7 @@ lensRightId {a = (a , a')} {b = (b , b')} {MkLens get put} = cong₂ MkLens righ
 -- agda questions: can I "pattern match on equality of a product-like thing"?
 -- can I tell agda to display goals in a certain form?
 -- is there any way to improve my agda writing process, i.e. fill in boilerplate parts of the code? begin ≡⟨ ⟩ ∎
+-- get type under cursor?
 ●ₗ-resp-≡ : {a b c : obj × obj} {f g : a lensHom b} {h i : b lensHom c}
   → f ≡ g → h ≡ i → (f ●ₗ h) ≡ (g ●ₗ i)
 ●ₗ-resp-≡ {f = (MkLens getf putf)} {g = (MkLens getg putg)} {h = (MkLens geth puth)} {i = (MkLens geti puti)} l r

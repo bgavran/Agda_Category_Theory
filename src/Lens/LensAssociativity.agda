@@ -28,7 +28,7 @@ private
   module mc = Monoidal.Monoidal mc
   module smc = SymmetricMonoidal.SymmetricMonoidal smc
   module cart = Comonoid.Cartesian cart
-  module lens = Lens.Lens (cart)
+  module lens = Lens.Lens cart
 
 open _Functor_
 open _NatTrans_
