@@ -12,11 +12,14 @@ open import NaturalTransformation
 open import Monoidal
 open import SymmetricMonoidal
 
-module Comonoid
+-- CD-category is defined in https://arxiv.org/abs/1709.00322 , Definition 2.2
+-- CD stands for Copy/Discard
+-- It is like a Cartesian category except the morphisms aren't natural w.r.t copy and delete
+module CD-Category
   {n m}
   {cat : Cat n m}
   {mc : Monoidal cat}
-  (smc : SymmetricMonoidal mc)where
+  (smc : SymmetricMonoidal mc) where
 
 private
   variable
@@ -30,11 +33,13 @@ open C
 open M
 open S
 
-record Cartesian : (Set (n ⊔ m)) where
-  constructor MkComonoid
+record CD-Category : (Set (n ⊔ m)) where
+  constructor MkCD-Category
 
   field
-    -- TODO these should actually be monoidal natural transformations?
+    -- TODO these should actually be natural transformations?
+    -- even stronger - monoidal natural transformations!
+    -- this requires adding a notion of a monoidal functor
     δ : {c : obj} → c hom (c ⊗ₒ c) -- multiplication
     ε : {c : obj} → c hom 𝟙         -- counit
 
@@ -44,8 +49,6 @@ record Cartesian : (Set (n ⊔ m)) where
                            ≡ id
     copyAssoc  : {c : obj} → δ {c = c} ● (δ ⊗ₘ id) ● αₘ
                            ≡ δ {c = c} ● (id ⊗ₘ δ)
-    deleteApply : {a b : obj} {f : a hom b} → ε ≡ f ● ε
-    copyApply   : {a b : obj} {f : a hom b} → f ● δ ≡ δ ● (f ⊗ₘ f)
 
   copyDeleteρ : {c : obj} → δ {c = c} ● (id ⊗ₘ ε) ● ρₘ ≡ id
   copyDeleteρ =
@@ -70,31 +73,6 @@ record Cartesian : (Set (n ⊔ m)) where
 
   π₂ : {a b : obj} → (a ⊗ₒ b) hom b
   π₂ = (ε ⊗ₘ id) ● λₘ
-
-  π₂law : {a b c d : obj} {f : a hom b} {g : c hom d}
-    → (f ⊗ₘ g) ● π₂ ≡ π₂ ● g
-  π₂law {f = f} {g = g} =
-    begin
-      (f ⊗ₘ g) ● π₂
-    ≡⟨⟩
-      (f ⊗ₘ g) ● ((ε ⊗ₘ id) ● λₘ)
-    ≡⟨ sym assoc ⟩
-      (f ⊗ₘ g) ● (ε ⊗ₘ id) ● λₘ
-    ≡⟨ sym distribute⊗ ⟨●⟩refl ⟩
-      (f ● ε) ⊗ₘ (g ● id) ● λₘ
-    ≡⟨ ⊗-resp-≡  (sym deleteApply) left-id ⟨●⟩refl ⟩
-      (ε ⊗ₘ g) ● λₘ
-    ≡⟨ ⊗-resp-≡ (sym left-id) (sym right-id) ⟨●⟩refl   ⟩
-      ((ε ● id) ⊗ₘ  (id ● g)) ● λₘ
-    ≡⟨ distribute⊗ ⟨●⟩refl   ⟩
-      (ε ⊗ₘ id) ●  (id ⊗ₘ g) ● λₘ
-    ≡⟨ trans assoc (refl⟨●⟩ λ□)  ⟩
-      (ε ⊗ₘ id) ● (λₘ ● g)
-    ≡⟨ sym assoc  ⟩
-      (ε ⊗ₘ id) ● λₘ ● g
-    ≡⟨⟩
-       π₂ ● g
-    ∎
 
   α●π₂≡π₂⊗id : {a b c : obj}
     → αₘ {a = a} {b = b} {c = c} ● π₂ ≡ π₂ ⊗ₘ id
@@ -194,71 +172,3 @@ record Cartesian : (Set (n ⊔ m)) where
     ≡⟨  copyDeleteλ  ⟩
        id
     ∎
-
-
-  --strangeLaw : {a b : obj}
-  --  → (δ {c = a} ⊗ₘ id {a = b}) ● αₘ ●  (id ⊗ₘ (ε ⊗ₘ id)) ● (id ⊗ₘ λₘ) ≡ id
-  --strangeLaw {b = b} =
-  --  begin
-  --      (δ ⊗ₘ id) ● αₘ ●  (id ⊗ₘ (ε ⊗ₘ id)) ● (id ⊗ₘ λₘ)
-  --  ≡⟨    (sym (assocApply (α□ {c = b})) ⟨●⟩refl)     ⟩
-  --      (δ ⊗ₘ id) ● ((id ⊗ₘ ε) ⊗ₘ id) ● αₘ ● (id ⊗ₘ λₘ)
-  --  ≡⟨    assoc  ⟩
-  --      (δ ⊗ₘ id) ● ((id ⊗ₘ ε) ⊗ₘ id) ● (αₘ ● (id ⊗ₘ λₘ))
-  --  ≡⟨    refl⟨●⟩ ▵-identity  ⟩
-  --      (δ ⊗ₘ id) ● ((id ⊗ₘ ε) ⊗ₘ id) ● (ρₘ ⊗ₘ id)
-  --  ≡⟨  sym distribute⊗₃   ⟩
-  --      (δ ● (id ⊗ₘ ε) ● ρₘ) ⊗ₘ ((id ● id) ● id)
-  --  ≡⟨  ⊗-resp-≡ copyDeleteρ left-id   ⟩
-  --      id ⊗ₘ (id ● id)
-  --  ≡⟨  ⊗-resp-≡ᵣ left-id   ⟩
-  --      id ⊗ₘ id
-  --  ≡⟨  idLaw ⊗   ⟩
-  --     id
-  --  ∎
-
-
--- Did I define this to be a category actually?
-  -- TODO prove universal property of cartesian product?
-
-
-{-
-record ComonoidHom {cat : Cat n m} {mc : Monoidal cat} {smc : SymmetricMonoidal mc}
-  {a b : obj cat}
-  (c₁ : Comonoid smc a)
-  (c₂ : Comonoid smc b)
-  : Set m where
-  constructor MkComonoidHom
-  module C₁ = Comonoid c₁
-  open C₁ renaming (ε to ε₁; δ to δ₁)
-  module C₂ = Comonoid c₂
-  open C₂ renaming (ε to ε₂; δ to δ₂)
-  module mc = Monoidal.Monoidal mc
-  open mc
-
-  -- map between objects which preserves comonoid structure
-  field
-    f : cat [ a , b ]
-    deleteApply : ε₁ ≡ cat [ ε₂ ∘ f ]
-    copyApply : cat [ δ₂ ∘ f ] ≡ cat [ (f ⊗ₘ f) ∘ δ₁ ]
-
-
--- category of commutative comonoids
--- also a cartesian monoidal category?
-comm : {cat : Cat n m} {mc : Monoidal cat} {smc : SymmetricMonoidal mc}
-  → Cat n m
-comm {cat = cat} {mc = mc} {smc = smc} = MkCat
-  (let tt = Comonoid smc
-       t = obj cat
-       -- ttt = map tt t
-   in {!!})
-  {!!}
-  {!!}
-  {!!}
-  {!!}
-  {!!}
-
-  {!!}
-
-
--}

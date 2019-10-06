@@ -11,14 +11,16 @@ open import Product
 open import NaturalTransformation
 open import Monoidal
 open import SymmetricMonoidal
-open import Comonoid
+open import CD-Category
+open import Cartesian
 
 module Lens.Lens
   {n m }
   {cat : Cat n m}
   {mc : Monoidal cat}
   {smc : SymmetricMonoidal mc}
-  (cart : Cartesian smc) where
+  {cd : CD-Category smc}
+  (cart : Cartesian cd) where
 
 private
   variable
@@ -26,7 +28,8 @@ private
   module cct = Cat cat
   module mc = Monoidal.Monoidal mc
   module smc = SymmetricMonoidal.SymmetricMonoidal smc
-  module cart = Comonoid.Cartesian cart
+  module cd = CD-Category.CD-Category cd
+  module cart = Cartesian.Cartesian cart
 
 open _Functor_
 open _NatTrans_
@@ -36,6 +39,7 @@ open cct
 open mc
 open smc
 open cart
+open cd
 
 
 record Lens (s t a b : obj) : (Set m) where
@@ -50,11 +54,11 @@ _lensHom_ (s , t) (a , b) = Lens s t a b
 
 Pt : {x y : obj} {f : 𝟙 hom x}
   → (𝟙 , 𝟙) lensHom (x , y)
-Pt {f = f} = MkLens f {!!}
+Pt {f = f} = MkLens f (λₘ ● ε)
 
 CoPt : {y r : obj} {f : y hom r}
   → (y , r) lensHom (𝟙 , 𝟙)
-CoPt {f = f} = MkLens {!!} {!!}
+CoPt {f = f} = MkLens ε (ρₘ ● f)
 
 
 -- ((δ ⊗ₘ id) ● ((id ⊗ₘ get₁) ⊗ₘ id ) ● αₘ ● (id ⊗ₘ put₂) ● put₁)
