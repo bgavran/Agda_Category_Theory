@@ -11,7 +11,9 @@ open import Product
 open import NaturalTransformation
 open import Monoidal
 open import SymmetricMonoidal
-open import Comonoid
+open import CD-Category
+open import CDAffine-Category
+open import Cartesian
 open import Lens.Lens using (Lens)
 import Lens.LensAssociativity
 
@@ -20,13 +22,17 @@ module Lens.LensCategory
   {cat : Cat n m}
   {mc : Monoidal cat}
   {smc : SymmetricMonoidal mc}
-  (cart : Cartesian smc) where
+  {cd : CD-Category smc}
+  {cda : CDAffine-Category cd}
+  (cart : Cartesian cda) where
 
 private
   module cct = Cat cat
   module mc = Monoidal.Monoidal mc
   module smc = SymmetricMonoidal.SymmetricMonoidal smc
-  module cart = Comonoid.Cartesian cart
+  module cd = CD-Category.CD-Category cd
+  module cda = CDAffine-Category.CDAffine-Category cda
+  module cart = Cartesian.Cartesian cart
   module lens = Lens.Lens cart
   module lensassoc = Lens.LensAssociativity cart
 
@@ -36,6 +42,8 @@ open import Isomorphism
 open cct
 open mc
 open smc
+open cd
+open cda
 open cart
 open lens
 open lensassoc using (lensAssoc)
