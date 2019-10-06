@@ -37,6 +37,7 @@ open M
 open S
 open CD
 
+-- It also means the unit object in the monoidal category is terminal
 record CDAffine-Category : (Set (n ⊔ m)) where
   constructor MkCDAffine
 

@@ -54,8 +54,8 @@ record Lens (s t a b : obj) : (Set m) where
 _lensHom_ : (obj × obj) → (obj × obj) → Set m
 _lensHom_ (s , t) (a , b) = Lens s t a b
 
-Pt : {x y : obj} {f : 𝟙 hom x}
-  → (𝟙 , 𝟙) lensHom (x , y)
+Pt : {x s : obj} {f : 𝟙 hom x}
+  → (𝟙 , 𝟙) lensHom (x , s)
 Pt {f = f} = MkLens f (λₘ ● ε)
 
 CoPt : {y r : obj} {f : y hom r}
