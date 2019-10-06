@@ -1,7 +1,12 @@
 # Formalization of Category Theory in Agda
 
-I find that I often make simple, avoidable errors when reasoning about mathematics. 
-This repository is a possible solution to this issue and a long-term investment into my mathematical career.
+I find that I often make simple, avoidable errors when reasoning about mathematics.
+This is mostly due to the fact that information in processed in the mind in a fuzzy, often error-prone way, and not as rigorously as we can process it today in modern computers.
+Given that _we have_ these modern computers, it seems foolish not to use their power.
+This is why in this repository I'm using the power of the dependently typed system of Agda to explicitly write down and systematically check the constructions I'm using in my work (constructions which are of mostly category-theoretic nature).
+In a sense, I'm hoping to outsource a part of my cognition to the type-checker and - together with this type-checker - I'm hoping to become a part of a system that's a better mathematician than me alone.
+As such this repository is a long-term investment into my mathematical career.
+
 > Hopefully, the structures specified in this repository will closely mirror those in my mind.
 
 ---
@@ -33,10 +38,9 @@ Proof assistants are also thought of as tools that only help with abstract mathe
 
 Development of this library is guided by the design choices found in the official [Agda category theory library](https://github.com/agda/agda-categories/tree/master/Categories).
 
-Many of the constructions are similar, due to the simple nature of these constructions. However, special care is taken to make as many arguments as implicit as it is sensible to do so, mirroring the way we _reason_ about these implicit arguments.
-At the moment this is mostly for personal study a personal tool.
+Many of the constructions are similar, due to the simple nature of these constructions. However, special care is taken to make as many arguments as implicit as it is sensible to do so, mirroring the way we _reason_ about these implicit arguments. 
 
 
-Key points:
+Miscellaneous:
 * To denote function composition `λ x → g(f(x))` instead of `g ∘ f` I reverse the order of arguments and use the filled circle as the symbol: `f ● g`. This has proven to be an effective measure for reducing the cognitive load when reasoning about complex chains of compositions.
 * There exist some type-holes which I use, but haven't provided proof of.
