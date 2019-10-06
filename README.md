@@ -3,6 +3,7 @@
 I find that I often make simple, avoidable errors when reasoning about mathematics.
 This is mostly due to the fact that information in processed in the mind in a fuzzy, often error-prone way, and not as rigorously as we can process it today in modern computers.
 Given that _we have_ these modern computers, it seems foolish not to use their power.
+
 This is why in this repository I'm using the power of the dependently typed system of Agda to explicitly write down and systematically check the constructions I'm using in my work (constructions which are of mostly category-theoretic nature).
 In a sense, I'm hoping to outsource a part of my cognition to the type-checker and - together with this type-checker - I'm hoping to become a part of a system that's a better mathematician than me alone.
 As such this repository is a long-term investment into my mathematical career.
