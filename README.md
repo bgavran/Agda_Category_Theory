@@ -45,4 +45,4 @@ Many of the constructions are similar, due to the simple nature of these constru
 
 Miscellaneous:
 * To denote function composition `λ x → g(f(x))` instead of `g ∘ f` I reverse the order of arguments and use the filled circle as the symbol: `f ● g`. This has proven to be an effective measure for reducing the cognitive load when reasoning about complex chains of compositions.
-* There exist some type-holes which I use, but haven't provided proof of.
+* There exist some type-holes which I use, but haven't provided proofs of yet.
