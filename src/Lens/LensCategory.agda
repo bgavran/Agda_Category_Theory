@@ -63,7 +63,7 @@ lensLeftId {a = (a , a')} {b = (b , b')} {MkLens get put} = cong₂ MkLens left-
           (δ ⊗ₘ id) ● αₘ ● ((id ⊗ₘ (get ⊗ₘ id)) ● (id ⊗ₘ π₂))
        ≡⟨ (refl⟨●⟩ sym distribute⊗) ⟩
           (δ ⊗ₘ id) ● αₘ ● (     (id ● id) ⊗ₘ ((get ⊗ₘ id) ● π₂)    )
-       ≡⟨ refl⟨●⟩ ( ⊗-resp-≡ left-id (trans π₂law left-id)) ⟩
+       ≡⟨ refl⟨●⟩ ( left-id ⟨⊗⟩ (trans π₂law left-id)) ⟩
            (δ ⊗ₘ id) ● αₘ ● (id ⊗ₘ π₂)
        ≡⟨   copyαπ₂≡id   ⟩
           id
@@ -83,7 +83,7 @@ lensRightId {a = (a , a')} {b = (b , b')} {MkLens get put} = cong₂ MkLens righ
        (δ ⊗ₘ id) ● ((id ⊗ₘ id) ⊗ₘ id) ● αₘ ● (id ⊗ₘ put) ● π₂
    ≡⟨  assoc  ⟩
        ((δ ⊗ₘ id) ● ((id ⊗ₘ id) ⊗ₘ id) ● αₘ) ● ((id ⊗ₘ put) ● π₂)
-   ≡⟨   ((refl⟨●⟩ trans (⊗-resp-≡ₗ (idLaw ⊗)) (idLaw ⊗)) ⟨●⟩refl) ⟨●⟩ π₂law   ⟩
+   ≡⟨   ((refl⟨●⟩ trans ((idLaw ⊗) ⟨⊗⟩refl) (idLaw ⊗)) ⟨●⟩refl) ⟨●⟩ π₂law   ⟩
        ((δ ⊗ₘ id) ● id ● αₘ) ● (π₂ ● put)
    ≡⟨  trans (trans assoc (refl⟨●⟩ right-id) ⟨●⟩refl) (sym assoc) ⟩
        (δ ⊗ₘ id) ● αₘ ● π₂ ● put
@@ -93,7 +93,7 @@ lensRightId {a = (a , a')} {b = (b , b')} {MkLens get put} = cong₂ MkLens righ
        (δ ⊗ₘ id) ● (π₂ ⊗ₘ id) ● put
    ≡⟨  sym distribute⊗ ⟨●⟩refl  ⟩
        (δ ● π₂) ⊗ₘ (id ● id) ● put
-   ≡⟨  ⊗-resp-≡ (δ●π₂≡id) left-id ⟨●⟩refl  ⟩
+   ≡⟨  ((δ●π₂≡id) ⟨⊗⟩ left-id) ⟨●⟩refl  ⟩
        (id ⊗ₘ id) ● put
    ≡⟨  idLaw ⊗ ⟨●⟩refl  ⟩
        id ● put
@@ -111,7 +111,7 @@ lensRightId {a = (a , a')} {b = (b , b')} {MkLens get put} = cong₂ MkLens righ
   = cong₂ MkLens (cong Lens.get l ⟨●⟩ cong Lens.get r)
   (begin
     (δ ⊗ₘ id) ● ((id ⊗ₘ getf) ⊗ₘ id) ● αₘ ● (id ⊗ₘ puth) ● putf
-  ≡⟨   (((refl⟨●⟩ ⊗-resp-≡ₗ (⊗-resp-≡ᵣ (cong Lens.get l))) ⟨●⟩refl) ⟨●⟩ ⊗-resp-≡ᵣ (cong Lens.put r)) ⟨●⟩ (cong Lens.put l)   ⟩
+  ≡⟨   (((refl⟨●⟩ ((refl⟨⊗⟩ (cong Lens.get l)) ⟨⊗⟩refl)) ⟨●⟩refl) ⟨●⟩ (refl⟨⊗⟩ (cong Lens.put r))) ⟨●⟩ (cong Lens.put l)   ⟩
     (δ ⊗ₘ id) ● ((id ⊗ₘ getg) ⊗ₘ id) ● αₘ ● (id ⊗ₘ puti) ● putg
   ∎)
 
@@ -126,3 +126,20 @@ lensCategory = MkCat
   lensRightId
   lensAssoc
   ●ₗ-resp-≡
+
+⊗ₗ : (lensCategory X lensCategory) Functor lensCategory
+⊗ₗ = MkFunctor
+  (λ x → let (a , c) = proj₁ x
+             (e , g) = proj₂ x
+         in a ⊗ₒ e , c ⊗ₒ g)
+  (λ l → {!!})
+  {!!}
+  {!!}
+
+lensMonoidal : Monoidal lensCategory
+lensMonoidal = MkMonoidal
+  ⊗ₗ
+  (𝟙 , 𝟙)
+  {!!}
+  {!!}
+  {!!}

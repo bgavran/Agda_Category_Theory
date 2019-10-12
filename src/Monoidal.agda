@@ -88,10 +88,19 @@ record Monoidal : Set (n ⊔ m) where
     hom ((a ⊗ₒ b) ⊗ₒ c)
   αₘ' = η (inverse associator)
 
+  ρₘ' : {a : obj}
+    → a hom (a ⊗ₒ 𝟙)
+  ρₘ' = η (inverse rightUnitor)
+
+
+  λₘ' : {a : obj}
+    → a hom (𝟙 ⊗ₒ a)
+  λₘ' = η (inverse leftUnitor)
+
   λ□ : {a b : obj} {f : cat [ a , b ]}
     → mapMor ((constFunctor 𝟙 \/ idFunctor) ●F ⊗) f ● λₘ
     ≡ λₘ ● f
-  λ□ = eqPaths (naturality (forward leftUnitor))
+  λ□ = {!!} -- eqPaths (naturality (forward leftUnitor))
 
   ρ□ : {a b : obj} {f : cat [ a , b ]}
     → mapMor ((idFunctor \/ constFunctor 𝟙) ●F ⊗) f ● ρₘ
@@ -109,6 +118,7 @@ record Monoidal : Set (n ⊔ m) where
     → mapMor ((idFunctor 𝕏 ⊗) ●F ⊗) f ● αₘ'
     ≡ αₘ' ● mapMor ((productAssociatorᵣ ●F (⊗ 𝕏 idFunctor)) ●F ⊗) f
   α□' = eqPaths (naturality (inverse associator))
+
 
 
   distribute⊗ : {a b c d e j : obj}
@@ -129,17 +139,17 @@ record Monoidal : Set (n ⊔ m) where
       (f ⊗ₘ h) ● (g ⊗ₘ i) ● (j ⊗ₘ k)
     ∎
 
-  ⊗-resp-≡ : {a b c d : obj} {f g : a hom b} {h i : c hom d}
+  _⟨⊗⟩_ : {a b c d : obj} {f g : a hom b} {h i : c hom d}
     → f ≡ g → h ≡ i → f ⊗ₘ h ≡ g ⊗ₘ i
-  ⊗-resp-≡ l r = cong₂ _⊗ₘ_ l r
+  l ⟨⊗⟩ r = cong₂ _⊗ₘ_ l r
 
-  ⊗-resp-≡ₗ : {a b c d : obj} {f g : a hom b} {h : c hom d}
+  _⟨⊗⟩refl : {a b c d : obj} {f g : a hom b} {h : c hom d}
     → f ≡ g → f ⊗ₘ h ≡ g ⊗ₘ h
-  ⊗-resp-≡ₗ l = ⊗-resp-≡ l refl
+  l ⟨⊗⟩refl = l ⟨⊗⟩ refl
 
-  ⊗-resp-≡ᵣ : {a b c d : obj} {f : a hom b} {g h : c hom d}
+  refl⟨⊗⟩_ : {a b c d : obj} {f : a hom b} {g h : c hom d}
     → g ≡ h → f ⊗ₘ g ≡ f ⊗ₘ h
-  ⊗-resp-≡ᵣ r = ⊗-resp-≡ refl r
+  refl⟨⊗⟩_ r = refl ⟨⊗⟩ r
 
   -- Monoidal product of isomorphisms is an isomorphism
   -- Action of a bifunctor on two isomorphisms should also be an isomorphism?
@@ -152,7 +162,7 @@ record Monoidal : Set (n ⊔ m) where
        (inverse f ⊗ₘ inverse g) ● (forward f ⊗ₘ forward g)
     ≡⟨ sym distribute⊗ ⟩
        (inverse f ● forward f) ⊗ₘ (inverse g ● forward g)
-    ≡⟨ ⊗-resp-≡ (leftInverseLaw f) (leftInverseLaw g) ⟩
+    ≡⟨ _⟨⊗⟩_ (leftInverseLaw f) (leftInverseLaw g) ⟩
        (id ⊗ₘ id)
     ≡⟨   idLaw ⊗   ⟩
         id
@@ -161,7 +171,7 @@ record Monoidal : Set (n ⊔ m) where
         (forward f ⊗ₘ forward g) ● (inverse f ⊗ₘ inverse g)
       ≡⟨ sym distribute⊗ ⟩
         (forward f ● inverse f) ⊗ₘ (forward g ● inverse g)
-      ≡⟨ ⊗-resp-≡ (rightInverseLaw f) (rightInverseLaw g) ⟩
+      ≡⟨ _⟨⊗⟩_ (rightInverseLaw f) (rightInverseLaw g) ⟩
         (id ⊗ₘ id)
       ≡⟨   idLaw ⊗   ⟩
         id
@@ -173,15 +183,14 @@ record Monoidal : Set (n ⊔ m) where
   --  -- → αₘ {a = x} {b = 𝟙} {c = y} ● (id ⊗ λₘ) ≡ ρₘ ⊗ₘ id
 
 
-  ▵-identity : {a c : obj}
-    → αₘ {a = a} {b = 𝟙} {c = c} ● (id ⊗ₘ λₘ) ≡ ρₘ ⊗ₘ id
-  ▵-identity = {!!}
-
   ⬠-identity : {a b c d : obj}
     → αₘ {a = (a ⊗ₒ b)} {b = c} {c = d} ● αₘ {a = a} {b = b} {c = (c ⊗ₒ d)}
     ≡ (αₘ {a = a} {b = b} {c = c} ⊗ₘ id) ● αₘ {a = a} {b = (b ⊗ₒ c)} {c = d} ● (id ⊗ₘ αₘ {a = b} {b = c} {c = d})
   ⬠-identity = {!!}
 
+  ▵-identity : {a c : obj}
+    → αₘ {a = a} {b = 𝟙} {c = c} ● (id ⊗ₘ λₘ) ≡ ρₘ ⊗ₘ id
+  ▵-identity = {!!}
 
   assocApply : {a b c c' d : obj}
     → {x : a hom b} {f : b hom c} {g : c hom d} {h : b hom c'} {i : c' hom d}
@@ -203,9 +212,9 @@ record Monoidal : Set (n ⊔ m) where
       (id ⊗ₘ g) ● (f ⊗ₘ id)
     ≡⟨  sym distribute⊗ ⟩
       (id ● f) ⊗ₘ (g ● id)
-    ≡⟨  ⊗-resp-≡ right-id left-id  ⟩
+    ≡⟨  _⟨⊗⟩_ right-id left-id  ⟩
           f ⊗ₘ g
-    ≡⟨  ⊗-resp-≡ (sym left-id) (sym right-id)  ⟩
+    ≡⟨  _⟨⊗⟩_ (sym left-id) (sym right-id)  ⟩
       (f ● id) ⊗ₘ  (id ● g)
     ≡⟨  distribute⊗  ⟩
       (f ⊗ₘ id) ● (id ⊗ₘ g)
@@ -221,11 +230,11 @@ record Monoidal : Set (n ⊔ m) where
   moveThroughAssocᵗ {x = x} {y = y} {z = z} {w = w} =
     begin
       (x ⊗ₘ y) ● αₘ ● (z ⊗ₘ w)
-    ≡⟨  refl⟨●⟩ ⊗-resp-≡ (sym left-id) (sym right-id)   ⟩
+    ≡⟨  refl⟨●⟩ _⟨⊗⟩_ (sym left-id) (sym right-id)   ⟩
       (x ⊗ₘ y) ● αₘ ● ((z ● id) ⊗ₘ (id ● w))
     ≡⟨  refl⟨●⟩ distribute⊗   ⟩
       (x ⊗ₘ y) ● αₘ ● ((z ⊗ₘ id) ● (id ⊗ₘ w))
-    ≡⟨  refl⟨●⟩ (⊗-resp-≡ᵣ(sym (idLaw ⊗)) ⟨●⟩refl)   ⟩
+    ≡⟨  refl⟨●⟩ ((refl⟨⊗⟩ (sym (idLaw ⊗))) ⟨●⟩refl)   ⟩
       (x ⊗ₘ y) ● αₘ ● ((z ⊗ₘ (id ⊗ₘ id)) ● (id ⊗ₘ w))
     ≡⟨  sym assoc   ⟩
       (x ⊗ₘ y) ● αₘ ● (z ⊗ₘ (id ⊗ₘ id)) ● (id ⊗ₘ w)
@@ -233,7 +242,7 @@ record Monoidal : Set (n ⊔ m) where
       (x ⊗ₘ y) ● ((z ⊗ₘ id) ⊗ₘ id) ● αₘ ● (id ⊗ₘ w)
     ≡⟨  sym distribute⊗ ⟨●⟩refl₂  ⟩
       ((x ● (z ⊗ₘ id)) ⊗ₘ (y ● id)) ● αₘ ● (id ⊗ₘ w)
-    ≡⟨  (⊗-resp-≡ᵣ left-id ) ⟨●⟩refl₂  ⟩
+    ≡⟨  (refl⟨⊗⟩ left-id) ⟨●⟩refl₂  ⟩
       ((x ● (z ⊗ₘ id)) ⊗ₘ y) ● αₘ ● (id ⊗ₘ w)
     ∎
 
@@ -248,7 +257,7 @@ record Monoidal : Set (n ⊔ m) where
        (f ⊗ₘ id) ● (g ⊗ₘ id)
     ≡⟨  sym distribute⊗   ⟩
        (f ● g) ⊗ₘ (id ● id)
-    ≡⟨  ⊗-resp-≡ᵣ left-id  ⟩
+    ≡⟨  refl⟨⊗⟩ left-id ⟩
        (f ● g) ⊗ₘ id
     ∎
   factorId₃ : {x a b c d : obj}

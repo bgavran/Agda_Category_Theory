@@ -57,9 +57,9 @@ record CDAffine-Category : (Set (n ⊔ m)) where
       (f ⊗ₘ g) ● (ε ⊗ₘ id) ● λₘ
     ≡⟨ sym distribute⊗ ⟨●⟩refl ⟩
       (f ● ε) ⊗ₘ (g ● id) ● λₘ
-    ≡⟨ ⊗-resp-≡  (sym deleteApply) left-id ⟨●⟩refl ⟩
+    ≡⟨ ((sym deleteApply) ⟨⊗⟩ left-id) ⟨●⟩refl ⟩
       (ε ⊗ₘ g) ● λₘ
-    ≡⟨ ⊗-resp-≡ (sym left-id) (sym right-id) ⟨●⟩refl   ⟩
+    ≡⟨ ((sym left-id) ⟨⊗⟩ (sym right-id)) ⟨●⟩refl   ⟩
       ((ε ● id) ⊗ₘ  (id ● g)) ● λₘ
     ≡⟨ distribute⊗ ⟨●⟩refl   ⟩
       (ε ⊗ₘ id) ●  (id ⊗ₘ g) ● λₘ

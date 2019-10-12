@@ -62,6 +62,26 @@ CoPt : {y r : obj} {f : y hom r}
   → (y , r) lensHom (𝟙 , 𝟙)
 CoPt {f = f} = MkLens ε (ρₘ ● f)
 
+counit : {x : obj} → (x , x) lensHom (𝟙 , 𝟙)
+counit = MkLens ε ρₘ
+
+
+-- function lifting
+
+◿ : {x y : obj}
+  → (f : x hom y) → (x , 𝟙) lensHom (y , 𝟙)
+Lens.get (◿ f) = f
+Lens.put (◿ f) = ε ⊗ₘ id ● λₘ
+
+
+_◺ : {x y : obj}
+  → (f : x hom y) → (𝟙 , y) lensHom (𝟙 , x)
+Lens.get (f ◺) = id
+Lens.put (f ◺) = λₘ ● f
+
+--counitLaw : {x y : obj} {f : x hom y}
+--  → (ρₘ' ⊗ₘ id) ● ((◿ f) ⊗ₘ id) ● (ρₘ ⊗ₘ id) ● counit ≡ (id ⊗ₘ λₘ') ● (id ⊗ₘ (f ◺)) ● (id ⊗ₘ λₘ) ● counit
+
 
 -- ((δ ⊗ₘ id) ● ((id ⊗ₘ get₁) ⊗ₘ id ) ● αₘ ● (id ⊗ₘ put₂) ● put₁)
 _●ₗ_ : {a b c : obj × obj}

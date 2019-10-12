@@ -8,6 +8,7 @@ open ≡-Reasoning
 
 record Cat (n m : Level) : Set (suc (n ⊔ m)) where
   constructor MkCat
+  infix 4 _hom_
   infixr 9 _∘_
   infixl 9 _●_ -- associate to the left because of reversal of the arguments
   infix 10  _[_,_] _[_∘_]

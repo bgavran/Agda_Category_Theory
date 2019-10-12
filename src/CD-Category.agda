@@ -83,7 +83,7 @@ record CD-Category : (Set (n ⊔ m)) where
         αₘ ● ((ε ⊗ₘ id) ● λₘ)
      ≡⟨    sym assoc   ⟩
         αₘ ● (ε ⊗ₘ id) ● λₘ
-     ≡⟨   (refl⟨●⟩ ⊗-resp-≡ᵣ (sym (idLaw ⊗))) ⟨●⟩refl   ⟩
+     ≡⟨   (refl⟨●⟩ refl⟨⊗⟩ (sym (idLaw ⊗))) ⟨●⟩refl   ⟩
         αₘ ● (ε ⊗ₘ (id ⊗ₘ id)) ● λₘ
      ≡⟨   sym α□ ⟨●⟩refl   ⟩
        ((ε ⊗ₘ id) ⊗ₘ id) ● αₘ ● λₘ
@@ -93,7 +93,7 @@ record CD-Category : (Set (n ⊔ m)) where
        ((ε ⊗ₘ id) ⊗ₘ id) ● (λₘ ⊗ₘ id)
      ≡⟨   sym distribute⊗   ⟩
        ((ε ⊗ₘ id) ● λₘ) ⊗ₘ (id ● id)
-     ≡⟨  ⊗-resp-≡ᵣ(left-id)  ⟩
+     ≡⟨  refl⟨⊗⟩ left-id  ⟩
        ((ε ⊗ₘ id) ● λₘ) ⊗ₘ id
      ≡⟨⟩
         π₂ ⊗ₘ id
@@ -121,7 +121,7 @@ record CD-Category : (Set (n ⊔ m)) where
         αₘ ● (id ⊗ₘ π₂)
     ≡⟨⟩
         αₘ ● (    id    ⊗ₘ ((ε ⊗ₘ id) ● λₘ))
-    ≡⟨   refl⟨●⟩ ⊗-resp-≡ₗ(sym left-id)   ⟩
+    ≡⟨   refl⟨●⟩ ((sym left-id) ⟨⊗⟩refl)   ⟩
         αₘ ● ((id ● id) ⊗ₘ ((ε ⊗ₘ id) ● λₘ))
     ≡⟨  refl⟨●⟩ distribute⊗  ⟩
         αₘ ● ((id ⊗ₘ (ε ⊗ₘ id)) ● (id ⊗ₘ λₘ))
@@ -135,7 +135,7 @@ record CD-Category : (Set (n ⊔ m)) where
         ((id ⊗ₘ ε) ⊗ₘ id) ● (ρₘ ⊗ₘ id)
     ≡⟨  sym distribute⊗  ⟩
         ((id ⊗ₘ ε) ● ρₘ) ⊗ₘ (id ● id)
-    ≡⟨  ⊗-resp-≡ᵣ left-id    ⟩
+    ≡⟨  refl⟨⊗⟩  left-id    ⟩
         π₁ ⊗ₘ id
     ∎
 
@@ -152,9 +152,9 @@ record CD-Category : (Set (n ⊔ m)) where
        (δ ⊗ₘ id) ● (((id ⊗ₘ ε) ● ρₘ) ⊗ₘ id)
     ≡⟨  sym distribute⊗  ⟩
        (δ ● ((id ⊗ₘ ε) ● ρₘ)) ⊗ₘ (id ● id)
-    ≡⟨  ⊗-resp-≡ (sym assoc) left-id  ⟩
+    ≡⟨  (sym assoc) ⟨⊗⟩ left-id  ⟩
        (δ ● (id ⊗ₘ ε) ● ρₘ) ⊗ₘ id
-    ≡⟨  ⊗-resp-≡ₗ copyDeleteρ ⟩
+    ≡⟨  copyDeleteρ ⟨⊗⟩refl ⟩
          id ⊗ₘ id
     ≡⟨  idLaw ⊗    ⟩
         id
