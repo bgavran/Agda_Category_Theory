@@ -8,6 +8,7 @@ This is why in this repository I'm using the power of the dependently typed syst
 
 In a sense, I'm hoping to outsource a part of my cognition to the type-checker and - together with this type-checker - I'm hoping to become a part of a system that's a better mathematician than me alone.
 As such this repository is a long-term investment into my mathematical career.
+It's a Work In Progress with many rough edges all around.
 
 > Hopefully, the structures specified in this repository will closely mirror those in my mind.
 

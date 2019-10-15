@@ -1,3 +1,5 @@
+{-# OPTIONS --allow-unsolved-metas #-}
+
 open import Level
 open import Function using (flip)
 open import Data.Product
@@ -36,6 +38,7 @@ private
   module lens = Lens.Lens cart
   module lensassoc = Lens.LensAssociativity cart
 
+open Cat using (_[_,_])
 open _Functor_
 open Cat.CommutativeSquare
 open import Isomorphism
@@ -48,9 +51,6 @@ open cart
 open lens
 open lensassoc using (lensAssoc)
 
-lensId : {a : obj × obj} → a lensHom a
-lensId = MkLens id π₂
-
 lensLeftId : {a b : obj × obj} {f : a lensHom b}
   → f ●ₗ lensId ≡ f
 lensLeftId {a = (a , a')} {b = (b , b')} {MkLens get put} = cong₂ MkLens left-id
@@ -58,6 +58,8 @@ lensLeftId {a = (a , a')} {b = (b , b')} {MkLens get put} = cong₂ MkLens left-
       _ ● put
    ≡⟨
        (begin
+          (δ ⊗ₘ id) ● ((id ⊗ₘ get) ⊗ₘ id) ● αₘ ● (id ⊗ₘ (π₂ ● id))
+       ≡⟨  refl⟨●⟩ (refl⟨⊗⟩ left-id) ⟩
           (δ ⊗ₘ id) ● ((id ⊗ₘ get) ⊗ₘ id) ●  αₘ ● (id ⊗ₘ π₂)
        ≡⟨ trans ((assocApply α□) ⟨●⟩refl) assoc ⟩
           (δ ⊗ₘ id) ● αₘ ● ((id ⊗ₘ (get ⊗ₘ id)) ● (id ⊗ₘ π₂))
@@ -66,10 +68,9 @@ lensLeftId {a = (a , a')} {b = (b , b')} {MkLens get put} = cong₂ MkLens left-
        ≡⟨ refl⟨●⟩ ( left-id ⟨⊗⟩ (trans π₂law left-id)) ⟩
            (δ ⊗ₘ id) ● αₘ ● (id ⊗ₘ π₂)
        ≡⟨   copyαπ₂≡id   ⟩
-          id
-       ∎ )
-
-        ⟨●⟩refl   ⟩
+           id
+       ∎)
+         ⟨●⟩refl   ⟩
        id ● put
    ≡⟨  right-id   ⟩
        put
@@ -80,31 +81,34 @@ lensRightId : {a b : obj × obj} {f : a lensHom b}
   → lensId ●ₗ f ≡ f
 lensRightId {a = (a , a')} {b = (b , b')} {MkLens get put} = cong₂ MkLens right-id
   (begin
-       (δ ⊗ₘ id) ● ((id ⊗ₘ id) ⊗ₘ id) ● αₘ ● (id ⊗ₘ put) ● π₂
-   ≡⟨  assoc  ⟩
-       ((δ ⊗ₘ id) ● ((id ⊗ₘ id) ⊗ₘ id) ● αₘ) ● ((id ⊗ₘ put) ● π₂)
-   ≡⟨   ((refl⟨●⟩ trans ((idLaw ⊗) ⟨⊗⟩refl) (idLaw ⊗)) ⟨●⟩refl) ⟨●⟩ π₂law   ⟩
-       ((δ ⊗ₘ id) ● id ● αₘ) ● (π₂ ● put)
-   ≡⟨  trans (trans assoc (refl⟨●⟩ right-id) ⟨●⟩refl) (sym assoc) ⟩
-       (δ ⊗ₘ id) ● αₘ ● π₂ ● put
-   ≡⟨  assoc ⟨●⟩refl  ⟩
-       (δ ⊗ₘ id) ● (αₘ ● π₂) ● put
-   ≡⟨  (refl⟨●⟩ α●π₂≡π₂⊗id) ⟨●⟩refl  ⟩
-       (δ ⊗ₘ id) ● (π₂ ⊗ₘ id) ● put
-   ≡⟨  sym distribute⊗ ⟨●⟩refl  ⟩
-       (δ ● π₂) ⊗ₘ (id ● id) ● put
-   ≡⟨  ((δ●π₂≡id) ⟨⊗⟩ left-id) ⟨●⟩refl  ⟩
-       (id ⊗ₘ id) ● put
-   ≡⟨  idLaw ⊗ ⟨●⟩refl  ⟩
-       id ● put
-   ≡⟨  right-id  ⟩
-       put
-   ∎)
+      (δ ⊗ₘ id) ● ((id ⊗ₘ id) ⊗ₘ id) ● αₘ ● (id ⊗ₘ put) ● (π₂ ● id)
+  ≡⟨  refl⟨●⟩ left-id ⟩
+      (δ ⊗ₘ id) ● ((id ⊗ₘ id) ⊗ₘ id) ● αₘ ● (id ⊗ₘ put) ● π₂
+  ≡⟨  assoc  ⟩
+      ((δ ⊗ₘ id) ● ((id ⊗ₘ id) ⊗ₘ id) ● αₘ) ● ((id ⊗ₘ put) ● π₂)
+  ≡⟨   ((refl⟨●⟩ trans ((idLaw ⊗) ⟨⊗⟩refl) (idLaw ⊗)) ⟨●⟩refl) ⟨●⟩ π₂law   ⟩
+      ((δ ⊗ₘ id) ● id ● αₘ) ● (π₂ ● put)
+  ≡⟨  trans (trans assoc (refl⟨●⟩ right-id) ⟨●⟩refl) (sym assoc) ⟩
+      (δ ⊗ₘ id) ● αₘ ● π₂ ● put
+  ≡⟨  assoc ⟨●⟩refl  ⟩
+      (δ ⊗ₘ id) ● (αₘ ● π₂) ● put
+  ≡⟨  (refl⟨●⟩ α●π₂≡π₂⊗id) ⟨●⟩refl  ⟩
+      (δ ⊗ₘ id) ● (π₂ ⊗ₘ id) ● put
+  ≡⟨  sym distribute⊗ ⟨●⟩refl  ⟩
+      (δ ● π₂) ⊗ₘ (id ● id) ● put
+  ≡⟨  ((δ●π₂≡id) ⟨⊗⟩ left-id) ⟨●⟩refl  ⟩
+      (id ⊗ₘ id) ● put
+  ≡⟨  idLaw ⊗ ⟨●⟩refl  ⟩
+      id ● put
+  ≡⟨  right-id  ⟩
+      put
+  ∎)
 
 -- agda questions: can I "pattern match on equality of a product-like thing"?
--- can I tell agda to display goals in a certain form?
+-- can I tell agda to display goals in a certain form? - SPC-u?
 -- is there any way to improve my agda writing process, i.e. fill in boilerplate parts of the code? begin ≡⟨ ⟩ ∎
 -- get type under cursor?
+-- can I get rid of this import boilerplate at top of every file?
 ●ₗ-resp-≡ : {a b c : obj × obj} {f g : a lensHom b} {h i : b lensHom c}
   → f ≡ g → h ≡ i → (f ●ₗ h) ≡ (g ●ₗ i)
 ●ₗ-resp-≡ {f = (MkLens getf putf)} {g = (MkLens getg putg)} {h = (MkLens geth puth)} {i = (MkLens geti puti)} l r
@@ -129,12 +133,19 @@ lensCategory = MkCat
 
 ⊗ₗ : (lensCategory X lensCategory) Functor lensCategory
 ⊗ₗ = MkFunctor
-  (λ x → let (a , c) = proj₁ x
-             (e , g) = proj₂ x
-         in a ⊗ₒ e , c ⊗ₒ g)
-  (λ l → {!!})
-  {!!}
-  {!!}
+  (mapObj swapProd)
+  (λ x → let (MkLens gₗ pₗ ) ,  (MkLens gᵣ pᵣ) = x
+         in MkLens (gₗ ⊗ₘ gᵣ) (|⇆|⊗ ● (pₗ ⊗ₘ pᵣ)))
+  (λ {a} → cong₂ MkLens (idLaw ⊗) (trans swapProject≡project (sym left-id)))
+  λ f g → let (MkLens gfₗ pfₗ) , (MkLens gfᵣ pfᵣ) = f
+              (MkLens ggₗ pgₗ) , (MkLens ggᵣ pgᵣ) = g
+              (MkLens gfgₗ pgfₗ) , (MkLens gfgᵣ pgfᵣ) = (lensCategory X lensCategory) Cat.[ f ● g ]
+          in begin
+              MkLens (gfgₗ ⊗ₘ gfgᵣ) (|⇆|⊗ ● (pgfₗ ⊗ₘ pgfᵣ))
+          ≡⟨  {!!}  ⟩
+              lensCategory Cat.[ (MkLens (gfₗ ⊗ₘ gfᵣ) (|⇆|⊗ ● (pfₗ ⊗ₘ pfᵣ))) ● (MkLens (ggₗ ⊗ₘ ggᵣ) (|⇆|⊗ ● (pgₗ ⊗ₘ pgᵣ))) ]
+          ∎
+  where swapProd = (|⇆|Xfunctor ●F (⊗ 𝕏 ⊗))
 
 lensMonoidal : Monoidal lensCategory
 lensMonoidal = MkMonoidal
@@ -143,3 +154,21 @@ lensMonoidal = MkMonoidal
   {!!}
   {!!}
   {!!}
+  {!!}
+  {!!}
+
+lensSymmetricMonoidal : SymmetricMonoidal lensMonoidal
+lensSymmetricMonoidal = MkSymmMonoidal (MkIso
+  (MkNatTrans (◿ σₘ || σₘ ◺) (Cat.MkCommSq {!!}))
+  (MkNatTrans (◿ σₘ || σₘ ◺) {!!})
+  (begin
+     {!!}
+   ≡⟨ {!!} ⟩
+     {!!}
+   ∎)
+  {!!})
+
+-- counitLaw : {x y : obj} {f : x hom y}
+--   →
+--counitLaw : {x y : obj} {f : x hom y}
+--  → (ρₘ' ⊗ₘ id) ● ((◿ f) ⊗ₘ id) ● (ρₘ ⊗ₘ id) ● counit ≡ (id ⊗ₘ λₘ') ● (id ⊗ₘ (f ◺)) ● (id ⊗ₘ λₘ) ● counit

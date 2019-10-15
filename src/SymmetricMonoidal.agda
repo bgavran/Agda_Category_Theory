@@ -41,13 +41,27 @@ record SymmetricMonoidal : (Set (n ⊔ m)) where
   σₘ : {a b : obj} → (a ⊗ₒ b) hom (b ⊗ₒ a)
   σₘ = η (forward σ)
 
-  σₘ' : {a b : obj} → (a ⊗ₒ b) hom (b ⊗ₒ a)
-  σₘ' = η (inverse σ)
+  -- σₘ == σₘ'
+  -- σₘ' : {a b : obj} → (a ⊗ₒ b) hom (b ⊗ₒ a)
+  -- σₘ' = η (inverse σ)
 
   σ□ : {a b c d : obj} → ∀ {f : (cat X cat) [ (a , b) , (c , d) ]}
-    -- → {g : cat [ ? , ? ]}
     → (mapMor ⊗ f) ● σₘ ≡ σₘ ● (mapMor (swapFunctor ●F ⊗) f)
   σ□ = eqPaths (naturality (forward σ))
+
+  id≡σσ : {a b : obj} → id {a = (a ⊗ₒ b)} ≡ σₘ ● σₘ
+  id≡σσ {a = a} {b = b} =
+    begin
+        id
+    ≡⟨  (let t = sym (rightInverseLaw σ)
+             tt = cong (η ) t
+         in {!!}) ⟩
+       σₘ ● σₘ
+    ∎
+
+  -- σ□' : {a b c d : obj} → ∀ {f : (cat X cat) [ (a , b) , (c , d) ]}
+  --   → mapMor (swapFunctor ●F ⊗) f ● σₘ' ≡ σₘ' ● ({!!} ⊗ₘ {!f!})
+  -- σ□' = eqPaths (naturality (inverse σ))
   -- TODO coherence
 
 
@@ -56,3 +70,26 @@ record SymmetricMonoidal : (Set (n ⊔ m)) where
   λ≡σ●ρ : {x : obj}
     → λₘ {a = x} ≡ σₘ ● ρₘ
   λ≡σ●ρ = {!!}
+
+  ρ≡σ●λ : {x : obj}
+    → ρₘ {a = x} ≡ σₘ ● λₘ
+  ρ≡σ●λ = begin
+       ρₘ
+   ≡⟨  sym right-id ⟩
+       id ● ρₘ
+   ≡⟨  id≡σσ ⟨●⟩refl ⟩
+       (σₘ ● σₘ) ● ρₘ
+   ≡⟨  assoc ⟩
+       σₘ ● (σₘ ● ρₘ)
+   ≡⟨  refl⟨●⟩ sym λ≡σ●ρ ⟩
+       σₘ ● λₘ
+   ∎
+
+  |⇆|⊗ : {a b c d : obj}
+    → (a ⊗ₒ b) ⊗ₒ (c ⊗ₒ d) hom
+      (a ⊗ₒ c) ⊗ₒ (b ⊗ₒ d)
+  |⇆|⊗ = αₘ
+    ● (id ⊗ₘ αₘ' )
+    ● id ⊗ₘ (σₘ ⊗ₘ id)
+    ● (id ⊗ₘ αₘ)
+    ● αₘ'

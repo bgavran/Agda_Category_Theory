@@ -27,7 +27,6 @@ open _Functor_
 open _NatTrans_
 
 
-
 record Monoidal : Set (n ⊔ m) where
   constructor MkMonoidal
 
@@ -52,7 +51,6 @@ record Monoidal : Set (n ⊔ m) where
     associator  : _≅_ {cat = functorCategory} [x⊗y]⊗z x⊗[y⊗z]
     leftUnitor  : _≅_ {cat = functorCategory} [𝟙⊗x] idFunctor
     rightUnitor : _≅_ {cat = functorCategory} [x⊗𝟙] idFunctor
-    --▵-identity : associator ●≅ (? ⊗≅ ?)
 
   infixl 10 _⊗ₒ_ _⊗ₘ_
   _⊗ₒ_ : obj → obj → obj
@@ -80,13 +78,13 @@ record Monoidal : Set (n ⊔ m) where
   αₘ : {a b c : obj}
     → ((a ⊗ₒ b) ⊗ₒ c)
     hom (a ⊗ₒ(b ⊗ₒ c))
-  αₘ = η (forward associator)
+  αₘ {_} = η (forward associator)
 
 
   αₘ' : {a b c : obj}
     → (a ⊗ₒ (b ⊗ₒ c))
     hom ((a ⊗ₒ b) ⊗ₒ c)
-  αₘ' = η (inverse associator)
+  αₘ' {_} = η (inverse associator)
 
   ρₘ' : {a : obj}
     → a hom (a ⊗ₒ 𝟙)
@@ -97,29 +95,36 @@ record Monoidal : Set (n ⊔ m) where
     → a hom (𝟙 ⊗ₒ a)
   λₘ' = η (inverse leftUnitor)
 
+  -- the empty pattern match `{_}` is because of this issue https://github.com/agda/agda/issues/4131
   λ□ : {a b : obj} {f : cat [ a , b ]}
     → mapMor ((constFunctor 𝟙 \/ idFunctor) ●F ⊗) f ● λₘ
     ≡ λₘ ● f
-  λ□ = {!!} -- eqPaths (naturality (forward leftUnitor))
+  λ□ {_} = eqPaths (naturality (forward leftUnitor))
 
   ρ□ : {a b : obj} {f : cat [ a , b ]}
     → mapMor ((idFunctor \/ constFunctor 𝟙) ●F ⊗) f ● ρₘ
     ≡ ρₘ ● f
-  ρ□ = eqPaths (naturality (forward rightUnitor))
+  ρ□ {_} = eqPaths (naturality (forward rightUnitor))
 
   α□ : {a b c d e i : obj}
     → {f : (cat X (cat X cat)) [ (a , (b , c)) , (d , (e , i)) ]}
     → mapMor ((productAssociatorᵣ ●F (⊗ 𝕏 idFunctor)) ●F ⊗) f ● αₘ
     ≡ αₘ ● mapMor ((idFunctor 𝕏 ⊗) ●F ⊗) f
-  α□ = eqPaths (naturality (forward associator))
+  α□ {_} = eqPaths (naturality (forward associator))
 
   α□' : {a b c d e i : obj}
     → {f : (cat X (cat X cat)) [ (a , (b , c)) , (d , (e , i)) ]}
     → mapMor ((idFunctor 𝕏 ⊗) ●F ⊗) f ● αₘ'
     ≡ αₘ' ● mapMor ((productAssociatorᵣ ●F (⊗ 𝕏 idFunctor)) ●F ⊗) f
-  α□' = eqPaths (naturality (inverse associator))
+  α□' {_} = eqPaths (naturality (inverse associator))
 
 
+  field
+    ▵-identity : {x y : obj}
+      → αₘ {a = x} {b = 𝟙} {c = y} ● (id ⊗ₘ λₘ) ≡ ρₘ ⊗ₘ id
+    ⬠-identity : {a b c d : obj}
+      → αₘ {a = (a ⊗ₒ b)} {b = c} {c = d} ● αₘ {a = a} {b = b} {c = (c ⊗ₒ d)}
+      ≡ (αₘ ⊗ₘ id) ● αₘ {a = a} {b = (b ⊗ₒ c)} {c = d} ● (id ⊗ₘ αₘ )
 
   distribute⊗ : {a b c d e j : obj}
     → {f : a hom c} {g : c hom e} {h : b hom d} {i : d hom j}
@@ -137,6 +142,17 @@ record Monoidal : Set (n ⊔ m) where
          ((f ● g) ⊗ₘ (h ● i)) ● (j ⊗ₘ k)
     ≡⟨   distribute⊗ ⟨●⟩refl    ⟩
       (f ⊗ₘ h) ● (g ⊗ₘ i) ● (j ⊗ₘ k)
+    ∎
+  distribute⊗₄ : {a b c d e o p q r s : obj}
+    → {f : a hom c} {g : c hom e} {h : b hom d} {i : d hom o}  {j : e hom q } {k : o hom p} {l : q hom r} {m : p hom s}
+    → (f ● g ● j ● l) ⊗ₘ (h ● i ● k ● m) ≡ (f ⊗ₘ h) ● (g ⊗ₘ i) ● (j ⊗ₘ k) ● (l ⊗ₘ m)
+  distribute⊗₄ {f = f} {g = g} {h = h} {i = i} {j = j} {k = k} {l = l} {m = m} =
+    begin
+      (((f ● g) ● j) ● l) ⊗ₘ (((h ● i) ● k) ● m)
+    ≡⟨  compLaw ⊗ (f ● g ● j , h ● i ● k) (l , m) ⟩
+      ((f ● g ● j) ⊗ₘ (h ● i ● k) ) ● (l ⊗ₘ m)
+    ≡⟨   distribute⊗₃ ⟨●⟩refl    ⟩
+      (f ⊗ₘ h) ● (g ⊗ₘ i) ● (j ⊗ₘ k) ● (l ⊗ₘ m)
     ∎
 
   _⟨⊗⟩_ : {a b c d : obj} {f g : a hom b} {h i : c hom d}
@@ -177,20 +193,6 @@ record Monoidal : Set (n ⊔ m) where
         id
     ∎)
 
-  -- TODO can't add triangle identity as a field since Agda seems to be broken...
-  --field
-  --  triangleIdentity : obj -- {x y : obj}
-  --  -- → αₘ {a = x} {b = 𝟙} {c = y} ● (id ⊗ λₘ) ≡ ρₘ ⊗ₘ id
-
-
-  ⬠-identity : {a b c d : obj}
-    → αₘ {a = (a ⊗ₒ b)} {b = c} {c = d} ● αₘ {a = a} {b = b} {c = (c ⊗ₒ d)}
-    ≡ (αₘ {a = a} {b = b} {c = c} ⊗ₘ id) ● αₘ {a = a} {b = (b ⊗ₒ c)} {c = d} ● (id ⊗ₘ αₘ {a = b} {b = c} {c = d})
-  ⬠-identity = {!!}
-
-  ▵-identity : {a c : obj}
-    → αₘ {a = a} {b = 𝟙} {c = c} ● (id ⊗ₘ λₘ) ≡ ρₘ ⊗ₘ id
-  ▵-identity = {!!}
 
   assocApply : {a b c c' d : obj}
     → {x : a hom b} {f : b hom c} {g : c hom d} {h : b hom c'} {i : c' hom d}
@@ -246,9 +248,6 @@ record Monoidal : Set (n ⊔ m) where
       ((x ● (z ⊗ₘ id)) ⊗ₘ y) ● αₘ ● (id ⊗ₘ w)
     ∎
 
-  --moveThroughAssocᵇ :
-  --  → (x ⊗ₘ y) ● αₘ ● (z ⊗ₘ w) ≡ (id ⊗ₘ y) ● α ● (())
-
   factorId : {x a b c : obj}
     {f : a hom b} {g : b hom c}
     → (f ⊗ₘ id {a = x}) ● (g ⊗ₘ id) ≡ (f ● g) ⊗ₘ id
@@ -294,3 +293,4 @@ record Monoidal : Set (n ⊔ m) where
     ≡⟨ {!!} ⟩
       αₘ ● λₘ
     ∎
+

@@ -20,16 +20,6 @@ private
     n m n' m' : Level
     c₁ c₂ c₃ c₄ d₁ d₂ : Cat n m
 
--- copied from agda-categories... I have no idea what it does
-zipWith : ∀ {a b c p q r s} {A : Set a} {B : Set b} {C : Set c} {P : A → Set p} {Q : B → Set q} {R : C → Set r} {S : (x : C) → R x → Set s}
-  → (_∙_ : A → B → C)
-  → (_∘_ : ∀ {x y} → P x → Q y → R (x ∙ y))
-  → (_*_ : (x : C) → (y : R x) → S x y)
-  → (x : Σ A P) → (y : Σ B Q)
-  → S (proj₁ x ∙ proj₁ y) (proj₂ x ∘ proj₂ y)
-zipWith _∙_ _∘_ _*_ (a , p) (b , q) = (a ∙ b) * (p ∘ q)
-syntax zipWith f g h = f -< h >- g
-
 _X_ : (Cat n m) → (Cat n' m') → Cat (n ⊔ n') (m ⊔ m')
 obj (c₁ X c₂) = (obj c₁ × obj c₂)
 _hom_ (c₁ X c₂) (a₁ , a₂) (b₁ , b₂) = (a₁ hom₁ b₁) × (a₂ hom₂ b₂)
@@ -66,7 +56,7 @@ compLaw (F 𝕏 G) (f₁ , f₂) (g₁ , g₂) = cong₂ _,_ (compLaw F f₁ g�
 
 
 
--- the symbol should be read top to bottom, as if branching
+-- the symbol should be read bottom to top as if branching
 _\/_ : c₁ Functor  c₂
      → c₁ Functor       c₃
      → c₁ Functor (c₂ X c₃)
@@ -81,22 +71,21 @@ mapMor swapFunctor = swap
 idLaw swapFunctor = refl
 compLaw swapFunctor = λ _ _ → refl
 
-{-
 
+{-
 |   |   |   |
 |    \ /    |
 |     X‌     |
 |    / \    |
 |   |   |   |
-
 -}
 
 |⇆| : {a : Set n} {b : Set m} {c : Set n'} {d : Set m'}
   → ((a × b) × (c × d)) → ((a × c) × (b × d))
 |⇆| ((a , b) , (c , d)) = (a , c) , (b , d)
 
-|⇆|functor : ((c₁ X c₂) X (c₃ X c₄)) Functor ((c₁ X c₃) X (c₂ X c₄))
-mapObj |⇆|functor  = |⇆|
-mapMor |⇆|functor  = |⇆|
-idLaw |⇆|functor   = cong₂ _,_ {!!} {!!}
-compLaw |⇆|functor = {!!}
+|⇆|Xfunctor : ((c₁ X c₂) X (c₃ X c₄)) Functor ((c₁ X c₃) X (c₂ X c₄))
+mapObj |⇆|Xfunctor  = |⇆|
+mapMor |⇆|Xfunctor  = |⇆|
+idLaw |⇆|Xfunctor   = refl
+compLaw |⇆|Xfunctor = λ _ _ → refl

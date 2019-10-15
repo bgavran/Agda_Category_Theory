@@ -1,3 +1,4 @@
+{-# OPTIONS --allow-unsolved-metas #-}
 open import Level
 open import Function using (flip)
 open import Data.Product
@@ -25,6 +26,8 @@ module Lens.SimpleLens
   (cart : Cartesian cda) where
 
 import Lens.Lens as L
+import Lens.LensCategory as LC
+import Lens.LensAssociativity
 private
   module cct = Cat cat
   module mc = Monoidal.Monoidal mc
@@ -33,6 +36,8 @@ private
   module cda = CDAffine-Category.CDAffine-Category cda
   module cart = Cartesian.Cartesian cart
   module lenss = L cart
+  module lc = LC cart
+  module lensassoc = Lens.LensAssociativity cart
 
 open _Functor_
 open Cat.CommutativeSquare
@@ -44,6 +49,8 @@ open cd
 open cda
 open cart
 open lenss
+open lc
+open lensassoc using (lensAssoc)
 
 
 record SimpleLens (a b : obj) : (Set m) where
@@ -51,16 +58,50 @@ record SimpleLens (a b : obj) : (Set m) where
   field
     lens : Lens a a b b
 
-record LawfulSimpleLens (a b : obj) : (Set m) where
-  constructor MkLawfulSimpleLens
-  field
-    simpleLens : SimpleLens a b
-  module simpleLens = SimpleLens simpleLens
-  open simpleLens
-  module lls = Lens lens
-  open lls
+_●ₛₗ_ : {a b c : obj} →
+  SimpleLens a b → SimpleLens b c → SimpleLens a c
+_●ₛₗ_ (MkSimpleLens g) (MkSimpleLens f) = MkSimpleLens (g ●ₗ f)
 
-  field
-    putGetLaw : put ● get ≡ π₂
-    putPutLaw : (put ⊗ₘ id ) ● put ≡ (π₁ ⊗ₘ id ) ● put
-    getPutLaw : δ ● (id ⊗ₘ get) ● put ≡ id
+simpleLensCategory : Cat n m
+simpleLensCategory = MkCat
+  obj
+  SimpleLens
+  (MkSimpleLens lensId)
+  _●ₛₗ_
+  (cong MkSimpleLens lensLeftId)
+  (cong MkSimpleLens lensRightId)
+  (cong MkSimpleLens lensAssoc)
+  {!!}
+
+simpleLensMonoidal : Monoidal simpleLensCategory
+simpleLensMonoidal = MkMonoidal
+  (MkFunctor
+    (mapObj ⊗)
+    (λ x → let (MkSimpleLens l) , (MkSimpleLens r) = x
+            in MkSimpleLens (mapMor ⊗ₗ (l , r)))
+    {!!}
+    {!!})
+  𝟙
+  {!!}
+  {!!}
+  {!!}
+  {!!}
+  {!!}
+
+simpleLensSymmetricMonoidal : SymmetricMonoidal simpleLensMonoidal
+simpleLensSymmetricMonoidal = MkSymmMonoidal (MkIso
+  (MkNatTrans (MkSimpleLens (◿ σₘ || σₘ ◺)) (Cat.MkCommSq (cong MkSimpleLens {!!})))
+  (MkNatTrans (MkSimpleLens (◿ σₘ || σₘ ◺)) (Cat.MkCommSq (cong MkSimpleLens {!!})))
+  {!!}
+  {!!})
+
+
+
+simpleLensCDCategory : CD-Category simpleLensSymmetricMonoidal
+simpleLensCDCategory = MkCD-Category
+  (MkSimpleLens (MkLens δ {!!}))
+  (MkSimpleLens (MkLens ε π₁))
+  {!!}
+  {!!}
+  {!!}
+

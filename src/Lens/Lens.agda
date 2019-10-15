@@ -15,13 +15,21 @@ open import CD-Category
 open import CDAffine-Category
 open import Cartesian
 
+open import CategoryOfCategories
+open CategoryOfCategories
+--module catc = Cat catOfCats
+--open catc using (monomorphism)
+
 module Lens.Lens
-  {n m }
+  {n m}
   {cat : Cat n m}
   {mc : Monoidal cat}
   {smc : SymmetricMonoidal mc}
   {cd : CD-Category smc}
   {cda : CDAffine-Category cd}
+  --{catc : Cat n m}
+  --(incl : Cat._hom_ catOfCats catc cat)
+  --(mₚ : Cat.monomorphism catOfCats incl)
   (cart : Cartesian cda) where
 
 private
@@ -62,25 +70,27 @@ CoPt : {y r : obj} {f : y hom r}
   → (y , r) lensHom (𝟙 , 𝟙)
 CoPt {f = f} = MkLens ε (ρₘ ● f)
 
-counit : {x : obj} → (x , x) lensHom (𝟙 , 𝟙)
-counit = MkLens ε ρₘ
+--counit : {x : obj} → (x , x) lensHom (𝟙 , 𝟙)
+--counit = MkLens ε ρₘ
 
 
 -- function lifting
 
+◿_||_◺ : {x y z w : obj}
+  → (f : x hom y) → (g : w hom z) → (x , z) lensHom (y , w)
+◿ f || g ◺ = MkLens f (π₂ ● g)
+
 ◿ : {x y : obj}
   → (f : x hom y) → (x , 𝟙) lensHom (y , 𝟙)
-Lens.get (◿ f) = f
-Lens.put (◿ f) = ε ⊗ₘ id ● λₘ
+◿ f = ◿ f || id ◺
 
 
 _◺ : {x y : obj}
   → (f : x hom y) → (𝟙 , y) lensHom (𝟙 , x)
-Lens.get (f ◺) = id
-Lens.put (f ◺) = λₘ ● f
+f ◺ = ◿ id || f ◺
 
---counitLaw : {x y : obj} {f : x hom y}
---  → (ρₘ' ⊗ₘ id) ● ((◿ f) ⊗ₘ id) ● (ρₘ ⊗ₘ id) ● counit ≡ (id ⊗ₘ λₘ') ● (id ⊗ₘ (f ◺)) ● (id ⊗ₘ λₘ) ● counit
+lensId : {a : obj × obj} → a lensHom a
+lensId = ◿ id || id ◺
 
 
 -- ((δ ⊗ₘ id) ● ((id ⊗ₘ get₁) ⊗ₘ id ) ● αₘ ● (id ⊗ₘ put₂) ● put₁)

@@ -17,6 +17,7 @@ record Cat (n m : Level) : Set (suc (n ⊔ m)) where
     obj : Set n
     _hom_ : (a b : obj) → Set m
 
+
     id : {a : obj} -> a hom a
     _●_  : {a b c : obj}
       -> (a hom b)
@@ -194,14 +195,7 @@ record Cat (n m : Level) : Set (suc (n ⊔ m)) where
     {h :             c hom d}
     {i :                   d hom e}
     → ((f ● g) ● h) ● i ≡ f ● (g ● (h ● i))
-  assoc₂ {f = f} {g = g} {h = h} {i = i} =
-    begin
-      ((f ● g) ● h) ● i
-    ≡⟨    assoc    ⟩
-      (f ● g) ● (h ● i)
-    ≡⟨    assoc    ⟩
-      (f ● (g ● (h ● i)))
-    ∎
+  assoc₂ = trans assoc assoc
 
   assoc₃ : {a b c d e x : obj}
     {f : a hom b}
@@ -210,13 +204,8 @@ record Cat (n m : Level) : Set (suc (n ⊔ m)) where
     {i :                   d hom e}
     {j :                         e hom x}
     → (((f ● g) ● h) ● i) ● j ≡ f ● (g ● (h ● (i ● j)))
-  assoc₃ {f = f} {g = g} {h = h} {i = i} {j = j} =
-    begin
-      (((f ● g) ● h) ● i) ● j
-    ≡⟨    assoc    ⟩
-      ((f ● g) ● h) ● (i ● j)
-    ≡⟨    assoc    ⟩
-      (f ● g) ● (h ● (i ● j))
-    ≡⟨    assoc    ⟩
-      f ● (g ● (h ● (i ● j)))
-    ∎
+  assoc₃ = trans assoc assoc₂
+
+  monomorphism : {b c : obj}
+    → (h : b hom c) -> Set (n ⊔ m)
+  monomorphism {b = b} h = {a : obj} → {f g : a hom b} → f ● h ≡ g ● h → f ≡ g

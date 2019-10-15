@@ -1,3 +1,5 @@
+{-# OPTIONS --allow-unsolved-metas #-}
+
 open import Level
 open import Function using (flip)
 open import Data.Product
@@ -74,6 +76,42 @@ record CD-Category : (Set (n ⊔ m)) where
   π₂ : {a b : obj} → (a ⊗ₒ b) hom b
   π₂ = (ε ⊗ₘ id) ● λₘ
 
+
+  swapProject≡project : {a b c d : obj}
+    → |⇆|⊗ {a = a} {b = b} {c = c} {d = d} ● ((π₂ ● id) ⊗ₘ (π₂ ● id)) ≡ π₂
+  swapProject≡project {a = a} {b = b} {c = c} {d = d}=
+    begin
+      |⇆|⊗ ● ((π₂ ● id) ⊗ₘ (π₂ ● id))
+    ≡⟨   refl⟨●⟩ (left-id ⟨⊗⟩ left-id)  ⟩
+      |⇆|⊗ ● (π₂ ⊗ₘ π₂)
+    ≡⟨⟩
+       αₘ ● (id ⊗ₘ αₘ' ) ● (id ⊗ₘ (σₘ ⊗ₘ id)) ● (id ⊗ₘ αₘ) ● αₘ' ● (((ε ⊗ₘ id) ● λₘ) ⊗ₘ ((ε ⊗ₘ id) ● λₘ))
+    ≡⟨  refl⟨●⟩ distribute⊗ ⟩
+       αₘ ● (id ⊗ₘ αₘ' ) ● (id ⊗ₘ (σₘ ⊗ₘ id)) ● (id ⊗ₘ αₘ) ● αₘ' ● (((ε ⊗ₘ id) ⊗ₘ (ε ⊗ₘ id)) ● (λₘ ⊗ₘ λₘ))
+    ≡⟨  trans (sym assoc) (assoc ⟨●⟩refl)⟩
+       αₘ ● (id ⊗ₘ αₘ' ) ● (id ⊗ₘ (σₘ ⊗ₘ id)) ● (id ⊗ₘ αₘ) ● (αₘ' ● ((ε ⊗ₘ id) ⊗ₘ (ε ⊗ₘ id))) ● (λₘ ⊗ₘ λₘ)
+    ≡⟨  (trans (refl⟨●⟩ sym α□') (sym assoc)) ⟨●⟩refl ⟩
+       αₘ ● (id ⊗ₘ αₘ' ) ● (id ⊗ₘ (σₘ ⊗ₘ id)) ● (id ⊗ₘ αₘ) ● (ε ⊗ₘ (id ⊗ₘ (ε ⊗ₘ id))) ● αₘ' ● (λₘ ⊗ₘ λₘ)
+    ≡⟨  assoc₃ ⟨●⟩refl₂ ⟩
+       αₘ ● ((id ⊗ₘ αₘ' ) ● ((id ⊗ₘ (σₘ ⊗ₘ id)) ● ((id ⊗ₘ αₘ) ● ((ε ⊗ₘ (id ⊗ₘ (ε ⊗ₘ id))) )))) ● αₘ' ● (λₘ ⊗ₘ λₘ)
+    ≡⟨  (refl⟨●⟩ sym assoc₂) ⟨●⟩refl₂ ⟩
+       αₘ ● ((id ⊗ₘ αₘ' ) ● (id ⊗ₘ (σₘ ⊗ₘ id)) ● (id ⊗ₘ αₘ) ● ((ε ⊗ₘ (id ⊗ₘ (ε ⊗ₘ id))))) ● αₘ' ● (λₘ ⊗ₘ λₘ)
+    ≡⟨  (refl⟨●⟩ sym distribute⊗₄) ⟨●⟩refl₂ ⟩
+       αₘ ● ((id ● id ● id ● ε) ⊗ₘ (αₘ' ● (σₘ ⊗ₘ id) ● αₘ ● (id ⊗ₘ (ε ⊗ₘ id))))              ● αₘ' ● (λₘ ⊗ₘ λₘ)
+    ≡⟨  (refl⟨●⟩ (((trans (left-id ⟨●⟩refl) left-id) ⟨●⟩refl) ⟨⊗⟩ assocApply (sym α□))) ⟨●⟩refl₂ ⟩
+       αₘ ● ((id ● ε)           ⊗ₘ (αₘ' ● (σₘ ⊗ₘ id) ● ((id ⊗ₘ ε) ⊗ₘ id) ● αₘ  ))              ● αₘ' ● (λₘ ⊗ₘ λₘ)
+    ≡⟨  (refl⟨●⟩ (right-id ⟨⊗⟩ (assoc ⟨●⟩refl))) ⟨●⟩refl₂ ⟩
+       αₘ ● (ε           ⊗ₘ (αₘ' ● ((σₘ ⊗ₘ id) ● ((id ⊗ₘ ε) ⊗ₘ id)) ● αₘ  ))              ● αₘ' ● (λₘ ⊗ₘ λₘ)
+    ≡⟨  (refl⟨●⟩ (refl⟨⊗⟩ ((refl⟨●⟩ sym distribute⊗) ⟨●⟩refl))) ⟨●⟩refl₂ ⟩
+       αₘ ● (ε ⊗ₘ (αₘ' ● ((σₘ ● (id ⊗ₘ ε)) ⊗ₘ (id ● id)) ● αₘ  )) ● αₘ' ● (λₘ ⊗ₘ λₘ)
+    ≡⟨  (refl⟨●⟩ (refl⟨⊗⟩ ((refl⟨●⟩ (sym σ□ ⟨⊗⟩refl) ) ⟨●⟩refl))) ⟨●⟩refl₂ ⟩
+       αₘ ● (ε ⊗ₘ (αₘ' ● (((ε ⊗ₘ id) ● σₘ) ⊗ₘ (id ● id)) ● αₘ  )) ● αₘ' ● (λₘ ⊗ₘ λₘ)
+    ≡⟨  {!!} ⟩
+      αₘ' ●  αₘ ⊗ₘ id ● ((ε ⊗ₘ (ε ⊗ₘ id)) ⊗ₘ id) ● ((id ⊗ₘ λₘ) ⊗ₘ id) ● λₘ ⊗ₘ id
+    ≡⟨  {!!}  ⟩
+      (ε ⊗ₘ id) ● λₘ
+    ∎
+
   α●π₂≡π₂⊗id : {a b c : obj}
     → αₘ {a = a} {b = b} {c = c} ● π₂ ≡ π₂ ⊗ₘ id
   α●π₂≡π₂⊗id =
@@ -112,6 +150,21 @@ record CD-Category : (Set (n ⊔ m)) where
        (ε ⊗ₘ id) ● (σₘ ● ρₘ)
     ≡⟨    refl⟨●⟩ (sym λ≡σ●ρ )   ⟩
        (ε ⊗ₘ id) ● λₘ
+    ∎
+
+  σ●π₂≡π₁ : {a b : obj}
+    → σₘ ● π₂ ≡ π₁ {a = a} {b = b}
+  σ●π₂≡π₁ =
+    begin
+       σₘ ● ((ε ⊗ₘ id) ● λₘ)
+    ≡⟨  sym assoc  ⟩
+       (σₘ ● (ε ⊗ₘ id)) ● λₘ
+    ≡⟨  (sym σ□) ⟨●⟩refl   ⟩
+       (id ⊗ₘ ε) ● σₘ ● λₘ
+    ≡⟨    assoc   ⟩
+       (id ⊗ₘ ε) ● (σₘ ● λₘ)
+    ≡⟨    refl⟨●⟩ (sym ρ≡σ●λ)   ⟩
+       (id ⊗ₘ ε) ● ρₘ
     ∎
 
   ▵-identityπ : {a b c : obj}
