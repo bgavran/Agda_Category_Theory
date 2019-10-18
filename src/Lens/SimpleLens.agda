@@ -58,6 +58,9 @@ record SimpleLens (a b : obj) : (Set m) where
   field
     lens : Lens a a b b
 
+MkSimpleLens' : {a b : obj} → a hom b → a ⊗ₒ b hom a → SimpleLens a b
+MkSimpleLens' g p = MkSimpleLens (MkLens g p)
+
 _●ₛₗ_ : {a b c : obj} →
   SimpleLens a b → SimpleLens b c → SimpleLens a c
 _●ₛₗ_ (MkSimpleLens g) (MkSimpleLens f) = MkSimpleLens (g ●ₗ f)

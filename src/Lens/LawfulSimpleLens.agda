@@ -109,6 +109,16 @@ lawfulSimpleLensCategory = MkCat
   {!!}
   {!!}
 
+lawfulSimpleLensMonoidal : Monoidal lawfulSimpleLensCategory
+lawfulSimpleLensMonoidal = MkMonoidal
+  (MkFunctor {!!} {!!} {!!} {!!})
+  (Monoidal.𝟙 simpleLensMonoidal)
+  {!!}
+  {!!}
+  {!!}
+  {!!}
+  {!!}
+
 lawfulSimpleLensCDAffineCategory : CDAffine-Category simpleLensCDCategory
 lawfulSimpleLensCDAffineCategory = MkCDAffine (λ {a = a} {b = b} {f = f} →
   let MkSimpleLens (MkLens gf pf) = f

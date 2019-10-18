@@ -29,15 +29,18 @@ private
   module M = Monoidal.Monoidal mc
   module S = SymmetricMonoidal.SymmetricMonoidal smc
   module CD = CD-Category.CD-Category cd
+  module CDA = CDAffine-Category.CDAffine-Category cda
 
 open _Functor_
 open C
 open M
 open S
 open CD
+open CDA
 
 record Cartesian : (Set (n ⊔ m)) where
   constructor MkCartesian
 
   field
     copyApply   : {a b : obj} {f : a hom b} → f ● δ ≡ δ ● (f ⊗ₘ f)
+    -- this means that 𝟙 in CD-category is terminal. How to prove this?

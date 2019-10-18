@@ -62,16 +62,13 @@ record Lens (s t a b : obj) : (Set m) where
 _lensHom_ : (obj × obj) → (obj × obj) → Set m
 _lensHom_ (s , t) (a , b) = Lens s t a b
 
-Pt : {x s : obj} {f : 𝟙 hom x}
-  → (𝟙 , 𝟙) lensHom (x , s)
-Pt {f = f} = MkLens f (λₘ ● ε)
+Pt : {x s : obj}
+  → (f : 𝟙 hom x) → (𝟙 , 𝟙) lensHom (x , s)
+Pt f = MkLens f (λₘ ● ε)
 
-CoPt : {y r : obj} {f : y hom r}
-  → (y , r) lensHom (𝟙 , 𝟙)
-CoPt {f = f} = MkLens ε (ρₘ ● f)
-
---counit : {x : obj} → (x , x) lensHom (𝟙 , 𝟙)
---counit = MkLens ε ρₘ
+CoPt : {y r : obj}
+  → (f : y hom r) → (y , r) lensHom (𝟙 , 𝟙)
+CoPt f = MkLens ε (ρₘ ● f)
 
 
 -- function lifting

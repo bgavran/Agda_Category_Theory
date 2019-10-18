@@ -17,6 +17,7 @@ open import Isomorphism
 -- CDAffine-category is defined in https://arxiv.org/abs/1709.00322 , Definition 2.3
 -- CD stands for Copy/Discard
 -- It is like a Cartesian category except the morphisms aren't natural w.r.t copy (but are natural w.r.t delete)
+-- It also means the unit object in the monoidal category is terminal
 module CDAffine-Category
   {n m}
   {cat : Cat n m}
@@ -40,13 +41,38 @@ open CD
 open Isomorphism._≅_
 open _NatTrans_
 
--- It also means the unit object in the monoidal category is terminal
 record CDAffine-Category : (Set (n ⊔ m)) where
   constructor MkCDAffine
 
   field
     -- Naturality w.r.t. deletion
-    deleteApply : {a b : obj} {f : a hom b} → ε ≡ f ● ε
+    deleteApply : {a b : obj} {f : a hom b} → εₘ ≡ f ● εₘ
+
+
+  idmorphismon𝟙≡εₘ : id {a = 𝟙} ≡ εₘ
+  idmorphismon𝟙≡εₘ =
+     begin
+         id
+     ≡⟨  sym left-id  ⟩
+         id ● id
+     ≡⟨  {!!}  ⟩
+         εₘ ● εₘ
+     ≡⟨  sym deleteApply  ⟩
+         εₘ
+     ∎
+
+  𝟙terminal : {a : obj} → {f : a hom 𝟙} → f ≡ εₘ
+  𝟙terminal {f = f} =
+    begin
+       f
+    ≡⟨ {!!} ⟩
+       {!εₘ ● id!}
+    ≡⟨  {!!} ⟩
+       f ● εₘ
+    ≡⟨  sym deleteApply ⟩
+       εₘ
+    ∎
+
 
   π₂law : {a b c d : obj} {f : a hom b} {g : c hom d}
     → (f ⊗ₘ g) ● π₂ ≡ π₂ ● g
@@ -54,21 +80,21 @@ record CDAffine-Category : (Set (n ⊔ m)) where
     begin
       (f ⊗ₘ g) ● π₂
     ≡⟨⟩
-      (f ⊗ₘ g) ● ((ε ⊗ₘ id) ● λₘ)
+      (f ⊗ₘ g) ● ((εₘ ⊗ₘ id) ● λₘ)
     ≡⟨ sym assoc ⟩
-      (f ⊗ₘ g) ● (ε ⊗ₘ id) ● λₘ
+      (f ⊗ₘ g) ● (εₘ ⊗ₘ id) ● λₘ
     ≡⟨ sym distribute⊗ ⟨●⟩refl ⟩
-      (f ● ε) ⊗ₘ (g ● id) ● λₘ
+      (f ● εₘ) ⊗ₘ (g ● id) ● λₘ
     ≡⟨ ((sym deleteApply) ⟨⊗⟩ left-id) ⟨●⟩refl ⟩
-      (ε ⊗ₘ g) ● λₘ
+      (εₘ ⊗ₘ g) ● λₘ
     ≡⟨ ((sym left-id) ⟨⊗⟩ (sym right-id)) ⟨●⟩refl   ⟩
-      ((ε ● id) ⊗ₘ  (id ● g)) ● λₘ
+      ((εₘ ● id) ⊗ₘ  (id ● g)) ● λₘ
     ≡⟨ distribute⊗ ⟨●⟩refl   ⟩
-      (ε ⊗ₘ id) ●  (id ⊗ₘ g) ● λₘ
+      (εₘ ⊗ₘ id) ●  (id ⊗ₘ g) ● λₘ
     ≡⟨ trans assoc (refl⟨●⟩ λ□)  ⟩
-      (ε ⊗ₘ id) ● (λₘ ● g)
+      (εₘ ⊗ₘ id) ● (λₘ ● g)
     ≡⟨ sym assoc  ⟩
-      (ε ⊗ₘ id) ● λₘ ● g
+      (εₘ ⊗ₘ id) ● λₘ ● g
     ≡⟨⟩
       π₂ ● g
     ∎

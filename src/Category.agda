@@ -65,8 +65,8 @@ record Cat (n m : Level) : Set (suc (n ⊔ m)) where
   cod : {a b : obj} -> (a hom b) -> obj
   cod {b} _ = b
 
-  op : Cat n m
-  op = record
+  _ᵒᵖ : Cat n m
+  _ᵒᵖ = record
     { obj = obj
     ; _hom_ = flip _hom_
     ; id = id

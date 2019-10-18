@@ -62,6 +62,8 @@ record Monoidal : Set (n ⊔ m) where
     → (a ⊗ₒ c) hom (b ⊗ₒ d)
   f ⊗ₘ g = mapMor ⊗ (f , g)
 
+  _[_⊗ₘ_] : {a b c d : obj} → a hom b → c hom d → (a ⊗ₒ c) hom (b ⊗ₒ d)
+  _[_⊗ₘ_] = _⊗ₘ_
 
 
   -- subscript ₘ stands for "morphism" and □ is supposed to evoke
@@ -136,24 +138,13 @@ record Monoidal : Set (n ⊔ m) where
     → {f : a hom c} {g : c hom e} {h : b hom d} {i : d hom o}  {j : e hom q } {k : o hom p}
     → (f ● g ● j) ⊗ₘ (h ● i ● k) ≡ (f ⊗ₘ h) ● (g ⊗ₘ i) ● (j ⊗ₘ k)
   distribute⊗₃ {f = f} {g = g} {h = h} {i = i} {j = j} {k = k} =
-    begin
-      ((f ● g) ● j) ⊗ₘ ((h ● i) ● k)
-    ≡⟨  compLaw ⊗ (f ● g , (h ● i)) (j , k)  ⟩
-         ((f ● g) ⊗ₘ (h ● i)) ● (j ⊗ₘ k)
-    ≡⟨   distribute⊗ ⟨●⟩refl    ⟩
-      (f ⊗ₘ h) ● (g ⊗ₘ i) ● (j ⊗ₘ k)
-    ∎
+    trans  (compLaw ⊗ (f ● g , (h ● i)) (j , k)) (distribute⊗ ⟨●⟩refl)
+
   distribute⊗₄ : {a b c d e o p q r s : obj}
     → {f : a hom c} {g : c hom e} {h : b hom d} {i : d hom o}  {j : e hom q } {k : o hom p} {l : q hom r} {m : p hom s}
     → (f ● g ● j ● l) ⊗ₘ (h ● i ● k ● m) ≡ (f ⊗ₘ h) ● (g ⊗ₘ i) ● (j ⊗ₘ k) ● (l ⊗ₘ m)
   distribute⊗₄ {f = f} {g = g} {h = h} {i = i} {j = j} {k = k} {l = l} {m = m} =
-    begin
-      (((f ● g) ● j) ● l) ⊗ₘ (((h ● i) ● k) ● m)
-    ≡⟨  compLaw ⊗ (f ● g ● j , h ● i ● k) (l , m) ⟩
-      ((f ● g ● j) ⊗ₘ (h ● i ● k) ) ● (l ⊗ₘ m)
-    ≡⟨   distribute⊗₃ ⟨●⟩refl    ⟩
-      (f ⊗ₘ h) ● (g ⊗ₘ i) ● (j ⊗ₘ k) ● (l ⊗ₘ m)
-    ∎
+    trans  (compLaw ⊗ (f ● g ● j , h ● i ● k) (l , m)) (distribute⊗₃ ⟨●⟩refl)
 
   _⟨⊗⟩_ : {a b c d : obj} {f g : a hom b} {h i : c hom d}
     → f ≡ g → h ≡ i → f ⊗ₘ h ≡ g ⊗ₘ i
@@ -294,3 +285,5 @@ record Monoidal : Set (n ⊔ m) where
       αₘ ● λₘ
     ∎
 
+  ⃤⊗ : cat Functor cat
+  ⃤⊗ = ⃤ ●F ⊗

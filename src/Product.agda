@@ -89,3 +89,7 @@ mapObj |⇆|Xfunctor  = |⇆|
 mapMor |⇆|Xfunctor  = |⇆|
 idLaw |⇆|Xfunctor   = refl
 compLaw |⇆|Xfunctor = λ _ _ → refl
+
+
+⃤ : c₁ Functor (c₁ X c₁)
+⃤ = idFunctor \/ idFunctor
