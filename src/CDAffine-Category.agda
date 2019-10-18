@@ -48,26 +48,13 @@ record CDAffine-Category : (Set (n ⊔ m)) where
     -- Naturality w.r.t. deletion
     deleteApply : {a b : obj} {f : a hom b} → εₘ ≡ f ● εₘ
 
-
-  idmorphismon𝟙≡εₘ : id {a = 𝟙} ≡ εₘ
-  idmorphismon𝟙≡εₘ =
-     begin
-         id
-     ≡⟨  sym left-id  ⟩
-         id ● id
-     ≡⟨  {!!}  ⟩
-         εₘ ● εₘ
-     ≡⟨  sym deleteApply  ⟩
-         εₘ
-     ∎
-
   𝟙terminal : {a : obj} → {f : a hom 𝟙} → f ≡ εₘ
   𝟙terminal {f = f} =
     begin
        f
-    ≡⟨ {!!} ⟩
-       {!εₘ ● id!}
-    ≡⟨  {!!} ⟩
+    ≡⟨ sym left-id ⟩
+       f ● id
+    ≡⟨  refl⟨●⟩ sym ε▵ ⟩
        f ● εₘ
     ≡⟨  sym deleteApply ⟩
        εₘ

@@ -36,8 +36,8 @@ private
   module MF2 = MonoidalFunctor._MonoidalFunctor_ mf2
 
 
-open MF1 renaming (F to F₁; ϕ to ϕ₁; ε to ε₁)
-open MF2 renaming (F to F₂; ϕ to ϕ₂; ε to ε₂)
+open MF1 renaming (F to F₁; ϕ to ϕ₁; ψ to ψ₁)
+open MF2 renaming (F to F₂; ϕ to ϕ₂; ψ to ψ₂)
 -- open MC1 renaming (⊗ to ⊗₁;𝟙 to 𝟙₁)
 -- open MC2 renaming (⊗ to ⊗₂;𝟙 to 𝟙₂)
 
@@ -45,5 +45,5 @@ record _MonoidalNatTrans_ : Set (n ⊔ m ⊔ n' ⊔ m') where
   constructor MkMonoidalNatTrans
   field
     θ : F₁ NatTrans F₂
-    identityTriangle : cat2 [ ε₁ ● η θ ] ≡ ε₂
+    identityTriangle : cat2 [ ψ₁ ● η θ ] ≡ ψ₂
     squareMonoidalTrans : {!!} [ ϕ₁ ● θ ] ≡ {!!} [ {!!} , ϕ₂ ]

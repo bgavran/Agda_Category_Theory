@@ -32,6 +32,7 @@ private
   module M = Monoidal.Monoidal mc
   module S = SymmetricMonoidal.SymmetricMonoidal smc
 
+--open Cat using (_[_●_])
 open _Functor_
 open _NatTrans_
 open _MonoidalFunctor_ hiding (ε)
@@ -45,7 +46,7 @@ constFunctor𝟙 : cat Functor cat
 constFunctor𝟙 = constFunctor 𝟙
 
 constMonoidalFunctor𝟙 : mc MonoidalFunctor mc
-constMonoidalFunctor𝟙 = MkMonoidalFunctor (constFunctor 𝟙) (MkNatTrans {!!} {!!}) {!!}
+constMonoidalFunctor𝟙 = MkMonoidalFunctor (constFunctor 𝟙) (MkNatTrans {!!} {!!}) id
 
 monoidal⃤⊗ : mc MonoidalFunctor mc
 monoidal⃤⊗ = MkMonoidalFunctor ⃤⊗ {!!} {!!}
@@ -74,6 +75,9 @@ record CD-Category : (Set (n ⊔ m)) where
   ε□ : {a b : obj} {f : a hom b}
     → CommutativeSquare f εₘ εₘ (mapMor (constFunctor𝟙) f)
   ε□ = naturality (θ ε)
+
+  ε▵ : εₘ ≡ id {a = 𝟙}
+  ε▵ = trans (sym right-id) (identityTriangle ε)
 
   field
     copySwap   : {c : obj} → (δₘ ● σₘ)

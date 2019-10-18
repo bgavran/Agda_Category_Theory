@@ -17,7 +17,7 @@ open import Functor
 open import Product
 open import NaturalTransformation
 open Isomorphism._≅_
-open Cat using (_[_,_])
+open Cat
 open Cat.CommutativeSquare
 open _Functor_
 open _NatTrans_
@@ -42,15 +42,16 @@ record _MonoidalFunctor_
   field
     F : cat1 Functor cat2
     ϕ : ((F 𝕏 F) ●F ⊗₂) NatTrans (⊗₁ ●F F)
-    ε : cat2 [ 𝟙₂ , mapObj F 𝟙₁ ]
+    ψ : cat2 [ 𝟙₂ , mapObj F 𝟙₁ ]
 
   -- Add coherence conditions
 
 private
   variable
     n m n' m' : Level
-    cat : Cat n m
-    mc : Monoidal cat
 
-idFunctorMonoidal : mc MonoidalFunctor mc
-idFunctorMonoidal = MkMonoidalFunctor idFunctor {!!} {!!}
+idFunctorMonoidal : {cat : Cat n m} {mc : Monoidal cat} → mc MonoidalFunctor mc
+idFunctorMonoidal {cat = cat} = MkMonoidalFunctor
+  idFunctor
+  (MkNatTrans (id cat) (MkCommSq {!!}))
+  (id cat)
