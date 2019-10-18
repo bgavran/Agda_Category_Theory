@@ -58,7 +58,6 @@ record CD-Category : (Set (n ⊔ m)) where
 
 
   field
-    -- TODO these should actually be _monoidal_ natural transformations?
     δ : idFunctorMonoidal MonoidalNatTrans monoidal⃤⊗
     ε : idFunctorMonoidal MonoidalNatTrans constMonoidalFunctor𝟙
 
