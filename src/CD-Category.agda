@@ -54,9 +54,6 @@ monoidal⃤⊗ = MkMonoidalFunctor ⃤⊗ {!!} {!!}
 record CD-Category : (Set (n ⊔ m)) where
   constructor MkCD-Category
 
-
-
-
   field
     δ : idFunctorMonoidal MonoidalNatTrans monoidal⃤⊗
     ε : idFunctorMonoidal MonoidalNatTrans constMonoidalFunctor𝟙

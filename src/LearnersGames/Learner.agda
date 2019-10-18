@@ -61,7 +61,7 @@ open cct hiding (_[_●_]; _ᵒᵖ)
 open mc
 open smc
 open cd
-open cdop renaming (ε to η; δ to +)
+open cdop renaming (εₘ to ηₘ; δₘ to +ₘ)
 open cda
 open cart
 open lenss
@@ -123,8 +123,8 @@ squaredDifference {r = r} = (idᴸ ⊗ₘᴸ negate) ●ᴸ sum ●ᴸ sqr
 
 grad : {r : obj} → SimpleLens r 𝟙
 grad = MkSimpleLens (CoPt let create : {c : Cat.obj cat} → (Monoidal.𝟙 mcop) hom c
-                              create = η
-                              destroy = ε
+                              create = ηₘ
+                              destroy = εₘ
                            in {!!} ● create)
 
 inEnvironment : {x y p : obj}
@@ -137,4 +137,4 @@ sgd : {p : obj} → (p ⊗ₒ p) hom p
 sgd = {!!}
 
 updateParams : {p : obj} → SimpleLens p 𝟙 → p hom p
-updateParams (MkSimpleLens (MkLens _ p)) = δ ● (id ⊗ₘ (ρₘ' ● p)) ● sgd
+updateParams (MkSimpleLens (MkLens _ p)) = δₘ ● (id ⊗ₘ (ρₘ' ● p)) ● sgd

@@ -102,8 +102,8 @@ simpleLensSymmetricMonoidal = MkSymmMonoidal (MkIso
 
 simpleLensCDCategory : CD-Category simpleLensSymmetricMonoidal
 simpleLensCDCategory = MkCD-Category
-  (MkSimpleLens (MkLens δ {!!}))
-  (MkSimpleLens (MkLens ε π₁))
+  {!!}
+  {!!}
   {!!}
   {!!}
   {!!}

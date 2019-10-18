@@ -58,15 +58,15 @@ lensLeftId {a = (a , a')} {b = (b , b')} {MkLens get put} = cong₂ MkLens left-
       _ ● put
    ≡⟨
        (begin
-          (δ ⊗ₘ id) ● ((id ⊗ₘ get) ⊗ₘ id) ● αₘ ● (id ⊗ₘ (π₂ ● id))
+          (δₘ ⊗ₘ id) ● ((id ⊗ₘ get) ⊗ₘ id) ● αₘ ● (id ⊗ₘ (π₂ ● id))
        ≡⟨  refl⟨●⟩ (refl⟨⊗⟩ left-id) ⟩
-          (δ ⊗ₘ id) ● ((id ⊗ₘ get) ⊗ₘ id) ●  αₘ ● (id ⊗ₘ π₂)
+          (δₘ ⊗ₘ id) ● ((id ⊗ₘ get) ⊗ₘ id) ●  αₘ ● (id ⊗ₘ π₂)
        ≡⟨ trans ((assocApply α□) ⟨●⟩refl) assoc ⟩
-          (δ ⊗ₘ id) ● αₘ ● ((id ⊗ₘ (get ⊗ₘ id)) ● (id ⊗ₘ π₂))
+          (δₘ ⊗ₘ id) ● αₘ ● ((id ⊗ₘ (get ⊗ₘ id)) ● (id ⊗ₘ π₂))
        ≡⟨ (refl⟨●⟩ sym distribute⊗) ⟩
-          (δ ⊗ₘ id) ● αₘ ● (     (id ● id) ⊗ₘ ((get ⊗ₘ id) ● π₂)    )
+          (δₘ ⊗ₘ id) ● αₘ ● (     (id ● id) ⊗ₘ ((get ⊗ₘ id) ● π₂)    )
        ≡⟨ refl⟨●⟩ ( left-id ⟨⊗⟩ (trans π₂law left-id)) ⟩
-           (δ ⊗ₘ id) ● αₘ ● (id ⊗ₘ π₂)
+           (δₘ ⊗ₘ id) ● αₘ ● (id ⊗ₘ π₂)
        ≡⟨   copyαπ₂≡id   ⟩
            id
        ∎)
@@ -81,22 +81,22 @@ lensRightId : {a b : obj × obj} {f : a lensHom b}
   → lensId ●ₗ f ≡ f
 lensRightId {a = (a , a')} {b = (b , b')} {MkLens get put} = cong₂ MkLens right-id
   (begin
-      (δ ⊗ₘ id) ● ((id ⊗ₘ id) ⊗ₘ id) ● αₘ ● (id ⊗ₘ put) ● (π₂ ● id)
+      (δₘ ⊗ₘ id) ● ((id ⊗ₘ id) ⊗ₘ id) ● αₘ ● (id ⊗ₘ put) ● (π₂ ● id)
   ≡⟨  refl⟨●⟩ left-id ⟩
-      (δ ⊗ₘ id) ● ((id ⊗ₘ id) ⊗ₘ id) ● αₘ ● (id ⊗ₘ put) ● π₂
+      (δₘ ⊗ₘ id) ● ((id ⊗ₘ id) ⊗ₘ id) ● αₘ ● (id ⊗ₘ put) ● π₂
   ≡⟨  assoc  ⟩
-      ((δ ⊗ₘ id) ● ((id ⊗ₘ id) ⊗ₘ id) ● αₘ) ● ((id ⊗ₘ put) ● π₂)
+      ((δₘ ⊗ₘ id) ● ((id ⊗ₘ id) ⊗ₘ id) ● αₘ) ● ((id ⊗ₘ put) ● π₂)
   ≡⟨   ((refl⟨●⟩ trans ((idLaw ⊗) ⟨⊗⟩refl) (idLaw ⊗)) ⟨●⟩refl) ⟨●⟩ π₂law   ⟩
-      ((δ ⊗ₘ id) ● id ● αₘ) ● (π₂ ● put)
+      ((δₘ ⊗ₘ id) ● id ● αₘ) ● (π₂ ● put)
   ≡⟨  trans (trans assoc (refl⟨●⟩ right-id) ⟨●⟩refl) (sym assoc) ⟩
-      (δ ⊗ₘ id) ● αₘ ● π₂ ● put
+      (δₘ ⊗ₘ id) ● αₘ ● π₂ ● put
   ≡⟨  assoc ⟨●⟩refl  ⟩
-      (δ ⊗ₘ id) ● (αₘ ● π₂) ● put
+      (δₘ ⊗ₘ id) ● (αₘ ● π₂) ● put
   ≡⟨  (refl⟨●⟩ α●π₂≡π₂⊗id) ⟨●⟩refl  ⟩
-      (δ ⊗ₘ id) ● (π₂ ⊗ₘ id) ● put
+      (δₘ ⊗ₘ id) ● (π₂ ⊗ₘ id) ● put
   ≡⟨  sym distribute⊗ ⟨●⟩refl  ⟩
-      (δ ● π₂) ⊗ₘ (id ● id) ● put
-  ≡⟨  ((δ●π₂≡id) ⟨⊗⟩ left-id) ⟨●⟩refl  ⟩
+      (δₘ ● π₂) ⊗ₘ (id ● id) ● put
+  ≡⟨  ((δₘ●π₂≡id) ⟨⊗⟩ left-id) ⟨●⟩refl  ⟩
       (id ⊗ₘ id) ● put
   ≡⟨  idLaw ⊗ ⟨●⟩refl  ⟩
       id ● put
@@ -114,9 +114,9 @@ lensRightId {a = (a , a')} {b = (b , b')} {MkLens get put} = cong₂ MkLens righ
 ●ₗ-resp-≡ {f = (MkLens getf putf)} {g = (MkLens getg putg)} {h = (MkLens geth puth)} {i = (MkLens geti puti)} l r
   = cong₂ MkLens (cong Lens.get l ⟨●⟩ cong Lens.get r)
   (begin
-    (δ ⊗ₘ id) ● ((id ⊗ₘ getf) ⊗ₘ id) ● αₘ ● (id ⊗ₘ puth) ● putf
+    (δₘ ⊗ₘ id) ● ((id ⊗ₘ getf) ⊗ₘ id) ● αₘ ● (id ⊗ₘ puth) ● putf
   ≡⟨   (((refl⟨●⟩ ((refl⟨⊗⟩ (cong Lens.get l)) ⟨⊗⟩refl)) ⟨●⟩refl) ⟨●⟩ (refl⟨⊗⟩ (cong Lens.put r))) ⟨●⟩ (cong Lens.put l)   ⟩
-    (δ ⊗ₘ id) ● ((id ⊗ₘ getg) ⊗ₘ id) ● αₘ ● (id ⊗ₘ puti) ● putg
+    (δₘ ⊗ₘ id) ● ((id ⊗ₘ getg) ⊗ₘ id) ● αₘ ● (id ⊗ₘ puti) ● putg
   ∎)
 
 

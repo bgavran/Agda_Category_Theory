@@ -42,5 +42,5 @@ record Cartesian : (Set (n ⊔ m)) where
   constructor MkCartesian
 
   field
-    copyApply   : {a b : obj} {f : a hom b} → f ● δ ≡ δ ● (f ⊗ₘ f)
+    copyApply   : {a b : obj} {f : a hom b} → f ● δₘ ≡ δₘ ● (f ⊗ₘ f)
     -- this means that 𝟙 in CD-category is terminal. How to prove this?

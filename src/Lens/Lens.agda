@@ -64,11 +64,11 @@ _lensHom_ (s , t) (a , b) = Lens s t a b
 
 Pt : {x s : obj}
   → (f : 𝟙 hom x) → (𝟙 , 𝟙) lensHom (x , s)
-Pt f = MkLens f (λₘ ● ε)
+Pt f = MkLens f (λₘ ● εₘ)
 
 CoPt : {y r : obj}
   → (f : y hom r) → (y , r) lensHom (𝟙 , 𝟙)
-CoPt f = MkLens ε (ρₘ ● f)
+CoPt f = MkLens εₘ (ρₘ ● f)
 
 
 -- function lifting
@@ -90,7 +90,7 @@ lensId : {a : obj × obj} → a lensHom a
 lensId = ◿ id || id ◺
 
 
--- ((δ ⊗ₘ id) ● ((id ⊗ₘ get₁) ⊗ₘ id ) ● αₘ ● (id ⊗ₘ put₂) ● put₁)
+-- ((δₘ ⊗ₘ id) ● ((id ⊗ₘ get₁) ⊗ₘ id ) ● αₘ ● (id ⊗ₘ put₂) ● put₁)
 _●ₗ_ : {a b c : obj × obj}
   → a lensHom b
   →           b lensHom c
@@ -100,7 +100,7 @@ _●ₗ_ {a = (a , a')} {b = (b , b')} {c = (c , c')}
   = MkLens
   (get₁ ● get₂)
     (                 begin→⟨     a      ⊗ₒ c'    ⟩
-       δ ⊗ₘ id            →⟨ (a ⊗ₒ a) ⊗ₒ c'    ⟩
+       δₘ ⊗ₘ id            →⟨ (a ⊗ₒ a) ⊗ₒ c'    ⟩
      (id ⊗ₘ get₁) ⊗ₘ id  →⟨ (a ⊗ₒ b) ⊗ₒ c'    ⟩
         αₘ                 →⟨  a ⊗ₒ (b ⊗ₒ c')   ⟩
        id ⊗ₘ put₂          →⟨  a ⊗ₒ     b'       ⟩
