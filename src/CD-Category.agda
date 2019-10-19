@@ -35,15 +35,11 @@ private
 --open Cat using (_[_●_])
 open _Functor_
 open _NatTrans_
-open _MonoidalFunctor_ hiding (ε)
+open _MonoidalFunctor_
 open _MonoidalNatTrans_
 open C
 open M
 open S
-
--- if we remove this then an implicit arugment annotation is needed for constFunctor everywhere
-constFunctor𝟙 : cat Functor cat
-constFunctor𝟙 = constFunctor 𝟙
 
 constMonoidalFunctor𝟙 : mc MonoidalFunctor mc
 constMonoidalFunctor𝟙 = MkMonoidalFunctor (constFunctor 𝟙) (MkNatTrans {!!} {!!}) id
@@ -69,7 +65,7 @@ record CD-Category : (Set (n ⊔ m)) where
   δ□ = naturality (θ δ)
 
   ε□ : {a b : obj} {f : a hom b}
-    → CommutativeSquare f εₘ εₘ (mapMor (constFunctor𝟙) f)
+    → CommutativeSquare f εₘ εₘ id
   ε□ = naturality (θ ε)
 
   ε▵ : εₘ ≡ id {a = 𝟙}

@@ -122,7 +122,7 @@ squaredDifference : {r : obj} → SimpleLens (r ⊗ₒ r) r
 squaredDifference {r = r} = (idᴸ ⊗ₘᴸ negate) ●ᴸ sum ●ᴸ sqr
 
 grad : {r : obj} → SimpleLens r 𝟙
-grad = MkSimpleLens (CoPt let create : {c : Cat.obj cat} → (Monoidal.𝟙 mcop) hom c
+grad = MkSimpleLens (CoPt let create : {c : Cat.obj cat} → (Monoidal.𝟙 mcop) hom c -- "Monoidal.𝟙 mcop" is the initial object, I need to show its terminal as well
                               create = ηₘ
                               destroy = εₘ
                            in {!!} ● create)

@@ -6,14 +6,17 @@ open import Data.Product
 open import Level
 open import Function using (flip) renaming (_∘_ to _∙_)
 open import IO
-open import Relation.Binary.PropositionalEquality hiding ([_])
+open import Relation.Binary.PropositionalEquality hiding ([_]; naturality)
 open ≡-Reasoning
 
 open import Category
 open import Functor
+open import NaturalTransformation
 
 open Cat
+open Cat.CommutativeSquare
 open _Functor_
+open _NatTrans_
 
 private
   variable
@@ -93,3 +96,12 @@ compLaw |⇆|Xfunctor = λ _ _ → refl
 
 ⃤ : c₁ Functor (c₁ X c₁)
 ⃤ = idFunctor \/ idFunctor
+
+_𝕏ₙ_ : {c₁ : Cat n m} {c₂ : Cat n' m'} {F : c₁ Functor c₂} → {G : c₁ Functor c₂}
+  → (α : F NatTrans G) → (β : F NatTrans G)
+  → ((F 𝕏 F) NatTrans (G 𝕏 G))
+α 𝕏ₙ β = MkNatTrans
+  (η α , η β)
+  (MkCommSq
+    (cong₂ _,_ (eqPaths (naturality α)) (eqPaths (naturality β))
+    ))
