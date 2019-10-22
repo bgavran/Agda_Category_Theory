@@ -1,7 +1,7 @@
 {-# OPTIONS --allow-unsolved-metas #-}
 
 open import Level
-open import Function using (flip)
+open import Function using (flip; _∘′_) renaming (id to id')
 open import Data.Product
 open import IO
 open import Relation.Binary.PropositionalEquality hiding ([_]; naturality)
@@ -38,11 +38,12 @@ private
   module lens = Lens.Lens cart
   module lensassoc = Lens.LensAssociativity cart
 
-open Cat using (_[_,_])
+open Cat using (_[_,_];_ᵒᵖ)
 open _Functor_
 open Cat.CommutativeSquare
 open import Isomorphism
-open cct
+open import MonoidalNaturalTransformation
+open cct hiding (_ᵒᵖ)
 open mc
 open smc
 open cd
@@ -134,12 +135,10 @@ lensCategory = MkCat
 ⊗ₗ : (lensCategory X lensCategory) Functor lensCategory
 ⊗ₗ = MkFunctor
   (mapObj swapProd)
-  (λ x → let (MkLens gₗ pₗ ) ,  (MkLens gᵣ pᵣ) = x
-         in MkLens (gₗ ⊗ₘ gᵣ) (|⇆|⊗ ● (pₗ ⊗ₘ pᵣ)))
+  (λ (MkLens gₗ pₗ , MkLens gᵣ pᵣ) → MkLens (gₗ ⊗ₘ gᵣ) (|⇆|⊗ ● (pₗ ⊗ₘ pᵣ)))
   (λ {a} → cong₂ MkLens (idLaw ⊗) (trans swapProject≡project (sym left-id)))
-  λ f g → let (MkLens gfₗ pfₗ) , (MkLens gfᵣ pfᵣ) = f
-              (MkLens ggₗ pgₗ) , (MkLens ggᵣ pgᵣ) = g
-              (MkLens gfgₗ pgfₗ) , (MkLens gfgᵣ pgfᵣ) = (lensCategory X lensCategory) Cat.[ f ● g ]
+  λ f@(MkLens gfₗ pfₗ , MkLens gfᵣ pfᵣ) g@(MkLens ggₗ pgₗ , MkLens ggᵣ pgᵣ) →
+          let (MkLens gfgₗ pgfₗ) , (MkLens gfgᵣ pgfᵣ) = (lensCategory X lensCategory) Cat.[ f ● g ]
           in begin
               MkLens (gfgₗ ⊗ₘ gfgᵣ) (|⇆|⊗ ● (pgfₗ ⊗ₘ pgfᵣ))
           ≡⟨  {!!}  ⟩
@@ -168,7 +167,41 @@ lensSymmetricMonoidal = MkSymmMonoidal (MkIso
    ∎)
   {!!})
 
+
 -- counitLaw : {x y : obj} {f : x hom y}
 --   →
 --counitLaw : {x y : obj} {f : x hom y}
 --  → (ρₘ' ⊗ₘ id) ● ((◿ f) ⊗ₘ id) ● (ρₘ ⊗ₘ id) ● counit ≡ (id ⊗ₘ λₘ') ● (id ⊗ₘ (f ◺)) ● (id ⊗ₘ λₘ) ● counit
+
+proLens : ((cat ᵒᵖ) X cat) Functor lensCategory
+proLens = swapFunctor ●F MkFunctor
+  id'
+  (uncurry ◿_||_◺)
+  refl
+  λ (fₗ , fᵣ) (gₗ , gᵣ) → cong₂ MkLens refl (begin
+           π₂ ● (gᵣ ● fᵣ)
+      ≡⟨   sym assoc   ⟩
+           (π₂ ● gᵣ) ● fᵣ
+      ≡⟨   trans (sym π₂law ⟨●⟩refl) assoc ⟩
+            (id ⊗ₘ gᵣ) ● (π₂ ● fᵣ)
+      ≡⟨   (begin
+                (id ⊗ₘ gᵣ)
+            ≡⟨  sym right-id   ⟩
+                id ● (id ⊗ₘ gᵣ)
+            ≡⟨  sym copyαπ₂≡id ⟨●⟩refl   ⟩
+                (δₘ ⊗ₘ id) ● αₘ ● (id ⊗ₘ π₂) ● (id ⊗ₘ gᵣ)
+            ≡⟨  trans assoc (refl⟨●⟩ sym distribute⊗)    ⟩
+                (δₘ ⊗ₘ id) ● αₘ ● ((id ● id) ⊗ₘ (π₂ ● gᵣ))
+            ≡⟨  refl⟨●⟩ (refl⟨⊗⟩ ((trans (sym left-id) (sym π₂law) )⟨●⟩refl))   ⟩
+                (δₘ ⊗ₘ id) ● αₘ ● ((id ● id) ⊗ₘ ((fₗ ⊗ₘ id) ● π₂ ● gᵣ))
+            ≡⟨  refl⟨●⟩ (refl⟨⊗⟩ assoc)   ⟩
+                (δₘ ⊗ₘ id) ● αₘ ● ((id ● id) ⊗ₘ ((fₗ ⊗ₘ id) ● (π₂ ● gᵣ)))
+            ≡⟨  refl⟨●⟩ distribute⊗   ⟩
+                (δₘ ⊗ₘ id) ● αₘ ● ((id ⊗ₘ (fₗ ⊗ₘ id)) ● (id ⊗ₘ (π₂ ● gᵣ)))
+            ≡⟨  sym assoc   ⟩
+                (δₘ ⊗ₘ id) ● αₘ ● (id ⊗ₘ (fₗ ⊗ₘ id)) ● (id ⊗ₘ (π₂ ● gᵣ))
+            ≡⟨  assocApply (sym α□) ⟨●⟩refl   ⟩
+                (δₘ ⊗ₘ id) ● ((id ⊗ₘ fₗ) ⊗ₘ id) ● αₘ ● (id ⊗ₘ (π₂ ● gᵣ))
+            ∎) ⟨●⟩refl   ⟩
+           (δₘ ⊗ₘ id) ● ((id ⊗ₘ fₗ) ⊗ₘ id) ● αₘ ● (id ⊗ₘ (π₂ ● gᵣ)) ● (π₂ ● fᵣ)
+      ∎)
