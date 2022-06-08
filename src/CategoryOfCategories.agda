@@ -29,11 +29,8 @@ open _Functor_
 
 module CategoryOfCategories where
 
--- eqFunctor : {o m : Level} → {cat1 cat2 : Cat o m} → (f g : cat1 Functor cat2) → (p : _Functor_.mapObj f ≡ _Functor_.mapObj g) → ∀ {a b : obj cat1} → PathP (λ i → {!(_Functor_.mapObj a) hom (_Functor_.mapObj b)!}) (_Functor_.mapMor f) (_Functor_.mapMor g) → PathP {!!} {!!} {!!}
--- eqFunctor = {!!}
-
 leftIdFunctor : {n m : Level} → {a b : Cat n m} {f : a Functor b} → (f ●F idFunctor) ≡ f
-leftIdFunctor {f = f} = λ i → MkFunctor (mapObj f) (mapMor f) (λ i → {!!}) {!!}
+leftIdFunctor {f = f} = λ i → MkFunctor (mapObj f) (mapMor f) {!!} {!!}
 
 catOfCats : {o m : Level} → Cat (suc o ⊔ suc m) (o ⊔ m)
 catOfCats {o = o} {m = m} = MkCat

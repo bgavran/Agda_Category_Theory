@@ -19,17 +19,16 @@ private
 
 open Cat renaming (_∘_ to _∘₁_)
 
-record _Functor_ (cat1 : Cat n m) (cat2 : Cat n' m') : Set (n ⊔ m ⊔ n' ⊔ m') where
+record _Functor_ (cat₁ : Cat n m) (cat₂ : Cat n' m') : Set (n ⊔ m ⊔ n' ⊔ m') where
   constructor MkFunctor
-  -- open Cat cat1 renaming (obj to )
   field
-    mapObj : obj cat1 -> obj cat2
-    mapMor : {a b : obj cat1} -> cat1 [ a , b ] -> cat2 [ mapObj a , mapObj b ]
-    idLaw : {a : obj cat1} -> mapMor (id cat1 {a}) ≡ id cat2 {mapObj a}
-    compLaw : {a b c : obj cat1}
-      → (f : cat1 [ a , b ])
-      → (g : cat1 [ b , c ])
-      → mapMor (cat1 [ f ● g ]) ≡ cat2 [(mapMor f) ● (mapMor g) ]
+    mapObj : obj cat₁ -> obj cat₂
+    mapMor : {a b : obj cat₁} -> cat₁ [ a , b ] -> cat₂ [ mapObj a , mapObj b ]
+    idLaw : {a : obj cat₁} -> mapMor (id cat₁ {a}) ≡ id cat₂ {mapObj a}
+    compLaw : {a b c : obj cat₁}
+      → (f : cat₁ [ a , b ])
+      → (g : cat₁ [ b , c ])
+      → mapMor (cat₁ [ f ● g ]) ≡ cat₂ [(mapMor f) ● (mapMor g) ]
 
 open _Functor_
 
