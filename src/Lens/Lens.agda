@@ -1,7 +1,6 @@
 open import Level
 open import Function using (flip)
 open import Data.Product
-open import IO
 open import Relation.Binary.PropositionalEquality hiding ([_]; naturality)
 open ≡-Reasoning
 
@@ -43,7 +42,8 @@ private
 
 open _Functor_
 open _NatTrans_
-open Cat.CommutativeSquare
+import Shapes
+open Shapes.CommutativeSquare
 open import Isomorphism
 open cct
 open mc
@@ -88,7 +88,6 @@ f ◺ = ◿ id || f ◺
 
 lensId : {a : obj × obj} → a lensHom a
 lensId = ◿ id || id ◺
-
 
 -- ((δₘ ⊗ₘ id) ● ((id ⊗ₘ get₁) ⊗ₘ id ) ● αₘ ● (id ⊗ₘ put₂) ● put₁)
 _●ₗ_ : {a b c : obj × obj}

@@ -1,9 +1,9 @@
 open import Level
 open import Function using (flip)
 open import Data.Product
-open import IO
-open import Relation.Binary.PropositionalEquality hiding ([_])
-open ≡-Reasoning
+--open import IO
+open import Cubical.Core.Everything
+open import Cubical.Foundations.Prelude
 
 open import Category
 open import Functor
@@ -14,10 +14,6 @@ open import SymmetricMonoidal
 open import CD-Category
 open import Isomorphism
 
--- CDAffine-category is defined in https://arxiv.org/abs/1709.00322 , Definition 2.3
--- CD stands for Copy/Discard
--- It is like a Cartesian category except the morphisms aren't natural w.r.t copy (but are natural w.r.t delete)
--- It also means the unit object in the monoidal category is terminal
 module CDAffine-Category
   {n m}
   {cat : Cat n m}
@@ -41,6 +37,10 @@ open CD
 open Isomorphism._≅_
 open _NatTrans_
 
+-- CDAffine-category is defined in https://arxiv.org/abs/1709.00322 , Definition 2.3
+-- CD stands for Copy/Discard
+-- It is like a Cartesian category except the morphisms aren't natural w.r.t copy (but are natural w.r.t delete)
+-- It also means the unit object in the monoidal category is terminal
 record CDAffine-Category : (Set (n ⊔ m)) where
   constructor MkCDAffine
 
@@ -50,7 +50,6 @@ record CDAffine-Category : (Set (n ⊔ m)) where
 
   𝟙terminal : {a : obj} → {f : a hom 𝟙} → f ≡ εₘ
   𝟙terminal {f = f} =
-    begin
        f
     ≡⟨ sym left-id ⟩
        f ● id
@@ -64,7 +63,6 @@ record CDAffine-Category : (Set (n ⊔ m)) where
   π₂law : {a b c d : obj} {f : a hom b} {g : c hom d}
     → (f ⊗ₘ g) ● π₂ ≡ π₂ ● g
   π₂law {f = f} {g = g} =
-    begin
       (f ⊗ₘ g) ● π₂
     ≡⟨⟩
       (f ⊗ₘ g) ● ((εₘ ⊗ₘ id) ● λₘ)
@@ -78,7 +76,7 @@ record CDAffine-Category : (Set (n ⊔ m)) where
       ((εₘ ● id) ⊗ₘ  (id ● g)) ● λₘ
     ≡⟨ distribute⊗ ⟨●⟩refl   ⟩
       (εₘ ⊗ₘ id) ●  (id ⊗ₘ g) ● λₘ
-    ≡⟨ trans assoc (refl⟨●⟩ λ□)  ⟩
+    ≡⟨ assoc ∙ (refl⟨●⟩ λ□)  ⟩
       (εₘ ⊗ₘ id) ● (λₘ ● g)
     ≡⟨ sym assoc  ⟩
       (εₘ ⊗ₘ id) ● λₘ ● g
@@ -89,13 +87,12 @@ record CDAffine-Category : (Set (n ⊔ m)) where
   π₁law : {a b c d : obj} {f : a hom b} {g : c hom d}
     → (f ⊗ₘ g) ● π₁ ≡ π₁ ● f
   π₁law {b = b} {d = d} {f = f} {g = g} =
-    begin
       (f ⊗ₘ g) ● π₁
     ≡⟨  sym left-id ⟨●⟩refl  ⟩
       (f ⊗ₘ g) ● id ● π₁
-    ≡⟨  (refl⟨●⟩ id≡σσ) ⟨●⟩refl  ⟩
+    ≡⟨  (refl⟨●⟩ (id≡σσ ∙ (refl⟨●⟩ σ'≡σ))) ⟨●⟩refl  ⟩
       (f ⊗ₘ g) ● (σₘ ● σₘ) ● π₁
-    ≡⟨  trans assoc (refl⟨●⟩ assoc) ⟩
+    ≡⟨  assoc ∙ (refl⟨●⟩ assoc) ⟩
       (f ⊗ₘ g) ● (σₘ ● (σₘ ● π₁))
     ≡⟨  refl⟨●⟩ (refl⟨●⟩ σ●π₁≡π₂) ⟩
       (f ⊗ₘ g) ● (σₘ ● π₂)
@@ -107,6 +104,6 @@ record CDAffine-Category : (Set (n ⊔ m)) where
       σₘ ● ((g ⊗ₘ f) ● π₂)
     ≡⟨  refl⟨●⟩ π₂law ⟩
       σₘ ● (π₂ ● f)
-    ≡⟨  trans (sym assoc) (σ●π₂≡π₁ ⟨●⟩refl) ⟩
+    ≡⟨  (sym assoc) ∙ (σ●π₂≡π₁ ⟨●⟩refl) ⟩
        π₁ ● f
     ∎

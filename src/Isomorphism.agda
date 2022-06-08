@@ -1,19 +1,20 @@
+{-# OPTIONS --allow-unsolved-metas #-}
+
 open import Level
 open import Function using (flip)
-open import IO
-open import Relation.Binary.PropositionalEquality
-open ≡-Reasoning
+open import Cubical.Core.Everything
+open import Cubical.Foundations.Prelude
 
 open import Category
+open import Utils
 
-module Isomorphism {n m} {cat : Cat n m} where
+module Isomorphism {o m} {cat : Cat o m} where
 
-module cat = Cat cat
-open cat
+open Cat cat
 -- TODO
 -- monoidal product of isomorphisms
 
-record _≅_ (a : obj) (b : obj) : Set (n ⊔ m) where
+record _≅_ (a : obj) (b : obj) : Set (o ⊔ m) where
   constructor MkIso
   field
     forward : a hom b
@@ -28,8 +29,7 @@ _●≅_ : {a b c : obj}
 f ●≅ g = MkIso
   (forward f ● forward g)
   (inverse g ● inverse f)
-  (begin
-    (inverse g ● inverse f) ● (forward f ● forward g)
+  ((inverse g ● inverse f) ● (forward f ● forward g)
    ≡⟨ sym assoc  ⟩
     ((inverse g ● inverse f) ● forward f) ● forward g
    ≡⟨ assoc ⟨●⟩refl  ⟩
@@ -41,7 +41,7 @@ f ●≅ g = MkIso
    ≡⟨ leftInverseLaw g  ⟩
     id
    ∎ )
-   (begin
+   (
       (forward f ● forward g) ● (inverse g ● inverse f)
    ≡⟨ sym assoc  ⟩
       ((forward f ● forward g) ● inverse g) ● inverse f
@@ -54,3 +54,22 @@ f ●≅ g = MkIso
    ≡⟨ rightInverseLaw f   ⟩
       id
    ∎ )
+
+
+idIso : {a : obj} → (a ≅ a)
+idIso = MkIso id id left-id left-id
+
+
+leftIsoId : {a b : Cat.obj cat} {f : a ≅ b} → (f ●≅ idIso) ≡ f
+leftIsoId {f = (MkIso f b s r)} = λ i → MkIso {!!} {!!} {!!} {!!}
+
+isoCategory : Cat o (o ⊔ m)
+isoCategory = MkCat
+  obj
+  _≅_
+  idIso
+  _●≅_
+  leftIsoId
+  {!!}
+  {!!}
+  {!!}

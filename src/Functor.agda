@@ -2,8 +2,8 @@ module Functor where
 
 open import Level
 open import Function renaming (id to id→; _∘_ to _∘ᶠ_)
-open import Relation.Binary.PropositionalEquality hiding ([_])
-open ≡-Reasoning
+open import Cubical.Core.Everything
+open import Cubical.Foundations.Prelude
 
 open import Category
 
@@ -17,17 +17,21 @@ _●ᶠ_ = flip _∘ᶠ_
 private
   variable n m n' m' n'' m'' : Level
 
+open Cat renaming (_∘_ to _∘₁_)
+
 record _Functor_ (cat1 : Cat n m) (cat2 : Cat n' m') : Set (n ⊔ m ⊔ n' ⊔ m') where
   constructor MkFunctor
-  open Cat renaming (_∘_ to _∘₁_)
+  -- open Cat cat1 renaming (obj to )
   field
     mapObj : obj cat1 -> obj cat2
     mapMor : {a b : obj cat1} -> cat1 [ a , b ] -> cat2 [ mapObj a , mapObj b ]
-    idLaw : {a : obj cat1} -> mapMor (id cat1) ≡ id cat2 {mapObj a}
+    idLaw : {a : obj cat1} -> mapMor (id cat1 {a}) ≡ id cat2 {mapObj a}
     compLaw : {a b c : obj cat1}
       → (f : cat1 [ a , b ])
       → (g : cat1 [ b , c ])
       → mapMor (cat1 [ f ● g ]) ≡ cat2 [(mapMor f) ● (mapMor g) ]
+
+open _Functor_
 
 idFunctor : {cat : Cat n m} -> cat Functor cat
 idFunctor = record
@@ -54,7 +58,6 @@ _∘F_ {cat1 = cat1} {cat2 = cat2} {cat3 = cat3}
   open Cat
   idLaw' : {a : obj cat1} → (mapMor₁ {a} ●ᶠ mapMor₂) (id cat1) ≡ id cat3
   idLaw' {a = a} =
-    begin
       (mapMor₁ {a} ●ᶠ mapMor₂) (id cat1)
     ≡⟨ cong mapMor₂ idLaw₁ ⟩
        mapMor₂ (id cat2)
@@ -67,7 +70,6 @@ _∘F_ {cat1 = cat1} {cat2 = cat2} {cat3 = cat3}
     → (g : cat1 [ b , c ])
     → (mapMor₁ ●ᶠ mapMor₂) (cat1 [ f ● g ]) ≡ cat3 [ (mapMor₁ ●ᶠ mapMor₂) f ● (mapMor₁ ●ᶠ mapMor₂) g ]
   compLaw' f g =
-    begin
      (mapMor₁ ●ᶠ mapMor₂) (cat1 [ f ● g ])
     ≡⟨ (cong (mapMor₂) (compLaw₁ f g))    ⟩
       mapMor₂ (cat2 [ mapMor₁ f ● mapMor₁ g ] )
@@ -75,15 +77,14 @@ _∘F_ {cat1 = cat1} {cat2 = cat2} {cat3 = cat3}
       cat3 [ (mapMor₁ ●ᶠ mapMor₂) f ● (mapMor₁ ●ᶠ mapMor₂) g ]
     ∎
 
+infixl 9 _●F_
 _●F_ : ∀ {cat1 : Cat n m} -> {cat2 : Cat n' m'} -> {cat3 : Cat n'' m''}
   -> (f : cat1 Functor cat2)
   -> (g :              cat2 Functor cat3)
   -> (    cat1        Functor       cat3)
 _●F_ = flip _∘F_
 
-open Cat
-open _Functor_
-constFunctor : {cat1 cat2 : Cat n m} → (a : obj cat2) → cat1 Functor cat2
+constFunctor : {cat1 : Cat n m} {cat2 : Cat n' m'} → (a : obj cat2) → cat1 Functor cat2
 constFunctor {cat2 = cat2} d = MkFunctor
   (λ _ → d)
   (λ _ → id cat2)

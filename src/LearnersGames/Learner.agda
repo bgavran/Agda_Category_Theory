@@ -138,3 +138,9 @@ sgd = {!!}
 
 updateParams : {p : obj} → SimpleLens p 𝟙 → p hom p
 updateParams (MkSimpleLens (MkLens _ p)) = δₘ ● (id ⊗ₘ (ρₘ' ● p)) ● sgd
+
+
+-- lens needs comonoid structure!
+p2 : {q y z : obj}
+  → (SimpleLens (q ⊗ₒ y) z) → SimpleLens (q ⊗ₒ y ⊗ₒ y) (z ⊗ₒ z)
+p2 d = {!!}

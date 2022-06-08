@@ -3,9 +3,9 @@
 open import Level
 open import Function using (flip; _∘′_) renaming (id to id')
 open import Data.Product
-open import IO
-open import Relation.Binary.PropositionalEquality hiding ([_]; naturality)
-open ≡-Reasoning
+--open import IO
+open import Cubical.Core.Everything
+open import Cubical.Foundations.Prelude
 
 open import Category
 open import Functor
@@ -40,7 +40,8 @@ private
 
 open Cat using (_[_,_];_ᵒᵖ)
 open _Functor_
-open Cat.CommutativeSquare
+import Shapes
+open Shapes.CommutativeSquare
 open import Isomorphism
 open import MonoidalNaturalTransformation
 open cct hiding (_ᵒᵖ)
@@ -55,18 +56,17 @@ open lensassoc using (lensAssoc)
 lensLeftId : {a b : obj × obj} {f : a lensHom b}
   → f ●ₗ lensId ≡ f
 lensLeftId {a = (a , a')} {b = (b , b')} {MkLens get put} = cong₂ MkLens left-id
-   (begin
-      _ ● put
+   (_ ● put
    ≡⟨
-       (begin
+       (
           (δₘ ⊗ₘ id) ● ((id ⊗ₘ get) ⊗ₘ id) ● αₘ ● (id ⊗ₘ (π₂ ● id))
        ≡⟨  refl⟨●⟩ (refl⟨⊗⟩ left-id) ⟩
           (δₘ ⊗ₘ id) ● ((id ⊗ₘ get) ⊗ₘ id) ●  αₘ ● (id ⊗ₘ π₂)
-       ≡⟨ trans ((assocApply α□) ⟨●⟩refl) assoc ⟩
+       ≡⟨ ((assocApply α□) ⟨●⟩refl) ∙ assoc ⟩
           (δₘ ⊗ₘ id) ● αₘ ● ((id ⊗ₘ (get ⊗ₘ id)) ● (id ⊗ₘ π₂))
        ≡⟨ (refl⟨●⟩ sym distribute⊗) ⟩
           (δₘ ⊗ₘ id) ● αₘ ● (     (id ● id) ⊗ₘ ((get ⊗ₘ id) ● π₂)    )
-       ≡⟨ refl⟨●⟩ ( left-id ⟨⊗⟩ (trans π₂law left-id)) ⟩
+       ≡⟨ refl⟨●⟩ ( left-id ⟨⊗⟩ (π₂law ∙ left-id)) ⟩
            (δₘ ⊗ₘ id) ● αₘ ● (id ⊗ₘ π₂)
        ≡⟨   copyαπ₂≡id   ⟩
            id
@@ -81,15 +81,15 @@ lensLeftId {a = (a , a')} {b = (b , b')} {MkLens get put} = cong₂ MkLens left-
 lensRightId : {a b : obj × obj} {f : a lensHom b}
   → lensId ●ₗ f ≡ f
 lensRightId {a = (a , a')} {b = (b , b')} {MkLens get put} = cong₂ MkLens right-id
-  (begin
+  (
       (δₘ ⊗ₘ id) ● ((id ⊗ₘ id) ⊗ₘ id) ● αₘ ● (id ⊗ₘ put) ● (π₂ ● id)
   ≡⟨  refl⟨●⟩ left-id ⟩
       (δₘ ⊗ₘ id) ● ((id ⊗ₘ id) ⊗ₘ id) ● αₘ ● (id ⊗ₘ put) ● π₂
   ≡⟨  assoc  ⟩
       ((δₘ ⊗ₘ id) ● ((id ⊗ₘ id) ⊗ₘ id) ● αₘ) ● ((id ⊗ₘ put) ● π₂)
-  ≡⟨   ((refl⟨●⟩ trans ((idLaw ⊗) ⟨⊗⟩refl) (idLaw ⊗)) ⟨●⟩refl) ⟨●⟩ π₂law   ⟩
+  ≡⟨   ((refl⟨●⟩ ((idLaw ⊗) ⟨⊗⟩refl) ∙ (idLaw ⊗)) ⟨●⟩refl) ⟨●⟩ π₂law   ⟩
       ((δₘ ⊗ₘ id) ● id ● αₘ) ● (π₂ ● put)
-  ≡⟨  trans (trans assoc (refl⟨●⟩ right-id) ⟨●⟩refl) (sym assoc) ⟩
+  ≡⟨  (assoc ∙ (refl⟨●⟩ right-id) ⟨●⟩refl) ∙ (sym assoc) ⟩
       (δₘ ⊗ₘ id) ● αₘ ● π₂ ● put
   ≡⟨  assoc ⟨●⟩refl  ⟩
       (δₘ ⊗ₘ id) ● (αₘ ● π₂) ● put
@@ -114,7 +114,7 @@ lensRightId {a = (a , a')} {b = (b , b')} {MkLens get put} = cong₂ MkLens righ
   → f ≡ g → h ≡ i → (f ●ₗ h) ≡ (g ●ₗ i)
 ●ₗ-resp-≡ {f = (MkLens getf putf)} {g = (MkLens getg putg)} {h = (MkLens geth puth)} {i = (MkLens geti puti)} l r
   = cong₂ MkLens (cong Lens.get l ⟨●⟩ cong Lens.get r)
-  (begin
+  (
     (δₘ ⊗ₘ id) ● ((id ⊗ₘ getf) ⊗ₘ id) ● αₘ ● (id ⊗ₘ puth) ● putf
   ≡⟨   (((refl⟨●⟩ ((refl⟨⊗⟩ (cong Lens.get l)) ⟨⊗⟩refl)) ⟨●⟩refl) ⟨●⟩ (refl⟨⊗⟩ (cong Lens.put r))) ⟨●⟩ (cong Lens.put l)   ⟩
     (δₘ ⊗ₘ id) ● ((id ⊗ₘ getg) ⊗ₘ id) ● αₘ ● (id ⊗ₘ puti) ● putg
@@ -132,67 +132,28 @@ lensCategory = MkCat
   lensAssoc
   ●ₗ-resp-≡
 
-⊗ₗ : (lensCategory X lensCategory) Functor lensCategory
-⊗ₗ = MkFunctor
-  (mapObj swapProd)
-  (λ (MkLens gₗ pₗ , MkLens gᵣ pᵣ) → MkLens (gₗ ⊗ₘ gᵣ) (|⇆|⊗ ● (pₗ ⊗ₘ pᵣ)))
-  (λ {a} → cong₂ MkLens (idLaw ⊗) (trans swapProject≡project (sym left-id)))
-  λ f@(MkLens gfₗ pfₗ , MkLens gfᵣ pfᵣ) g@(MkLens ggₗ pgₗ , MkLens ggᵣ pgᵣ) →
-          let (MkLens gfgₗ pgfₗ) , (MkLens gfgᵣ pgfᵣ) = (lensCategory X lensCategory) Cat.[ f ● g ]
-          in begin
-              MkLens (gfgₗ ⊗ₘ gfgᵣ) (|⇆|⊗ ● (pgfₗ ⊗ₘ pgfᵣ))
-          ≡⟨  {!!}  ⟩
-              lensCategory Cat.[ (MkLens (gfₗ ⊗ₘ gfᵣ) (|⇆|⊗ ● (pfₗ ⊗ₘ pfᵣ))) ● (MkLens (ggₗ ⊗ₘ ggᵣ) (|⇆|⊗ ● (pgₗ ⊗ₘ pgᵣ))) ]
-          ∎
-  where swapProd = (|⇆|Xfunctor ●F (⊗ 𝕏 ⊗))
 
-lensMonoidal : Monoidal lensCategory
-lensMonoidal = MkMonoidal
-  ⊗ₗ
-  (𝟙 , 𝟙)
-  {!!}
-  {!!}
-  {!!}
-  {!!}
-  {!!}
-
-lensSymmetricMonoidal : SymmetricMonoidal lensMonoidal
-lensSymmetricMonoidal = MkSymmMonoidal (MkIso
-  (MkNatTrans (◿ σₘ || σₘ ◺) (Cat.MkCommSq {!!}))
-  (MkNatTrans (◿ σₘ || σₘ ◺) {!!})
-  (begin
-     {!!}
-   ≡⟨ {!!} ⟩
-     {!!}
-   ∎)
-  {!!})
-
-
--- counitLaw : {x y : obj} {f : x hom y}
---   →
---counitLaw : {x y : obj} {f : x hom y}
---  → (ρₘ' ⊗ₘ id) ● ((◿ f) ⊗ₘ id) ● (ρₘ ⊗ₘ id) ● counit ≡ (id ⊗ₘ λₘ') ● (id ⊗ₘ (f ◺)) ● (id ⊗ₘ λₘ) ● counit
-
+-- Notion of computation, given two morphisms X -> Y and R -> S we can think of them as lenses
 proLens : ((cat ᵒᵖ) X cat) Functor lensCategory
 proLens = swapFunctor ●F MkFunctor
   id'
   (uncurry ◿_||_◺)
   refl
-  λ (fₗ , fᵣ) (gₗ , gᵣ) → cong₂ MkLens refl (begin
+  λ (fₗ , fᵣ) (gₗ , gᵣ) → cong₂ MkLens refl (
            π₂ ● (gᵣ ● fᵣ)
       ≡⟨   sym assoc   ⟩
            (π₂ ● gᵣ) ● fᵣ
-      ≡⟨   trans (sym π₂law ⟨●⟩refl) assoc ⟩
+      ≡⟨   (sym π₂law ⟨●⟩refl) ∙ assoc ⟩
             (id ⊗ₘ gᵣ) ● (π₂ ● fᵣ)
-      ≡⟨   (begin
+      ≡⟨   (
                 (id ⊗ₘ gᵣ)
             ≡⟨  sym right-id   ⟩
                 id ● (id ⊗ₘ gᵣ)
             ≡⟨  sym copyαπ₂≡id ⟨●⟩refl   ⟩
                 (δₘ ⊗ₘ id) ● αₘ ● (id ⊗ₘ π₂) ● (id ⊗ₘ gᵣ)
-            ≡⟨  trans assoc (refl⟨●⟩ sym distribute⊗)    ⟩
+            ≡⟨  assoc ∙ (refl⟨●⟩ sym distribute⊗)    ⟩
                 (δₘ ⊗ₘ id) ● αₘ ● ((id ● id) ⊗ₘ (π₂ ● gᵣ))
-            ≡⟨  refl⟨●⟩ (refl⟨⊗⟩ ((trans (sym left-id) (sym π₂law) )⟨●⟩refl))   ⟩
+            ≡⟨  refl⟨●⟩ (refl⟨⊗⟩ (((sym left-id) ∙ (sym π₂law) )⟨●⟩refl))   ⟩
                 (δₘ ⊗ₘ id) ● αₘ ● ((id ● id) ⊗ₘ ((fₗ ⊗ₘ id) ● π₂ ● gᵣ))
             ≡⟨  refl⟨●⟩ (refl⟨⊗⟩ assoc)   ⟩
                 (δₘ ⊗ₘ id) ● αₘ ● ((id ● id) ⊗ₘ ((fₗ ⊗ₘ id) ● (π₂ ● gᵣ)))

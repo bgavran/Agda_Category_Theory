@@ -3,29 +3,34 @@
 open import Level
 open import Function using (flip)
 open import Data.Product
-open import IO
-open import Relation.Binary.PropositionalEquality hiding ([_]; naturality)
-open ≡-Reasoning
+open import Cubical.Core.Everything
+open import Cubical.Foundations.Prelude
 
 open import Category
+open import Shapes
 
 module Monoidal {n m} (cat : Cat n m) where
 
 private
-  module cc = Cat cat
   variable n' m' n'' m'' : Level
 
 open import Isomorphism
 open import Functor
 open import Product
 open import NaturalTransformation
-open cc hiding (_[_,_])
 open Isomorphism._≅_
-open Cat using (_[_,_])
-open Cat.CommutativeSquare
+open Cat cat hiding (_[_,_])
+open Cat using (_[_,_];_ᵒᵖ)
+open Shapes.CommutativeSquare
 open _Functor_
 open _NatTrans_
 
+FF : cat Functor (Cat._ᵒᵖ cat)
+FF = MkFunctor
+  (λ z → z)
+  (λ f → {!!})
+  {!!}
+  {!!}
 
 record Monoidal : Set (n ⊔ m) where
   constructor MkMonoidal
@@ -34,7 +39,6 @@ record Monoidal : Set (n ⊔ m) where
     ⊗ : (cat X cat) Functor cat
     𝟙 : obj
 
-
   x⊗[y⊗z] : (cat X (cat X cat)) Functor cat
   x⊗[y⊗z] = (idFunctor 𝕏 ⊗) ●F ⊗
 
@@ -42,7 +46,7 @@ record Monoidal : Set (n ⊔ m) where
   [x⊗y]⊗z = (productAssociatorᵣ ●F (⊗ 𝕏 idFunctor {cat = cat}))  ●F ⊗
 
   [𝟙⊗x] : cat Functor cat
-  [𝟙⊗x] = (constFunctor 𝟙 \/ idFunctor {cat = cat}) ●F (⊗)
+  [𝟙⊗x] = (constFunctor 𝟙 \/ idFunctor {cat = cat}) ●F ⊗
 
   [x⊗𝟙] : cat Functor cat
   [x⊗𝟙] = (idFunctor \/ constFunctor 𝟙) ●F ⊗
@@ -82,7 +86,6 @@ record Monoidal : Set (n ⊔ m) where
     hom (a ⊗ₒ(b ⊗ₒ c))
   αₘ {_} = η (forward associator)
 
-
   αₘ' : {a b c : obj}
     → (a ⊗ₒ (b ⊗ₒ c))
     hom ((a ⊗ₒ b) ⊗ₒ c)
@@ -97,30 +100,40 @@ record Monoidal : Set (n ⊔ m) where
     → a hom (𝟙 ⊗ₒ a)
   λₘ' = η (inverse leftUnitor)
 
-  -- the empty pattern match `{_}` is because of this issue https://github.com/agda/agda/issues/4131
+  -- the empty pattern match `{_}` is needed because of issue https://github.com/agda/agda/issues/4131
   λ□ : {a b : obj} {f : cat [ a , b ]}
     → mapMor ((constFunctor 𝟙 \/ idFunctor) ●F ⊗) f ● λₘ
     ≡ λₘ ● f
-  λ□ {_} = eqPaths (naturality (forward leftUnitor))
+  λ□ {_} = eqPaths□ (naturality (forward leftUnitor))
+
+  λ□' : {a b : obj} {f : cat [ a , b ]}
+    → f ● λₘ'
+    ≡ λₘ' ● mapMor ((constFunctor 𝟙 \/ idFunctor) ●F ⊗) f
+  λ□' {_} = eqPaths□ (naturality (inverse leftUnitor))
 
   ρ□ : {a b : obj} {f : cat [ a , b ]}
     → mapMor ((idFunctor \/ constFunctor 𝟙) ●F ⊗) f ● ρₘ
     ≡ ρₘ ● f
-  ρ□ {_} = eqPaths (naturality (forward rightUnitor))
+  ρ□ {_} = eqPaths□ (naturality (forward rightUnitor))
+
+  ρ□' : {a b : obj} {f : cat [ a , b ]}
+    → f ● ρₘ'  ≡ ρₘ' ● mapMor ((idFunctor \/ constFunctor 𝟙) ●F ⊗) f
+  ρ□' {_} = eqPaths□ (naturality (inverse rightUnitor))
 
   α□ : {a b c d e i : obj}
     → {f : (cat X (cat X cat)) [ (a , (b , c)) , (d , (e , i)) ]}
     → mapMor ((productAssociatorᵣ ●F (⊗ 𝕏 idFunctor)) ●F ⊗) f ● αₘ
     ≡ αₘ ● mapMor ((idFunctor 𝕏 ⊗) ●F ⊗) f
-  α□ {_} = eqPaths (naturality (forward associator))
+  α□ {_} = eqPaths□ (naturality (forward associator))
 
   α□' : {a b c d e i : obj}
     → {f : (cat X (cat X cat)) [ (a , (b , c)) , (d , (e , i)) ]}
     → mapMor ((idFunctor 𝕏 ⊗) ●F ⊗) f ● αₘ'
     ≡ αₘ' ● mapMor ((productAssociatorᵣ ●F (⊗ 𝕏 idFunctor)) ●F ⊗) f
-  α□' {_} = eqPaths (naturality (inverse associator))
+  α□' {_} = eqPaths□ (naturality (inverse associator))
 
 
+  -- these identities need to be natural isomorphism
   field
     ▵-identity : {x y : obj}
       → αₘ {a = x} {b = 𝟙} {c = y} ● (id ⊗ₘ λₘ) ≡ ρₘ ⊗ₘ id
@@ -138,13 +151,13 @@ record Monoidal : Set (n ⊔ m) where
     → {f : a hom c} {g : c hom e} {h : b hom d} {i : d hom o}  {j : e hom q } {k : o hom p}
     → (f ● g ● j) ⊗ₘ (h ● i ● k) ≡ (f ⊗ₘ h) ● (g ⊗ₘ i) ● (j ⊗ₘ k)
   distribute⊗₃ {f = f} {g = g} {h = h} {i = i} {j = j} {k = k} =
-    trans  (compLaw ⊗ (f ● g , (h ● i)) (j , k)) (distribute⊗ ⟨●⟩refl)
+     (compLaw ⊗ (f ● g , (h ● i)) (j , k)) ∙  (distribute⊗ ⟨●⟩refl)
 
   distribute⊗₄ : {a b c d e o p q r s : obj}
     → {f : a hom c} {g : c hom e} {h : b hom d} {i : d hom o}  {j : e hom q } {k : o hom p} {l : q hom r} {m : p hom s}
     → (f ● g ● j ● l) ⊗ₘ (h ● i ● k ● m) ≡ (f ⊗ₘ h) ● (g ⊗ₘ i) ● (j ⊗ₘ k) ● (l ⊗ₘ m)
   distribute⊗₄ {f = f} {g = g} {h = h} {i = i} {j = j} {k = k} {l = l} {m = m} =
-    trans  (compLaw ⊗ (f ● g ● j , h ● i ● k) (l , m)) (distribute⊗₃ ⟨●⟩refl)
+    (compLaw ⊗ (f ● g ● j , h ● i ● k) (l , m)) ∙ (distribute⊗₃ ⟨●⟩refl)
 
   _⟨⊗⟩_ : {a b c d : obj} {f g : a hom b} {h i : c hom d}
     → f ≡ g → h ≡ i → f ⊗ₘ h ≡ g ⊗ₘ i
@@ -165,7 +178,7 @@ record Monoidal : Set (n ⊔ m) where
   f ⊗≅ g = MkIso
     (forward f ⊗ₘ forward g)
     (inverse f ⊗ₘ inverse g)
-    (begin
+    (
        (inverse f ⊗ₘ inverse g) ● (forward f ⊗ₘ forward g)
     ≡⟨ sym distribute⊗ ⟩
        (inverse f ● forward f) ⊗ₘ (inverse g ● forward g)
@@ -174,7 +187,7 @@ record Monoidal : Set (n ⊔ m) where
     ≡⟨   idLaw ⊗   ⟩
         id
     ∎)
-    (begin
+    (
         (forward f ⊗ₘ forward g) ● (inverse f ⊗ₘ inverse g)
       ≡⟨ sym distribute⊗ ⟩
         (forward f ● inverse f) ⊗ₘ (forward g ● inverse g)
@@ -190,7 +203,7 @@ record Monoidal : Set (n ⊔ m) where
     → f ● g ≡ h ● i
     → x ● f ● g ≡ x ● h ● i
   assocApply {x = x} {f = f} {g = g} {h = h} {i = i} e =
-    begin
+    
        (x ● f) ● g   ≡⟨   assoc     ⟩
        x ● (f ● g)   ≡⟨  refl⟨●⟩ e  ⟩
        x ● (h ● i)   ≡⟨  sym assoc  ⟩
@@ -201,7 +214,7 @@ record Monoidal : Set (n ⊔ m) where
   ⇆ : {a b c d : obj} {f : a hom b} {g : c hom d}
     → (id ⊗ₘ g) ● (f ⊗ₘ id) ≡ (f ⊗ₘ id) ● (id ⊗ₘ g)
   ⇆ {f = f} {g = g} =
-    begin
+    
       (id ⊗ₘ g) ● (f ⊗ₘ id)
     ≡⟨  sym distribute⊗ ⟩
       (id ● f) ⊗ₘ (g ● id)
@@ -221,7 +234,7 @@ record Monoidal : Set (n ⊔ m) where
     {x : a hom (c ⊗ₒ d)} {y : b hom e} {z : c hom f} {w : (d ⊗ₒ e) hom g}
     → (x ⊗ₘ y) ● αₘ ● (z ⊗ₘ w) ≡ ((x ● (z ⊗ₘ id)) ⊗ₘ y) ● αₘ ● (id ⊗ₘ w)
   moveThroughAssocᵗ {x = x} {y = y} {z = z} {w = w} =
-    begin
+    
       (x ⊗ₘ y) ● αₘ ● (z ⊗ₘ w)
     ≡⟨  refl⟨●⟩ _⟨⊗⟩_ (sym left-id) (sym right-id)   ⟩
       (x ⊗ₘ y) ● αₘ ● ((z ● id) ⊗ₘ (id ● w))
@@ -243,7 +256,7 @@ record Monoidal : Set (n ⊔ m) where
     {f : a hom b} {g : b hom c}
     → (f ⊗ₘ id {a = x}) ● (g ⊗ₘ id) ≡ (f ● g) ⊗ₘ id
   factorId {f = f} {g = g} =
-    begin
+    
        (f ⊗ₘ id) ● (g ⊗ₘ id)
     ≡⟨  sym distribute⊗   ⟩
        (f ● g) ⊗ₘ (id ● id)
@@ -254,7 +267,7 @@ record Monoidal : Set (n ⊔ m) where
     {f : a hom b} {g : b hom c} {h : c hom d}
     → (f ⊗ₘ id {a = x}) ● (g ⊗ₘ id) ● (h ⊗ₘ id) ≡ (f ● g ● h) ⊗ₘ id
   factorId₃ {f = f} {g = g} {h = h} =
-    begin
+    
        (f ⊗ₘ id) ● (g ⊗ₘ id) ● (h ⊗ₘ id)
     ≡⟨  factorId ⟨●⟩refl  ⟩
        ((f ● g) ⊗ₘ id) ● (h ⊗ₘ id)
@@ -266,7 +279,7 @@ record Monoidal : Set (n ⊔ m) where
     {f : a hom b} {g : b hom c} {h : c hom d} {i : d hom e}
     → (f ⊗ₘ id {a = x}) ● (g ⊗ₘ id) ● (h ⊗ₘ id) ● (i ⊗ₘ id) ≡ (f ● g ● h ● i) ⊗ₘ id
   factorId₄ {f = f} {g = g} {h = h} {i = i} =
-    begin
+    
        (f ⊗ₘ id) ● (g ⊗ₘ id) ● (h ⊗ₘ id) ● (i ⊗ₘ id)
     ≡⟨  factorId ⟨●⟩refl₂  ⟩
        ((f ● g) ⊗ₘ id) ● (h ⊗ₘ id) ● (i ⊗ₘ id)
@@ -274,16 +287,27 @@ record Monoidal : Set (n ⊔ m) where
        (f ● g ● h ● i) ⊗ₘ id
     ∎
 
+  -- this is (5) in Kelly's paper "On MacLane’s Conditions for Coherence of Natural Associativities, Commutativities, etc. "
   -- this should follow from the pentagon in a similar vein to showing λ≡σ●ρ for SMC's
   -- it seems difficult to prove
   λ⊗id≡α●λ : {b c : obj}
     → λₘ {a = b} ⊗ₘ id {a = c} ≡ αₘ ● λₘ {a = (b ⊗ₒ c)}
   λ⊗id≡α●λ =
-    begin
+    
       λₘ ⊗ₘ id
     ≡⟨ {!!} ⟩
       αₘ ● λₘ
     ∎
+
+  λₘI≡ρₘI : λₘ {a = 𝟙} ≡ ρₘ {a = 𝟙}
+  λₘI≡ρₘI =
+    
+      λₘ
+    ≡⟨ {!!} ⟩
+      ρₘ
+    ∎
+
+
 
   ⃤⊗ : cat Functor cat
   ⃤⊗ = ⃤ ●F ⊗

@@ -15,6 +15,7 @@ open import SymmetricMonoidal
 open import CD-Category
 open import CDAffine-Category
 open import Cartesian
+open import SetInstance
 
 module Lens.SimpleLens
   {n m}
@@ -28,6 +29,8 @@ module Lens.SimpleLens
 import Lens.Lens as L
 import Lens.LensCategory as LC
 import Lens.LensAssociativity
+import Lens.LensMonoidal
+open import MonoidalNaturalTransformation
 private
   module cct = Cat cat
   module mc = Monoidal.Monoidal mc
@@ -38,6 +41,7 @@ private
   module lenss = L cart
   module lc = LC cart
   module lensassoc = Lens.LensAssociativity cart
+  module lensmon = Lens.LensMonoidal cart
 
 open _Functor_
 open Cat.CommutativeSquare
@@ -51,8 +55,9 @@ open cart
 open lenss
 open lc
 open lensassoc using (lensAssoc)
+open lensmon
 
-
+-- also called monomorphic lenses
 record SimpleLens (a b : obj) : (Set m) where
   constructor MkSimpleLens
   field
@@ -65,31 +70,35 @@ _●ₛₗ_ : {a b c : obj} →
   SimpleLens a b → SimpleLens b c → SimpleLens a c
 _●ₛₗ_ (MkSimpleLens g) (MkSimpleLens f) = MkSimpleLens (g ●ₗ f)
 
+simpleLensId : {a : obj} → SimpleLens a a
+simpleLensId = MkSimpleLens lensId
+
 simpleLensCategory : Cat n m
 simpleLensCategory = MkCat
   obj
   SimpleLens
-  (MkSimpleLens lensId)
+  simpleLensId
   _●ₛₗ_
   (cong MkSimpleLens lensLeftId)
   (cong MkSimpleLens lensRightId)
   (cong MkSimpleLens lensAssoc)
-  {!!}
+  λ f≡g h≡i → cong MkSimpleLens (●ₗ-resp-≡ (cong SimpleLens.lens f≡g) (cong SimpleLens.lens h≡i))
 
 simpleLensMonoidal : Monoidal simpleLensCategory
 simpleLensMonoidal = MkMonoidal
   (MkFunctor
     (mapObj ⊗)
-    (λ x → let (MkSimpleLens l) , (MkSimpleLens r) = x
-            in MkSimpleLens (mapMor ⊗ₗ (l , r)))
-    {!!}
-    {!!})
+    (λ (MkSimpleLens l , MkSimpleLens r) → MkSimpleLens (mapMor ⊗ₗ (l , r)))
+    (cong MkSimpleLens (idLaw ⊗ₗ))
+    (λ f g → cong MkSimpleLens let t = compLaw ⊗ₗ in {!!}))
   𝟙
   {!!}
+  (MkIso (MkNatTrans (MkSimpleLens (MkLens λₘ {!!})) {!!}) {!!} {!!} {!!})
   {!!}
   {!!}
   {!!}
-  {!!}
+  -- (cong MkSimpleLens (Monoidal.▵-identity lensMonoidal))
+  -- (cong MkSimpleLens (Monoidal.⬠-identity lensMonoidal))
 
 simpleLensSymmetricMonoidal : SymmetricMonoidal simpleLensMonoidal
 simpleLensSymmetricMonoidal = MkSymmMonoidal (MkIso
@@ -99,11 +108,10 @@ simpleLensSymmetricMonoidal = MkSymmMonoidal (MkIso
   {!!})
 
 
-
 simpleLensCDCategory : CD-Category simpleLensSymmetricMonoidal
 simpleLensCDCategory = MkCD-Category
-  {!!}
-  {!!}
+  (MkMonoidalNatTrans (MkNatTrans (MkSimpleLens' δₘ (π₂ ●  π₁)) (Cat.MkCommSq {!!})) {!!} {!!})
+  (MkMonoidalNatTrans (MkNatTrans (MkSimpleLens (CoPt id)) (Cat.MkCommSq (cong MkSimpleLens {!!}))) {!!} {!!})
   {!!}
   {!!}
   {!!}

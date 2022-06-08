@@ -1,7 +1,7 @@
 open import Level
 open import Function using (flip)
 open import Data.Product
-open import IO
+--open import IO
 open import Relation.Binary.PropositionalEquality hiding ([_])
 open ≡-Reasoning
 
@@ -38,9 +38,14 @@ open S
 open CD
 open CDA
 
+-- record Cartesian' : {!!} where
+--   constructor MkCartesian'
+--   field
+--     _x_ : obj → obj → obj
+--     π₁' : {a b : obj} → a x b → a
+
 record Cartesian : (Set (n ⊔ m)) where
   constructor MkCartesian
 
   field
     copyApply   : {a b : obj} {f : a hom b} → f ● δₘ ≡ δₘ ● (f ⊗ₘ f)
-    -- this means that 𝟙 in CD-category is terminal. How to prove this?

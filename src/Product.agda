@@ -5,22 +5,22 @@ module Product where
 open import Data.Product
 open import Level
 open import Function using (flip) renaming (_∘_ to _∙_)
-open import IO
-open import Relation.Binary.PropositionalEquality hiding ([_]; naturality)
-open ≡-Reasoning
+open import Cubical.Core.Everything
+open import Cubical.Foundations.Prelude
 
 open import Category
 open import Functor
 open import NaturalTransformation
 
 open Cat
-open Cat.CommutativeSquare
+open import Shapes
+open Shapes.CommutativeSquare
 open _Functor_
 open _NatTrans_
 
 private
   variable
-    n m n' m' : Level
+    n m n' m' n'' m'' n''' m''' : Level
     c₁ c₂ c₃ c₄ d₁ d₂ : Cat n m
 
 _X_ : (Cat n m) → (Cat n' m') → Cat (n ⊔ n') (m ⊔ m')
@@ -36,19 +36,43 @@ assoc (c₁ X c₂) = cong₂ _,_ (assoc c₁) (assoc c₂)
 ●-resp-≡ (c₁ X c₂) = {!!} -- x y = cong₂ (_,_) -- (●-resp-≡ c₁ (cong proj₁ x) (cong proj₁ y))
                                             -- (●-resp-≡ c₂ (cong proj₂ x) (cong proj₂ y))
 
+Π₁ : (c₁ X c₂) Functor c₁
+Π₁ = MkFunctor
+  (λ (a , b) → a)
+  (λ (a , b) → a)
+  refl
+  λ _ _ → refl
+
+Π₂ : (c₁ X c₂) Functor c₂
+Π₂ = MkFunctor
+  (λ (a , b) → b)
+  (λ (a , b) → b)
+  refl
+  λ _ _ → refl
+
 productAssociatorₗ : ((c₁ X c₂) X c₃) Functor (c₁ X (c₂ X c₃))
 productAssociatorₗ = MkFunctor
-  (< proj₁ ∙ proj₁ , < proj₂ ∙ proj₁ , proj₂ > > )
-  (< proj₁ ∙ proj₁ , < proj₂ ∙ proj₁ , proj₂ > > )
+  (λ ((a , b) , c) → (a , (b , c)) )
+  (λ ((f , g) , h) → (f , (g , h)) )
   refl
   (λ _ _ → refl)
 
 productAssociatorᵣ : (c₁ X (c₂ X c₃)) Functor ((c₁ X c₂) X c₃)
 productAssociatorᵣ = MkFunctor
-  < < proj₁ , proj₁ ∙ proj₂ > , proj₂ ∙ proj₂ >
-  < < proj₁ , proj₁ ∙ proj₂ > , proj₂ ∙ proj₂ >
+  (λ (a , (b , c)) → ((a , b) , c) )
+  (λ (f , (g , h)) → ((f , g) , h) )
   refl
   (λ _ _ → refl)
+
+-- project middle two
+-- for some reason there have to be a lot of implicit arguments
+π₂₃ : {c₁ : Cat n m} {c₂ : Cat n' m'} {c₃ : Cat n'' m''} {c₄ : Cat n''' m'''}
+  → ((c₁ X c₂) X (c₃ X c₄)) Functor (c₂ X c₃)
+π₂₃ {c₁ = c₁ }{c₂ = c₂} {c₃ = c₃} {c₄ = c₄} =
+  ((productAssociatorᵣ{c₁ = (c₁ X c₂)} {c₂ = c₃} {c₃ = c₄} ●F
+  Π₁ {c₁ = ((c₁ X c₂) X c₃)}{c₂ = c₄}) ●F
+  productAssociatorₗ {c₁ = c₁} {c₂ = c₂} {c₃ = c₃}) ●F
+  (Π₂ {c₁ = c₁} {c₂ = (c₂ X c₃)})
 
 
 _𝕏_ : (c₁ Functor d₁) → (c₂ Functor d₂) → (c₁ X c₂) Functor (d₁ X d₂)
@@ -87,21 +111,24 @@ compLaw swapFunctor = λ _ _ → refl
   → ((a × b) × (c × d)) → ((a × c) × (b × d))
 |⇆| ((a , b) , (c , d)) = (a , c) , (b , d)
 
-|⇆|Xfunctor : ((c₁ X c₂) X (c₃ X c₄)) Functor ((c₁ X c₃) X (c₂ X c₄))
-mapObj |⇆|Xfunctor  = |⇆|
-mapMor |⇆|Xfunctor  = |⇆|
-idLaw |⇆|Xfunctor   = refl
-compLaw |⇆|Xfunctor = λ _ _ → refl
+|⇆|𝕏 : {c₁ : Cat n m} {c₂ : Cat n' m'} {c₃ : Cat n'' m''} {c₄ : Cat n''' m'''}
+  → ((c₁ X c₂) X (c₃ X c₄)) Functor ((c₁ X c₃) X (c₂ X c₄))
+|⇆|𝕏 {c₁ = c₁ }{c₂ = c₂} {c₃ = c₃} {c₄ = c₄}
+  = productAssociatorᵣ {c₁ = (c₁ X c₂)} {c₂ = c₃} {c₃ = c₄} ●F
+    (productAssociatorₗ {c₁ = c₁} {c₂ = c₂} {c₃ = c₃} 𝕏 idFunctor {cat = c₄}) ●F
+    ((idFunctor {cat = c₁} 𝕏 (swapFunctor {c₁ = c₂} {c₂ = c₃})) 𝕏 idFunctor {cat = c₄}) ●F
+    (((productAssociatorᵣ {c₁ = c₁}  {c₂ = c₃} {c₃ = c₂} ) 𝕏 idFunctor {cat = c₄}) ●F productAssociatorₗ {c₁ = (c₁ X c₃)} {c₂ = c₂} {c₃ = c₄})
 
 
 ⃤ : c₁ Functor (c₁ X c₁)
 ⃤ = idFunctor \/ idFunctor
 
-_𝕏ₙ_ : {c₁ : Cat n m} {c₂ : Cat n' m'} {F : c₁ Functor c₂} → {G : c₁ Functor c₂}
-  → (α : F NatTrans G) → (β : F NatTrans G)
-  → ((F 𝕏 F) NatTrans (G 𝕏 G))
+-- product of natural transformations
+_𝕏ₙ_ : {c₁ : Cat n m} {c₂ : Cat n' m'} {c₃ : Cat n'' m''} {c₄ : Cat n''' m'''}
+  → {F : c₁ Functor c₂} → {G : c₁ Functor c₂}
+  → {H : c₃ Functor c₄} → {I : c₃ Functor c₄}
+  → (α : F NatTrans G) → (β : H NatTrans I)
+  → ((F 𝕏 H) NatTrans (G 𝕏 I))
 α 𝕏ₙ β = MkNatTrans
   (η α , η β)
-  (MkCommSq
-    (cong₂ _,_ (eqPaths (naturality α)) (eqPaths (naturality β))
-    ))
+  (MkCommSq (cong₂ _,_ (eqPaths□ (naturality α)) (eqPaths□ (naturality β))))

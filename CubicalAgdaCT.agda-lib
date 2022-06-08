@@ -1,0 +1,4 @@
+name: CubicalAgdaCT
+include: . ./src
+depend: cubical standard-library
+flags: --cubical

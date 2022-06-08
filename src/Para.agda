@@ -5,7 +5,7 @@ module Para {n m} {cat : Cat n m} {mc : Monoidal cat} where
 open import Level
 open import Function using (flip)
 open import Data.Product
-open import IO
+open import Data.List
 open import Relation.Binary.PropositionalEquality hiding ([_])
 open ≡-Reasoning
 
@@ -38,6 +38,7 @@ _●ₚ'_ {a = a} {b = b} {c = c} {p = p} {q = q} f g
   id ⊗ₘ f             →⟨ (q ⊗ₒ    b)     ⟩
   g                    →⟨    c              ⟩end
 
+-- This should be a category?
 _●ₚ_ :  {a b c : obj}
   → Σ obj (λ p → (p ⊗ₒ a) hom b)
   → Σ obj (λ q → (q ⊗ₒ b) hom c)
@@ -58,7 +59,7 @@ paraLeftId {a = a} {b = b} {f = p , f} =
       p , f
   ∎
 
--- TODO quotients?
+-- TODO this should be bicat, or quotients should be figured out?
 para : (v : SymmetricMonoidal mc) → Cat n (n ⊔ m)
 Cat.obj (para v)      = obj
 Cat._hom_ (para v)    = λ a b → Σ obj (λ p → (p ⊗ₒ a) hom b )
