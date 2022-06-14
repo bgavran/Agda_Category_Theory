@@ -12,6 +12,7 @@ open import SetInstance
 open import Monoidal
 import Shapes
 
+-- Covariant Slice
 module SliceOver {o m} (cat : Cat o m) (x : Cat.obj cat) where
   open Cat cat
   open Shapes cat
@@ -32,7 +33,6 @@ module SliceOver {o m} (cat : Cat o m) (x : Cat.obj cat) where
   open SliceObj
 
 
-  -- can we pattern match in record definitions?
   record _sliceHom_ (f g : SliceObj) : Set mrphLvl where
     constructor MkSliceHom
     private

@@ -33,10 +33,10 @@ record ClosedMonoidal : Set (o ⊔ m) where
   [_,_]ₒ = curry (mapObj comp)
 
   [_,_]ₘ : {a b c d : obj}
-    → b hom a -- this is from cat 
+    → b hom a -- this is from cat ᵒᵖ
     → c hom d
     → [ b , c ]ₒ hom [ a , d ]ₒ
-  [ f , g ]ₘ = let t = mapMor comp (( f ᵒᵖ , g )) in {!!}
+  [ f , g ]ₘ = mapMor comp ( {!f!} , {!!} )
 
   field
     conditionAdj : {!!} -- for every object there's an adjunction

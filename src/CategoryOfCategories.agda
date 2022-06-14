@@ -3,6 +3,9 @@
 open import Level
 open import Cubical.Core.Everything
 open import Cubical.Foundations.Prelude hiding (Lift)
+open import Cubical.Foundations.GroupoidLaws using (lUnit; rUnit)
+open import Cubical.Foundations.HLevels
+open import Cubical.Foundations.Function hiding (flip)
 open import Data.Unit using (⊤; tt) -- for the terminal category
 open import Data.Empty using (⊥) -- for the initial category
 open import Data.Product
@@ -29,8 +32,37 @@ open _Functor_
 
 module CategoryOfCategories where
 
-leftIdFunctor : {n m : Level} → {a b : Cat n m} {f : a Functor b} → (f ●F idFunctor) ≡ f
-leftIdFunctor {f = f} = λ i → MkFunctor (mapObj f) (mapMor f) {!!} {!!}
+variable
+  l : Level
+  A B : Type l
+
+apply0 : (p : I → A) → A
+apply0 = λ p → p i0
+
+refll : {a : A} → a ≡ a
+refll {a = a} = λ i → a
+
+fxt : {f g : A → B} → ((a : A) → f a ≡ g a) → f ≡ g
+fxt p i a = p a i
+
+-- fxt p i0 a = p i0 a = f a
+-- fxt p i1 a = p i1 a = g a
+
+
+-- we've got two interval types, we've got to do some space filling? hfill?
+
+-- F-lUnit : ∀ {o} {m} {o'} {m'} {cat₁ : Cat o m} {cat₂ : Cat o' m'} {f : cat₁ Functor cat₂} {i} {a : obj cat₁} → mapMor f (id cat₁) ≡ id cat₂
+-- F-lUnit {f = f} i = {!lUnit ? ?!} -- lUnit (idLaw f) ?
+ 
+-- leftIdFunctor : {o m o' m' : Level} → {cat₁ : Cat o m} {cat₂ : Cat o' m'} {f : cat₁ Functor cat₂} → (f ●F idFunctor) ≡ f
+-- leftIdFunctor {cat₂ = cat₂} {f = f} = λ i → MkFunctor (mapObj f) (mapMor f) F-lUnit {!!}
+
+leftIdFunctor : {o m o' m' : Level} → {cat₁ : Cat o m} {cat₂ : Cat o' m'} {f : cat₁ Functor cat₂} → (f ●F idFunctor) ≡ f
+leftIdFunctor {cat₁ = cat₁} {cat₂ = cat₂} {f = f} = λ i → MkFunctor (mapObj f) (mapMor f) (λ {a} → {!lemma i!}) {!!}
+  where lemma : {a : obj cat₁} → Path (mapMor f (id cat₁ {a}) ≡ id cat₂ {mapObj f a}) (idLaw f ∙ refl) (idLaw f)
+        lemma = {!!}
+
+
 
 catOfCats : {o m : Level} → Cat (suc o ⊔ suc m) (o ⊔ m)
 catOfCats {o = o} {m = m} = MkCat
@@ -44,13 +76,24 @@ catOfCats {o = o} {m = m} = MkCat
   {!!}
 
 
-ᵒᵖ : catOfCats Functor catOfCats
+ᵒᵖ : {o m : Level} → (catOfCats {o} {m}) Functor (catOfCats {o} {m})
 ᵒᵖ = MkFunctor
-  (λ cat → Cat._ᵒᵖ cat)
+  (λ (MkCat obj' hom' id' comp' left-id' right-id' assoc' resp') → (MkCat obj' (flip hom') id' (flip comp') right-id' left-id' (sym assoc') (flip resp')))
   (λ F → MkFunctor (mapObj F) (mapMor F) (idLaw F) λ f g → compLaw F g f)
-  (λ i → MkFunctor (λ x → x) (λ x → x) (λ i → {!!}) {!!})
-  λ f g → λ i → {!!}
+  (λ {a = cat} → λ i → MkFunctor (λ x → x) (λ x → x) (λ i₁ → id cat) λ f g i₁ → cat [ g ● f ])
+  λ {a = a} {b = b} {c = c} F G → λ i → MkFunctor
+    (λ x → mapObj G (mapObj F x))
+    (λ f → mapMor G (mapMor F f))
+    (λ i₁ → let t = mapMor G (mapMor F (id a)) in {!t!})
+    λ f g i₁ → {!c!} [ g ● f ]
 
+
+_ᵒᵖᶜ : {o m : Level} → (cat : Cat o m) → Cat o m
+cat ᵒᵖᶜ = mapObj ᵒᵖ cat
+
+
+_ᵒᵖᶠ : {o m : Level} {cat₁ cat₂ : Cat o m} → (f : cat₁ Functor cat₂) → ((cat₁ ᵒᵖᶜ) Functor (cat₂ ᵒᵖᶜ))
+f ᵒᵖᶠ = mapMor ᵒᵖ f
 
 -- need the kronecker below δ : Set × Set → 2 ↦ ((a, a) ↦ 1 | (a, _) ↦ 0)
 kron : {n : Level} {s : Set n} → s → s → Set n
@@ -61,7 +104,7 @@ disc {n = n} s = MkCat
   s
   kron
   (λ {a} → refl)
-  (λ f g → {!?!})
+  (λ f g → f ∙ g)
   {!!}
   {!!}
   {!!}

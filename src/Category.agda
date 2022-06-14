@@ -67,18 +67,18 @@ record Cat (o m : Level) : Set (catLvl o m) where
   cod : {a b : obj} -> (a hom b) -> obj
   cod {b} _ = b
 
-  -- opposite category
-  _ᵒᵖ : Cat o m
-  _ᵒᵖ = record
-    { obj = obj
-    ; _hom_ = flip _hom_
-    ; id = id
-    ; _●_ = flip _●_
-    ; left-id = right-id
-    ; right-id = left-id
-    ; assoc = sym assoc
-    ; ●-resp-≡ = flip ●-resp-≡
-    }
+  -- -- opposite category
+  -- _ᵒᵖ : Cat o m
+  -- _ᵒᵖ = record
+  --   { obj = obj
+  --   ; _hom_ = flip _hom_
+  --   ; id = id
+  --   ; _●_ = flip _●_
+  --   ; left-id = right-id
+  --   ; right-id = left-id
+  --   ; assoc = sym assoc
+  --   ; ●-resp-≡ = flip ●-resp-≡
+  --   }
 
 
   _⟨●⟩refl : {a b c : obj} {f g : a hom b} {h : b hom c}

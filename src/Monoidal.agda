@@ -20,17 +20,10 @@ open import Product
 open import NaturalTransformation
 open Isomorphism._≅_
 open Cat cat hiding (_[_,_])
-open Cat using (_[_,_];_ᵒᵖ)
+open Cat using (_[_,_])
 open Shapes.CommutativeSquare
 open _Functor_
 open _NatTrans_
-
-FF : cat Functor (Cat._ᵒᵖ cat)
-FF = MkFunctor
-  (λ z → z)
-  (λ f → {!!})
-  {!!}
-  {!!}
 
 record Monoidal : Set (n ⊔ m) where
   constructor MkMonoidal

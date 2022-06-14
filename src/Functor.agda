@@ -57,12 +57,12 @@ _∘F_ {cat1 = cat1} {cat2 = cat2} {cat3 = cat3}
   open Cat
   idLaw' : {a : obj cat1} → (mapMor₁ {a} ●ᶠ mapMor₂) (id cat1) ≡ id cat3
   idLaw' {a = a} =
-      (mapMor₁ {a} ●ᶠ mapMor₂) (id cat1)
-    ≡⟨ cong mapMor₂ idLaw₁ ⟩
-       mapMor₂ (id cat2)
-    ≡⟨ idLaw₂ ⟩
-       id cat3
-    ∎
+       (mapMor₁ {a} ●ᶠ mapMor₂) (id cat1)
+     ≡⟨ cong mapMor₂ idLaw₁ ⟩
+        mapMor₂ (id cat2)
+     ≡⟨ idLaw₂ ⟩
+        id cat3
+     ∎
 
   compLaw' : {a b c : obj cat1}
     → (f : cat1 [ a , b ])
