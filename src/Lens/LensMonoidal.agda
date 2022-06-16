@@ -3,11 +3,11 @@
 open import Level
 open import Function using (flip; _∘′_) renaming (id to id')
 open import Data.Product
-open import IO
 open import Relation.Binary.PropositionalEquality hiding ([_]; naturality)
 open ≡-Reasoning
 
 open import Category
+open import Shapes
 open import Functor
 open import Product
 open import NaturalTransformation
@@ -17,6 +17,8 @@ open import CD-Category
 open import CDAffine-Category
 open import Cartesian
 open import Lens.Lens using (Lens)
+open import Isomorphism
+open import MonoidalNaturalTransformation
 import Lens.LensAssociativity
 import Lens.LensCategory
 
@@ -29,47 +31,35 @@ module Lens.LensMonoidal
   {cda : CDAffine-Category cd}
   (cart : Cartesian cda) where
 
-private
-  module cct = Cat cat
-  module mc = Monoidal.Monoidal mc
-  module smc = SymmetricMonoidal.SymmetricMonoidal smc
-  module cd = CD-Category.CD-Category cd
-  module cda = CDAffine-Category.CDAffine-Category cda
-  module cart = Cartesian.Cartesian cart
-  module lens = Lens.Lens cart
-  module lensassoc = Lens.LensAssociativity cart
-  module lenscart = Lens.LensCategory cart
-
-open Cat using (_[_,_];_ᵒᵖ)
+open Cat using (_[_,_])
 open _Functor_
 open _NatTrans_
-open Cat.CommutativeSquare
-open import Isomorphism
-open import MonoidalNaturalTransformation
-open cct hiding (_ᵒᵖ)
-open mc
-open smc
-open cd
-open cda
-open cart
-open lens
-open lensassoc using (lensAssoc)
-open lenscart
+open Shapes.CommutativeSquare
+open Cat cat
+open Monoidal.Monoidal mc
+open SymmetricMonoidal.SymmetricMonoidal smc
+open CD-Category.CD-Category cd
+open CDAffine-Category.CDAffine-Category cda
+open Cartesian.Cartesian cart
+open Lens.Lens cart
+open Lens.LensAssociativity cart using (lensAssoc)
+open Lens.LensCategory cart
 
 ⊗ₗ : (lensCategory X lensCategory) Functor lensCategory
 ⊗ₗ = MkFunctor
   (mapObj swapProd)
   (λ (MkLens gₗ pₗ , MkLens gᵣ pᵣ) → MkLens (gₗ ⊗ₘ gᵣ) (|⇆|⊗ₘ ● (pₗ ⊗ₘ pᵣ)))
-  (λ {_} → cong₂ MkLens (idLaw ⊗) (trans swapProject≡project (sym left-id)))
-  λ f@(MkLens gfₗ pfₗ , MkLens gfᵣ pfᵣ) g@(MkLens ggₗ pgₗ , MkLens ggᵣ pgᵣ) → cong₂ MkLens distribute⊗
-    (let (MkLens gfgₗ pgfₗ) , (MkLens gfgᵣ pgfᵣ) = (lensCategory X lensCategory) Cat.[ f ● g ]
-    in begin
-        |⇆|⊗ₘ ● (pgfₗ ⊗ₘ pgfᵣ)
-    ≡⟨   (let t = sym (eqPaths□ |⇆|⊗□) in {!t!} )   ⟩
-           {!!}
-    ≡⟨     {!!}   ⟩
-        (δₘ ⊗ₘ id) ● ((id ⊗ₘ (gfₗ ⊗ₘ gfᵣ)) ⊗ₘ id ) ● αₘ ● (id ⊗ₘ (|⇆|⊗ₘ ● (pgₗ ⊗ₘ pgᵣ))) ● (|⇆|⊗ₘ ● (pfₗ ⊗ₘ pfᵣ))
-    ∎)
+  (λ {_} → {!!}) -- cong₂ MkLens (idLaw ⊗) ?) -- (trans ? (sym left-id)))
+  λ f@(MkLens gfₗ pfₗ , MkLens gfᵣ pfᵣ) g@(MkLens ggₗ pgₗ , MkLens ggᵣ pgᵣ) → {!!}
+    -- cong₂ MkLens distribute⊗
+    -- (let (MkLens gfgₗ pgfₗ) , (MkLens gfgᵣ pgfᵣ) = (lensCategory X lensCategory) Cat.[ f ● g ]
+    -- in begin
+    --     |⇆|⊗ₘ ● (pgfₗ ⊗ₘ pgfᵣ)
+    -- ≡⟨   (let t = sym (eqPaths□ |⇆|⊗□) in {!t!} )   ⟩
+    --        {!!}
+    -- ≡⟨     {!!}   ⟩
+    --     (δₘ ⊗ₘ id) ● ((id ⊗ₘ (gfₗ ⊗ₘ gfᵣ)) ⊗ₘ id ) ● αₘ ● (id ⊗ₘ (|⇆|⊗ₘ ● (pgₗ ⊗ₘ pgᵣ))) ● (|⇆|⊗ₘ ● (pfₗ ⊗ₘ pfᵣ))
+    -- ∎)
 
 
     --     (|⇆|⊗ ● (pgfₗ ⊗ₘ pgfᵣ))
@@ -96,7 +86,7 @@ open lenscart
 lensMonoidal : Monoidal lensCategory
 lensMonoidal = MkMonoidal
   ⊗ₗ
-  (𝟙 , 𝟙)
+  (𝕀 , 𝕀)
   {!!}
   {!!}
   {!!}
@@ -115,14 +105,14 @@ lensMonoidal = MkMonoidal
   --       {!!}
   --       {!!})
 
-lensSymmetricMonoidal : SymmetricMonoidal lensMonoidal
-lensSymmetricMonoidal = MkSymmMonoidal (MkIso
-  {!!}
-  {!!}
-  -- (MkNatTrans (◿ σₘ || σₘ ◺) (Cat.MkCommSq (cong₂ MkLens σ□ {!!})))
-  -- (MkNatTrans (◿ σₘ || σₘ ◺) {!!})
-  {!!}
-  {!!})
+-- lensSymmetricMonoidal : SymmetricMonoidal lensMonoidal
+-- lensSymmetricMonoidal = MkSymmMonoidal (MkIso
+--   {!!}
+--   {!!}
+--   -- (MkNatTrans (◿ σₘ || σₘ ◺) (Cat.MkCommSq (cong₂ MkLens σ□ {!!})))
+--   -- (MkNatTrans (◿ σₘ || σₘ ◺) {!!})
+--   {!!}
+--   {!!})
 
 
 -- counitLaw : {x y : obj} {f : x hom y}

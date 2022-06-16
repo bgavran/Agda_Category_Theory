@@ -63,11 +63,11 @@ _lensHom_ : (obj × obj) → (obj × obj) → Set m
 _lensHom_ (s , t) (a , b) = Lens s t a b
 
 Pt : {x s : obj}
-  → (f : 𝟙 hom x) → (𝟙 , 𝟙) lensHom (x , s)
+  → (f : 𝕀 hom x) → (𝕀 , 𝕀) lensHom (x , s)
 Pt f = MkLens f (λₘ ● εₘ)
 
 CoPt : {y r : obj}
-  → (f : y hom r) → (y , r) lensHom (𝟙 , 𝟙)
+  → (f : y hom r) → (y , r) lensHom (𝕀 , 𝕀)
 CoPt f = MkLens εₘ (ρₘ ● f)
 
 
@@ -78,12 +78,12 @@ CoPt f = MkLens εₘ (ρₘ ● f)
 ◿ f || g ◺ = MkLens f (π₂ ● g)
 
 ◿ : {x y : obj}
-  → (f : x hom y) → (x , 𝟙) lensHom (y , 𝟙)
+  → (f : x hom y) → (x , 𝕀) lensHom (y , 𝕀)
 ◿ f = ◿ f || id ◺
 
 
 _◺ : {x y : obj}
-  → (f : x hom y) → (𝟙 , y) lensHom (𝟙 , x)
+  → (f : x hom y) → (𝕀 , y) lensHom (𝕀 , x)
 f ◺ = ◿ id || f ◺
 
 lensId : {a : obj × obj} → a lensHom a

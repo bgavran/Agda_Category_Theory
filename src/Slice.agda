@@ -71,8 +71,10 @@ module Slice {o m} {cat : Cat o m} where
     where
     open _Functor_
     open _Functor_ F renaming (mapObj to F₀; mapMor to F₁)
+    open GrothObj
 
   open _Functor_
+  -- Grothendieck construction
   g : (F : cat Functor catOfCats {o} {m}) → Cat o m
   g F = MkCat
     (GrothObj F)

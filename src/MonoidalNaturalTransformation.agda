@@ -33,8 +33,8 @@ open _NatTrans_
 private
   module MC1 = Monoidal.Monoidal mc1
   module MC2 = Monoidal.Monoidal mc2
-open MC1 renaming (⊗ to ⊗₁;𝟙 to 𝟙₁)
-open MC2 renaming (⊗ to ⊗₂;𝟙 to 𝟙₂)
+open MC1 renaming (⊗ to ⊗₁;𝕀 to 𝕀₁)
+open MC2 renaming (⊗ to ⊗₂;𝕀 to 𝕀₂)
 
 record _MonoidalNatTrans_ (mf1 mf2 : mc1 MonoidalFunctor mc2) : Set (n ⊔ m ⊔ n' ⊔ m') where
   constructor MkMonoidalNatTrans

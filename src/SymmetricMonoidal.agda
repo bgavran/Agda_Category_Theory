@@ -115,19 +115,20 @@ record SymmetricMonoidal : (Set (n ⊔ m)) where
   swapProd :  ((cat X cat) X (cat X cat)) Functor (cat X cat)
   swapProd = (|⇆|𝕏 ●F (⊗ 𝕏 ⊗))
 
-  -- |⇆|⊗' : (idFunctor {cat = ((cat X cat) X (cat X cat))}) NatTrans (|⇆|𝕏 {c₁ = cat} {c₂ = cat} {c₃ = cat} {c₄ = cat})
-  -- |⇆|⊗' = let x = (idNatTrans 𝕏ₙ (forward σX)) 𝕏ₙ idNatTrans
-  --          -- we tensor the natural transformation from left and right side and then whisker it correspondingly to the right and to the left
-  --          in whiskerₗ (productAssociatorᵣ ●F (productAssociatorₗ 𝕏 idFunctor )) (whiskerᵣ x ((productAssociatorᵣ 𝕏 idFunctor ) ●F productAssociatorₗ))
+  |⇆|⊗' : (idFunctor {cat = ((cat X cat) X (cat X cat))}) NatTrans (|⇆|𝕏 {c₁ = cat} {c₂ = cat} {c₃ = cat} {c₄ = cat})
+  |⇆|⊗' = let x = (idNatTrans 𝕏ₙ (forward σX)) 𝕏ₙ idNatTrans
+           -- we tensor the natural transformation from left and right side and then whisker it correspondingly to the right and to the left
+           -- previously the solution was the one below but now it doesn't work for some reason
+           in {!!} -- whiskerₗ (productAssociatorᵣ ●F (productAssociatorₗ 𝕏 idFunctor )) (whiskerᵣ x ((productAssociatorᵣ 𝕏 idFunctor ) ●F productAssociatorₗ))
 
   -- -- it's easier to understand this natural transformation in terms of the morphism it associates to each object
-  -- |⇆|⊗ : (idFunctor ●F ((⊗ 𝕏 ⊗) ●F ⊗)) NatTrans (|⇆|𝕏 ●F ((⊗ 𝕏 ⊗) ●F ⊗))
-  -- |⇆|⊗ = whiskerᵣ |⇆|⊗' ((⊗ 𝕏 ⊗) ●F ⊗)
+  |⇆|⊗ : (idFunctor ●F ((⊗ 𝕏 ⊗) ●F ⊗)) NatTrans (|⇆|𝕏 ●F ((⊗ 𝕏 ⊗) ●F ⊗))
+  |⇆|⊗ = whiskerᵣ |⇆|⊗' ((⊗ 𝕏 ⊗) ●F ⊗)
 
-  -- |⇆|⊗ₘ : {a b c d : obj}
-  --   → (a ⊗ₒ b) ⊗ₒ (c ⊗ₒ d) hom
-  --     (a ⊗ₒ c) ⊗ₒ (b ⊗ₒ d)
-  -- |⇆|⊗ₘ = η |⇆|⊗
+  |⇆|⊗ₘ : {a b c d : obj}
+    → (a ⊗ₒ b) ⊗ₒ (c ⊗ₒ d) hom
+      (a ⊗ₒ c) ⊗ₒ (b ⊗ₒ d)
+  |⇆|⊗ₘ = η |⇆|⊗
 
-  -- |⇆|⊗□ : _
-  -- |⇆|⊗□ = naturality |⇆|⊗
+  |⇆|⊗□ : _
+  |⇆|⊗□ = naturality |⇆|⊗

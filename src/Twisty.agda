@@ -8,8 +8,9 @@ open ≡-Reasoning
 open import Category
 open import Functor
 open import Product
+open import CategoryOfCategories
 
-open Cat using (_[_,_];_ᵒᵖ)
+open Cat using (_[_,_])
 -- open import NaturalTransformation
 -- open import Monoidal
 -- open import SymmetricMonoidal
@@ -19,11 +20,10 @@ open Cat using (_[_,_];_ᵒᵖ)
 
 module Twisty {o m} (cat : Cat o m) where
 
-  module cat = Cat cat
-  open cat hiding (_ᵒᵖ)
+  open Cat cat
 
   -- the category needs to be closed
-  tw : (cat X (cat ᵒᵖ)) Functor cat
+  tw : (cat X (cat ᵒᵖᶜ)) Functor cat
   tw = MkFunctor
     (λ (x , x') → {!!})
     {!!}

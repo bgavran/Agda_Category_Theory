@@ -30,7 +30,7 @@ record Monoidal : Set (n ⊔ m) where
 
   field
     ⊗ : (cat X cat) Functor cat
-    𝟙 : obj
+    𝕀 : obj
 
   x⊗[y⊗z] : (cat X (cat X cat)) Functor cat
   x⊗[y⊗z] = (idFunctor 𝕏 ⊗) ●F ⊗
@@ -38,16 +38,16 @@ record Monoidal : Set (n ⊔ m) where
   [x⊗y]⊗z : (cat X (cat X cat)) Functor cat
   [x⊗y]⊗z = (productAssociatorᵣ ●F (⊗ 𝕏 idFunctor {cat = cat}))  ●F ⊗
 
-  [𝟙⊗x] : cat Functor cat
-  [𝟙⊗x] = (constFunctor 𝟙 \/ idFunctor {cat = cat}) ●F ⊗
+  [𝕀⊗x] : cat Functor cat
+  [𝕀⊗x] = (constFunctor 𝕀 \/ idFunctor {cat = cat}) ●F ⊗
 
-  [x⊗𝟙] : cat Functor cat
-  [x⊗𝟙] = (idFunctor \/ constFunctor 𝟙) ●F ⊗
+  [x⊗𝕀] : cat Functor cat
+  [x⊗𝕀] = (idFunctor \/ constFunctor 𝕀) ●F ⊗
 
-  field
+  field -- swap the order of these so they're in same order laws for a category
     associator  : _≅_ {cat = functorCategory} [x⊗y]⊗z x⊗[y⊗z]
-    leftUnitor  : _≅_ {cat = functorCategory} [𝟙⊗x] idFunctor
-    rightUnitor : _≅_ {cat = functorCategory} [x⊗𝟙] idFunctor
+    leftUnitor  : _≅_ {cat = functorCategory} [𝕀⊗x] idFunctor
+    rightUnitor : _≅_ {cat = functorCategory} [x⊗𝕀] idFunctor
 
   infixl 10 _⊗ₒ_ _⊗ₘ_
   _⊗ₒ_ : obj → obj → obj
@@ -66,12 +66,12 @@ record Monoidal : Set (n ⊔ m) where
   -- subscript ₘ stands for "morphism" and □ is supposed to evoke
   -- the fact that there exist naturality squares for associators and left/right unitors
   λₘ : {a : obj}
-    → (𝟙 ⊗ₒ a) hom  a
+    → (𝕀 ⊗ₒ a) hom  a
   λₘ = η (forward leftUnitor)
 
 
   ρₘ : {a : obj}
-    → (a ⊗ₒ 𝟙) hom  a
+    → (a ⊗ₒ 𝕀) hom  a
   ρₘ = η (forward rightUnitor)
 
   αₘ : {a b c : obj}
@@ -85,32 +85,32 @@ record Monoidal : Set (n ⊔ m) where
   αₘ' {_} = η (inverse associator)
 
   ρₘ' : {a : obj}
-    → a hom (a ⊗ₒ 𝟙)
+    → a hom (a ⊗ₒ 𝕀)
   ρₘ' = η (inverse rightUnitor)
 
 
   λₘ' : {a : obj}
-    → a hom (𝟙 ⊗ₒ a)
+    → a hom (𝕀 ⊗ₒ a)
   λₘ' = η (inverse leftUnitor)
 
   -- the empty pattern match `{_}` is needed because of issue https://github.com/agda/agda/issues/4131
   λ□ : {a b : obj} {f : cat [ a , b ]}
-    → mapMor ((constFunctor 𝟙 \/ idFunctor) ●F ⊗) f ● λₘ
+    → mapMor ((constFunctor 𝕀 \/ idFunctor) ●F ⊗) f ● λₘ
     ≡ λₘ ● f
   λ□ {_} = eqPaths□ (naturality (forward leftUnitor))
 
   λ□' : {a b : obj} {f : cat [ a , b ]}
     → f ● λₘ'
-    ≡ λₘ' ● mapMor ((constFunctor 𝟙 \/ idFunctor) ●F ⊗) f
+    ≡ λₘ' ● mapMor ((constFunctor 𝕀 \/ idFunctor) ●F ⊗) f
   λ□' {_} = eqPaths□ (naturality (inverse leftUnitor))
 
   ρ□ : {a b : obj} {f : cat [ a , b ]}
-    → mapMor ((idFunctor \/ constFunctor 𝟙) ●F ⊗) f ● ρₘ
+    → mapMor ((idFunctor \/ constFunctor 𝕀) ●F ⊗) f ● ρₘ
     ≡ ρₘ ● f
   ρ□ {_} = eqPaths□ (naturality (forward rightUnitor))
 
   ρ□' : {a b : obj} {f : cat [ a , b ]}
-    → f ● ρₘ'  ≡ ρₘ' ● mapMor ((idFunctor \/ constFunctor 𝟙) ●F ⊗) f
+    → f ● ρₘ'  ≡ ρₘ' ● mapMor ((idFunctor \/ constFunctor 𝕀) ●F ⊗) f
   ρ□' {_} = eqPaths□ (naturality (inverse rightUnitor))
 
   α□ : {a b c d e i : obj}
@@ -129,7 +129,7 @@ record Monoidal : Set (n ⊔ m) where
   -- these identities need to be natural isomorphism
   field
     ▵-identity : {x y : obj}
-      → αₘ {a = x} {b = 𝟙} {c = y} ● (id ⊗ₘ λₘ) ≡ ρₘ ⊗ₘ id
+      → αₘ {a = x} {b = 𝕀} {c = y} ● (id ⊗ₘ λₘ) ≡ ρₘ ⊗ₘ id
     ⬠-identity : {a b c d : obj}
       → αₘ {a = (a ⊗ₒ b)} {b = c} {c = d} ● αₘ {a = a} {b = b} {c = (c ⊗ₒ d)}
       ≡ (αₘ ⊗ₘ id) ● αₘ {a = a} {b = (b ⊗ₒ c)} {c = d} ● (id ⊗ₘ αₘ )
@@ -292,7 +292,7 @@ record Monoidal : Set (n ⊔ m) where
       αₘ ● λₘ
     ∎
 
-  λₘI≡ρₘI : λₘ {a = 𝟙} ≡ ρₘ {a = 𝟙}
+  λₘI≡ρₘI : λₘ {a = 𝕀} ≡ ρₘ {a = 𝕀}
   λₘI≡ρₘI =
     
       λₘ

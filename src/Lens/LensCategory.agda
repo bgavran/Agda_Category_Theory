@@ -18,6 +18,7 @@ open import CDAffine-Category
 open import Cartesian
 open import Lens.Lens using (Lens)
 import Lens.LensAssociativity
+open import CategoryOfCategories
 
 module Lens.LensCategory
   {n m}
@@ -28,30 +29,20 @@ module Lens.LensCategory
   {cda : CDAffine-Category cd}
   (cart : Cartesian cda) where
 
-private
-  module cct = Cat cat
-  module mc = Monoidal.Monoidal mc
-  module smc = SymmetricMonoidal.SymmetricMonoidal smc
-  module cd = CD-Category.CD-Category cd
-  module cda = CDAffine-Category.CDAffine-Category cda
-  module cart = Cartesian.Cartesian cart
-  module lens = Lens.Lens cart
-  module lensassoc = Lens.LensAssociativity cart
-
-open Cat using (_[_,_];_ᵒᵖ)
+open Cat using (_[_,_])
 open _Functor_
 import Shapes
 open Shapes.CommutativeSquare
 open import Isomorphism
 open import MonoidalNaturalTransformation
-open cct hiding (_ᵒᵖ)
-open mc
-open smc
-open cd
-open cda
-open cart
-open lens
-open lensassoc using (lensAssoc)
+open Cat cat
+open Monoidal.Monoidal mc
+open SymmetricMonoidal.SymmetricMonoidal smc
+open CD-Category.CD-Category cd
+open CDAffine-Category.CDAffine-Category cda
+open Cartesian.Cartesian cart
+open Lens.Lens cart
+open Lens.LensAssociativity cart using (lensAssoc)
 
 lensLeftId : {a b : obj × obj} {f : a lensHom b}
   → f ●ₗ lensId ≡ f
@@ -134,7 +125,7 @@ lensCategory = MkCat
 
 
 -- Notion of computation, given two morphisms X -> Y and R -> S we can think of them as lenses
-proLens : ((cat ᵒᵖ) X cat) Functor lensCategory
+proLens : ((cat ᵒᵖᶜ) X cat) Functor lensCategory
 proLens = swapFunctor ●F MkFunctor
   id'
   (uncurry ◿_||_◺)

@@ -20,10 +20,10 @@ open _NatTrans_
 
 private
   variable
-    n m n' m' n'' m'' n''' m''' : Level
-    c₁ c₂ c₃ c₄ d₁ d₂ : Cat n m
+    o m o' m' o'' m'' o''' m''' : Level
+    c₁ c₂ c₃ c₄ d₁ d₂ : Cat o m
 
-_X_ : (Cat n m) → (Cat n' m') → Cat (n ⊔ n') (m ⊔ m')
+_X_ : (Cat o m) → (Cat o' m') → Cat (o ⊔ o') (m ⊔ m')
 obj (c₁ X c₂) = (obj c₁ × obj c₂)
 _hom_ (c₁ X c₂) (a₁ , a₂) (b₁ , b₂) = (a₁ hom₁ b₁) × (a₂ hom₂ b₂)
   where _hom₁_ = _hom_ c₁
@@ -66,7 +66,7 @@ productAssociatorᵣ = MkFunctor
 
 -- project middle two
 -- for some reason there have to be a lot of implicit arguments
-π₂₃ : {c₁ : Cat n m} {c₂ : Cat n' m'} {c₃ : Cat n'' m''} {c₄ : Cat n''' m'''}
+π₂₃ : {c₁ : Cat o m} {c₂ : Cat o' m'} {c₃ : Cat o'' m''} {c₄ : Cat o''' m'''}
   → ((c₁ X c₂) X (c₃ X c₄)) Functor (c₂ X c₃)
 π₂₃ {c₁ = c₁ }{c₂ = c₂} {c₃ = c₃} {c₄ = c₄} =
   ((productAssociatorᵣ{c₁ = (c₁ X c₂)} {c₂ = c₃} {c₃ = c₄} ●F
@@ -107,11 +107,11 @@ compLaw swapFunctor = λ _ _ → refl
 |   |   |   |
 -}
 
-|⇆| : {a : Set n} {b : Set m} {c : Set n'} {d : Set m'}
+|⇆| : {a : Set o} {b : Set m} {c : Set o'} {d : Set m'}
   → ((a × b) × (c × d)) → ((a × c) × (b × d))
 |⇆| ((a , b) , (c , d)) = (a , c) , (b , d)
 
-|⇆|𝕏 : {c₁ : Cat n m} {c₂ : Cat n' m'} {c₃ : Cat n'' m''} {c₄ : Cat n''' m'''}
+|⇆|𝕏 : {c₁ : Cat o m} {c₂ : Cat o' m'} {c₃ : Cat o'' m''} {c₄ : Cat o''' m'''}
   → ((c₁ X c₂) X (c₃ X c₄)) Functor ((c₁ X c₃) X (c₂ X c₄))
 |⇆|𝕏 {c₁ = c₁ }{c₂ = c₂} {c₃ = c₃} {c₄ = c₄}
   = productAssociatorᵣ {c₁ = (c₁ X c₂)} {c₂ = c₃} {c₃ = c₄} ●F
@@ -124,7 +124,7 @@ compLaw swapFunctor = λ _ _ → refl
 ⃤ = idFunctor \/ idFunctor
 
 -- product of natural transformations
-_𝕏ₙ_ : {c₁ : Cat n m} {c₂ : Cat n' m'} {c₃ : Cat n'' m''} {c₄ : Cat n''' m'''}
+_𝕏ₙ_ : {c₁ : Cat o m} {c₂ : Cat o' m'} {c₃ : Cat o'' m''} {c₄ : Cat o''' m'''}
   → {F : c₁ Functor c₂} → {G : c₁ Functor c₂}
   → {H : c₃ Functor c₄} → {I : c₃ Functor c₄}
   → (α : F NatTrans G) → (β : H NatTrans I)

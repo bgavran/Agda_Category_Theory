@@ -29,21 +29,25 @@ record Cat (o m : Level) : Set (catLvl o m) where
 
 
   _∘_  : {a b c : obj}
-    -> (      b hom c)
-    -> (a hom b)
-    -> (a    hom    c)
+    → (      b hom c)
+    → (a hom b)
+    → (a    hom    c)
   _∘_ g f = _●_ f g
 
-  _[_,_] : obj -> obj -> Set m
+  _[_,_] : obj → obj → Set m
   _[_,_] = _hom_
 
   _[_∘_] : {a b c : obj}
-    -> b hom c -> a hom b -> a hom c
+    → b hom c → a hom b → a hom c
   _[_∘_] = _∘_
 
   _[_●_] : {a b c : obj}
-    -> a hom b -> b hom c -> a hom c
+    → a hom b → b hom c → a hom c
   _[_●_] = _●_
+
+  -- _[_●_●_] : {a b c d : obj} -- this implicitly assumes an order of composition
+  --   → a hom b → b hom c → c hom d → a hom d
+  -- _[_●_●_] f g h = f ● g ● h
 
   -- To say that two morphims are equal we're using Agda's built in ≡
   -- We additionally need to say that composing morphisms respects equality

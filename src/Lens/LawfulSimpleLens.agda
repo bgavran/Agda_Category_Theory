@@ -1,11 +1,12 @@
 open import Level
 open import Function using (flip)
 open import Data.Product
-open import IO
 open import Relation.Binary.PropositionalEquality hiding ([_]; naturality)
 open ≡-Reasoning
 
 open import Category
+open import Shapes
+open import Isomorphism
 open import Functor
 open import Product
 open import NaturalTransformation
@@ -29,40 +30,26 @@ import Lens.LensCategory as LC
 import Lens.LensAssociativity
 import Lens.SimpleLens
 
-private
-  module cct = Cat cat
-  module mc = Monoidal.Monoidal mc
-  module smc = SymmetricMonoidal.SymmetricMonoidal smc
-  module cd = CD-Category.CD-Category cd
-  module cda = CDAffine-Category.CDAffine-Category cda
-  module cart = Cartesian.Cartesian cart
-  module lenss = L cart
-  module lc = LC cart
-  module ls = Lens.SimpleLens cart
-  module lensassoc = Lens.LensAssociativity cart
-
 open _Functor_
-open Cat.CommutativeSquare
-open import Isomorphism
-open cct
-open mc
-open smc
-open cd
-open cda
-open cart
-open lenss
-open lc
-open lensassoc using (lensAssoc)
-open ls
+open Shapes.CommutativeSquare
+open Cat cat
+open Monoidal.Monoidal mc
+open SymmetricMonoidal.SymmetricMonoidal smc
+open CD-Category.CD-Category cd
+open CDAffine-Category.CDAffine-Category cda
+open Cartesian.Cartesian cart
+open L cart
+open LC cart
+open Lens.LensAssociativity cart using (lensAssoc)
+open Lens.SimpleLens cart
+
 
 record LawfulSimpleLens (a b : obj) : (Set m) where
   constructor MkLawfulSimpleLens
   field
     simpleLens : SimpleLens a b
-  module simpleLens = SimpleLens simpleLens
-  open simpleLens
-  module lls = Lens lens
-  open lls
+  open SimpleLens simpleLens
+  open Lens lens
 
   field
     putGetLaw : put ● get ≡ π₂
@@ -88,7 +75,7 @@ lawfulSimpleLensId = MkLawfulSimpleLens
        δ ● (id ⊗ₘ id) ● (π₂ ● id)
    ≡⟨  (refl⟨●⟩ idLaw ⊗) ⟨●⟩ left-id   ⟩
        δ ● id ● π₂
-   ≡⟨  trans (left-id ⟨●⟩refl)  δ●π₂≡id ⟩
+   ≡⟨  trans (left-id ⟨●⟩refl)  ? ⟩ -- CD-Category.CD-Category.δ●π₂≡id ⟩
        id
    ∎)
 
@@ -112,34 +99,34 @@ lawfulSimpleLensCategory = MkCat
 lawfulSimpleLensMonoidal : Monoidal lawfulSimpleLensCategory
 lawfulSimpleLensMonoidal = MkMonoidal
   (MkFunctor {!!} {!!} {!!} {!!})
-  (Monoidal.𝟙 simpleLensMonoidal)
+  (Monoidal.𝕀 simpleLensMonoidal)
   {!!}
   {!!}
   {!!}
   {!!}
   {!!}
 
-lawfulSimpleLensCDAffineCategory : CDAffine-Category simpleLensCDCategory
-lawfulSimpleLensCDAffineCategory = MkCDAffine (λ {a = a} {b = b} {f = f} →
-  let MkSimpleLens (MkLens gf pf) = f
-  in cong MkSimpleLens
-  (begin
-      MkLens ε π₁
-   ≡⟨ cong₂ MkLens deleteApply (
-     begin
-          π₁
-     ≡⟨  {!!} ⟩
-         (δ ⊗ₘ id) ● αₘ ● (id ⊗ₘ (π₁ ● gf)) ● pf
-     ≡⟨  (refl⟨●⟩ (sym left-id ⟨⊗⟩ sym π₁law)) ⟨●⟩refl ⟩
-         (δ ⊗ₘ id) ● αₘ ● ((id ● id) ⊗ₘ ((gf ⊗ₘ id) ● π₁)) ● pf
-     ≡⟨  (refl⟨●⟩ distribute⊗) ⟨●⟩refl ⟩
-         (δ ⊗ₘ id) ● αₘ ● ((id ⊗ₘ (gf ⊗ₘ id)) ● (id ⊗ₘ π₁)) ● pf
-     ≡⟨  sym assoc ⟨●⟩refl ⟩
-         (δ ⊗ₘ id) ● αₘ ● (id ⊗ₘ (gf ⊗ₘ id)) ● (id ⊗ₘ π₁) ● pf
-     ≡⟨  (assocApply (sym α□)) ⟨●⟩refl₂ ⟩
-         (δ ⊗ₘ id) ● ((id ⊗ₘ gf) ⊗ₘ id ) ● αₘ ● (id ⊗ₘ π₁) ● pf
-     ∎) ⟩
-      MkLens (gf ● ε) ((δ ⊗ₘ id) ● ((id ⊗ₘ gf) ⊗ₘ id ) ● αₘ ● (id ⊗ₘ π₁) ● pf)
-   ≡⟨ refl ⟩
-      MkLens gf pf ●ₗ MkLens ε π₁
-    ∎))
+-- lawfulSimpleLensCDAffineCategory : CDAffine-Category simpleLensCDCategory
+-- lawfulSimpleLensCDAffineCategory = MkCDAffine (λ {a = a} {b = b} {f = f} →
+--   let MkSimpleLens (MkLens gf pf) = f
+--   in cong MkSimpleLens
+--   (begin
+--       MkLens ε π₁
+--    ≡⟨ cong₂ MkLens deleteApply (
+--      begin
+--           π₁
+--      ≡⟨  {!!} ⟩
+--          (δ ⊗ₘ id) ● αₘ ● (id ⊗ₘ (π₁ ● gf)) ● pf
+--      ≡⟨  (refl⟨●⟩ (sym left-id ⟨⊗⟩ sym π₁law)) ⟨●⟩refl ⟩
+--          (δ ⊗ₘ id) ● αₘ ● ((id ● id) ⊗ₘ ((gf ⊗ₘ id) ● π₁)) ● pf
+--      ≡⟨  (refl⟨●⟩ distribute⊗) ⟨●⟩refl ⟩
+--          (δ ⊗ₘ id) ● αₘ ● ((id ⊗ₘ (gf ⊗ₘ id)) ● (id ⊗ₘ π₁)) ● pf
+--      ≡⟨  sym assoc ⟨●⟩refl ⟩
+--          (δ ⊗ₘ id) ● αₘ ● (id ⊗ₘ (gf ⊗ₘ id)) ● (id ⊗ₘ π₁) ● pf
+--      ≡⟨  (assocApply (sym α□)) ⟨●⟩refl₂ ⟩
+--          (δ ⊗ₘ id) ● ((id ⊗ₘ gf) ⊗ₘ id ) ● αₘ ● (id ⊗ₘ π₁) ● pf
+--      ∎) ⟩
+--       MkLens (gf ● ε) ((δ ⊗ₘ id) ● ((id ⊗ₘ gf) ⊗ₘ id ) ● αₘ ● (id ⊗ₘ π₁) ● pf)
+--    ≡⟨ refl ⟩
+--       MkLens gf pf ●ₗ MkLens ε π₁
+--     ∎))

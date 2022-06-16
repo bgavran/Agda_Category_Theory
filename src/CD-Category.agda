@@ -48,7 +48,7 @@ open M
 open S
 
 constMonoidalFunctor𝟙 : mc MonoidalFunctor mc
-constMonoidalFunctor𝟙 = MkMonoidalFunctor (constFunctor 𝟙) (MkNatTrans {!!} {!!}) id
+constMonoidalFunctor𝟙 = MkMonoidalFunctor (constFunctor 𝕀) (MkNatTrans {!!} {!!}) id
 
 monoidal⃤⊗ : mc MonoidalFunctor mc
 monoidal⃤⊗ = MkMonoidalFunctor ⃤⊗ {!!} {!!}
@@ -63,7 +63,7 @@ record CD-Category : (Set (n ⊔ m)) where
   δₘ : {c : obj} → c hom (c ⊗ₒ c) -- multiplication
   δₘ = η (θ δ)
 
-  εₘ : {c : obj} → c hom 𝟙         -- counit
+  εₘ : {c : obj} → c hom 𝕀         -- counit
   εₘ = η (θ ε)
 
   δ□ : {a b : obj} {f : a hom b}
@@ -74,7 +74,7 @@ record CD-Category : (Set (n ⊔ m)) where
     → CommutativeSquare f εₘ εₘ id
   ε□ = naturality (θ ε)
 
-  ε▵ : εₘ ≡ id {a = 𝟙}
+  ε▵ : εₘ ≡ id {a = 𝕀}
   ε▵ = (sym right-id) ∙ (id▵ ε)
 
   field

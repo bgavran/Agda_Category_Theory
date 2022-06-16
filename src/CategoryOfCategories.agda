@@ -16,14 +16,16 @@ open import Data.Empty
 open import Utils
 open import Category
 open import Functor
+open import Product
 open import NaturalTransformation
 open import Monoidal
 open import SymmetricMonoidal
 open import CD-Category
 open import MonoidalNaturalTransformation
 open import Shapes
+open import Isomorphism
 
-open import SetInstance
+open import CategoryOfSets
 
 -- open import Terminal -- probably should move this proof of terminality of oneObjectCat to a different file
 
@@ -32,6 +34,7 @@ open _Functor_
 
 module CategoryOfCategories where
 
+-- some stuff for testing
 variable
   l : Level
   A B : Type l
@@ -81,11 +84,11 @@ catOfCats {o = o} {m = m} = MkCat
   (λ (MkCat obj' hom' id' comp' left-id' right-id' assoc' resp') → (MkCat obj' (flip hom') id' (flip comp') right-id' left-id' (sym assoc') (flip resp')))
   (λ F → MkFunctor (mapObj F) (mapMor F) (idLaw F) λ f g → compLaw F g f)
   (λ {a = cat} → λ i → MkFunctor (λ x → x) (λ x → x) (λ i₁ → id cat) λ f g i₁ → cat [ g ● f ])
-  λ {a = a} {b = b} {c = c} F G → λ i → MkFunctor
+  (λ {a = a} {b = b} {c = c} F G → λ i → MkFunctor
     (λ x → mapObj G (mapObj F x))
     (λ f → mapMor G (mapMor F f))
     (λ i₁ → let t = mapMor G (mapMor F (id a)) in {!t!})
-    λ f g i₁ → {!c!} [ g ● f ]
+    λ f g i₁ → {!c!} [ g ● f ])
 
 
 _ᵒᵖᶜ : {o m : Level} → (cat : Cat o m) → Cat o m
@@ -95,14 +98,10 @@ cat ᵒᵖᶜ = mapObj ᵒᵖ cat
 _ᵒᵖᶠ : {o m : Level} {cat₁ cat₂ : Cat o m} → (f : cat₁ Functor cat₂) → ((cat₁ ᵒᵖᶜ) Functor (cat₂ ᵒᵖᶜ))
 f ᵒᵖᶠ = mapMor ᵒᵖ f
 
--- need the kronecker below δ : Set × Set → 2 ↦ ((a, a) ↦ 1 | (a, _) ↦ 0)
-kron : {n : Level} {s : Set n} → s → s → Set n
-kron a b = a ≡ b
-
 disc : {n : Level} → Set n → Cat n n
 disc {n = n} s = MkCat
   s
-  kron
+  (λ a b → a ≡ b) -- this is like  kron : {n : Level} {s : Set n} → s → s → Set n , i.e. δ : Set × Set → 2 ↦ ((a, a) ↦ 1 | (a, _) ↦ 0)
   (λ {a} → refl)
   (λ f g → f ∙ g)
   {!!}
@@ -113,7 +112,7 @@ disc {n = n} s = MkCat
 disc' : {o : Level} → 𝕊𝕖𝕥 {o = o} Functor catOfCats {o = o}
 disc' = MkFunctor
   disc
-  {!!}
+  (λ f → MkFunctor f {!!} {!!} {!!})
   {!!}
   {!!}
 
@@ -147,46 +146,6 @@ emptyCat {o = o} {m = m} = MkCat
   (λ a b → Lift m ⊥)
   (lift {!()!})  -- ??
   -- λ { { lift () } }
-  {!!}
-  {!!}
-  {!!}
-  {!!}
-  {!!}
-
-
-catOfCatsMonoidal : Monoidal catOfCats
-catOfCatsMonoidal = MkMonoidal
-  {!!}
-  oneObjectCat
-  {!!}
-  {!!}
-  {!!}
-  {!!}
-  {!!}
-
--- CatSymmetricMonoidal : SymmetricMonoidal catOfCatsMonoidal
--- CatSymmetricMonoidal = MkSymmMonoidal {!!}
-
--- CatCDCategory : CD-Category CatSymmetricMonoidal
--- CatCDCategory = MkCD-Category
---   --                                               should × go there?
---   (MkMonoidalNatTrans (MkNatTrans (MkFunctor (λ x → {!!} × {!!}) {!!} {!!} {!!}) {!!}) {!!} {!!})
---   (MkMonoidalNatTrans (MkNatTrans (MkFunctor (λ _ → lift tt) {!!} {!!} {!!}) {!!}) {!!} {!!})
---   {!!}
---   {!!}
---   {!!}
-
-
-cc : {n m : Level} → {cat : Cat n m} → {mc : Monoidal cat} → Set (n ⊔ m)
-cc {cat = cat} {mc = mc} = SymmetricMonoidal mc
-
--- category of cd-affine categories?
--- category of monoidal categories
-catOfSMC : {n m : Level} → Cat {!!} {!!}
-catOfSMC {n = n} {m = m} = MkCat
-  cc
-  {!!} -- monoidal functor
-  {!!}
   {!!}
   {!!}
   {!!}
