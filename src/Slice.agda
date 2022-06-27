@@ -8,7 +8,7 @@ open import Category
 open import Functor
 open import SliceOver
 open import CategoryOfCategories
-open import SetInstance
+open import CategoryOfSets
 open import NaturalTransformation
 import Shapes
 open Cat

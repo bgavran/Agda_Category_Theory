@@ -1,4 +1,5 @@
 open import Level
+open import Data.Product
 open import Function renaming (id to id')
 open import Cubical.Core.Everything hiding (comp)
 open import Cubical.Foundations.Prelude hiding (comp)
@@ -12,19 +13,27 @@ module Poly.Test
 record PolyObj : Set (suc (o ⊔ m)) where
   constructor MkPolyObj
   field
-    base : Set o
-    arr : base → Set m
+    pos : Set o
+    dir : pos → Set m
 
 open PolyObj
 
 record PolyHom (A B : PolyObj) : Set (o ⊔ m) where
   constructor MkPolyHom
   field
-    f : base A → base B
-    f# : {a : base A} → arr B (f a) → arr A a
+    f : pos A → pos B
+    f# : {a : pos A} → dir B (f a) → dir A a
+
+record NewPolyHom (A B : PolyObj) : Set (suc o ⊔ m) where
+  constructor MkNewPolyHom
+  field
+    res : Set o
+    f : pos A → res × pos B
+    f# : {r : res} → {!!}
+    -- f# : {a : pos A} → dir B (proj₂ (f a)) → dir A a -- can't use {a : A} in implementation?
 
 polyComp : {A B C : PolyObj} → (F : PolyHom A B) → (G : PolyHom B C) → PolyHom A C
-polyComp (MkPolyHom f f#) (MkPolyHom g g#) = MkPolyHom (g ∘ f) λ {a} → f# ∘ g# {f a}
+polyComp (MkPolyHom f f#) (MkPolyHom g g#) = MkPolyHom (g ∘ f) {!!} -- λ {a} → f# ∘ g# {f a}
 
 poly : Cat (suc (o ⊔ m)) (o ⊔ m)
 poly = MkCat
@@ -43,19 +52,10 @@ record PolyCat (o m : Level) : Set (suc (o ⊔ m)) where
   constructor MkPolyCat
   field
     obj : Set o
-    arr : obj → Set m
-    tgt : {a : obj} → arr a → obj
-    id : (a : obj) → arr a
-    comp : {a : obj} → (f : arr a) → (g : arr (tgt f)) → arr a
+    dir : obj → Set m
+    tgt : {a : obj} → dir a → obj
+    id : (a : obj) → dir a
+    comp : {a : obj} → (f : dir a) → (g : dir (tgt f)) → dir a
 
     idLaw : {a : obj} → tgt (id a) ≡ a
-    -- compLaw : {a : obj} {f : arr a} → comp (id a) f ≡ f
-
--- l0 : {o : Level} → Set o
--- l0 = {!!}
--- 
--- l1 : {o m : Level} → (A : l0 {o}) → Set m
--- l1 = {!!}
--- 
--- l2 : {o m m' : Level} → (A : l0 {o}) → (A' : l1 {m = m} A) → Set m'
--- l2 = {!!}
+    -- compLaw : {a : obj} {f : dir a} → comp (id a) f ≡ f
