@@ -40,17 +40,21 @@ DepLens = DepLens' {0ℓ}
 DepAdt : Cat (suc 0ℓ) 0ℓ
 DepAdt = DepAdt' {0ℓ}
 
+-- Adt' : {o m o' m' : Level}
+--   → (c : Cat o m)
+--   → (d : Cat o m)
+--   → Cat o {!!}
+-- Adt' c d = FLens c (constFunctor d)
+
 switch : Bool → Type
 switch false = Unit
 switch true = Bool
 
-dd : obj DepLens
-dd = MkGrothObj Bool switch
+test : DepLens [ MkGrothObj Bool switch , MkGrothObj Bool switch ]
+test = MkGrothHom id' λ { false _  → tt
+                        ; true b → not b}
 
-cc : obj DepLens
-cc = MkGrothObj Bool switch
-
-
-h : DepLens [ MkGrothObj Bool switch , MkGrothObj Bool switch ]
-h = MkGrothHom id' λ { false _  → {!!}
-                           ; true → {!!}}
+-- seems like this is a known bug and will be fixed in the next version?
+-- https://github.com/agda/agda/issues/691
+hh : DepAdt [ MkGrothObj Bool (λ _ → Bool) , MkGrothObj Bool (λ _ → Bool) ]
+hh = MkGrothHom id' λ x b → {!not b!}

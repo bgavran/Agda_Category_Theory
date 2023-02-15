@@ -25,3 +25,6 @@ record DepAct
 
 NonDepAct : (c, d : Cat o m) → Type (suc o ⊔ m)
 NonDepAct c d = DepAct c (constFunctor d) 
+
+
+-- DepActReparam : 
