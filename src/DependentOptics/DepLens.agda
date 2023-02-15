@@ -1,3 +1,5 @@
+{-# OPTIONS --allow-unsolved-metas #-}
+
 open import Level
 open import Data.Product
 open import Function renaming (id to id')
@@ -7,39 +9,38 @@ open import Cubical.Foundations.Prelude hiding (comp)
 open import Category
 open import CategoryOfSets
 
-module Poly.Test
+module DependentOptics.DepLens
   {o m : Level} where
 
-record PolyObj : Set (suc (o ⊔ m)) where
-  constructor MkPolyObj
+record Cont : Set (suc (o ⊔ m)) where
+  constructor MkCont
   field
     pos : Set o
     dir : pos → Set m
 
-open PolyObj
+record Cont0 : Set (suc (o ⊔ m)) where
+  constructor MkCont0
+  field
+    pos0 : Set o
+    dir0 : (@0 _ : pos0) → Set m
 
-record PolyHom (A B : PolyObj) : Set (o ⊔ m) where
-  constructor MkPolyHom
+open Cont
+
+record DepLens (A B : Cont) : Set (o ⊔ m) where
+  constructor MkDepLens
   field
     f : pos A → pos B
     f# : {a : pos A} → dir B (f a) → dir A a
 
-record NewPolyHom (A B : PolyObj) : Set (suc o ⊔ m) where
-  constructor MkNewPolyHom
-  field
-    res : Set o
-    f : pos A → res × pos B
-    f# : {r : res} → {!!}
-    -- f# : {a : pos A} → dir B (proj₂ (f a)) → dir A a -- can't use {a : A} in implementation?
-
-polyComp : {A B C : PolyObj} → (F : PolyHom A B) → (G : PolyHom B C) → PolyHom A C
-polyComp (MkPolyHom f f#) (MkPolyHom g g#) = MkPolyHom (g ∘ f) {!!} -- λ {a} → f# ∘ g# {f a}
+polyComp : {A B C : Cont} → (F : DepLens A B) → (G : DepLens B C) → DepLens A C
+polyComp (MkDepLens f f#) (MkDepLens g g#) = MkDepLens (g ∘ f) (λ {a} → f# ∘ g# {f a}) -- λ {a} f# ∘ g# {f a}
+                                                                                       --   there's going to be a point in history 'a'
 
 poly : Cat (suc (o ⊔ m)) (o ⊔ m)
 poly = MkCat
-  PolyObj
-  (λ A B → PolyHom A B)
-  (MkPolyHom id' id')
+  Cont
+  (λ A B → DepLens A B)
+  (MkDepLens id' id')
   polyComp
   {!!}
   {!!}

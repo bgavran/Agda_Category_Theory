@@ -5,15 +5,24 @@ open ≡-Reasoning
 
 open import Category
 open import Functor
-open import Monoidal
+open import DepAct
 
-module Lens.Optic
-  {o m' : Level} -- renamed to m' because residual is called m
-  {cat : Cat o m'}
-  {mc : Monoidal cat} where
+module Optic.Optic
+  {o m' : Level}  -- renamed to m' because residual is called m
+  {cat : Cat o m}
+  (c d m : Cat o m)
+  (l : NonDepAct c m)
+  (r : NonDepAct d m)
+  where
 
+
+-- Optic : NonDepAct  
+
+{-
 open Cat cat
 open Monoidal.Monoidal mc
+
+
 
 
 record OpticHom (a a' b b' : obj) : Set (o ⊔ m') where
@@ -37,3 +46,4 @@ opticCat = MkCat
   {!!}
   {!!}
   {!!}
+-}

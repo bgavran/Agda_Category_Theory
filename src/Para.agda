@@ -49,12 +49,12 @@ _●ₚ_ {a = a} {b = b} {c = c} (p , f) (q , g) = (q ⊗ₒ p) , f ●ₚ' g
 -- make operators for reasoning in Para?
 
 paraLeftId : {a b : obj} {f : Σ obj (λ p → (p ⊗ₒ a) hom b)}
-  → (𝟙 , λₘ) ●ₚ f ≡ f
+  → (𝕀 , λₘ) ●ₚ f ≡ f
 paraLeftId {a = a} {b = b} {f = p , f} =
   begin
-    (𝟙 , λₘ) ●ₚ (p , f)
+    (𝕀 , λₘ) ●ₚ (p , f)
   ≡⟨⟩
-    (p ⊗ₒ 𝟙) , αₘ ● (id ⊗ₘ λₘ) ● f
+    (p ⊗ₒ 𝕀) , αₘ ● (id ⊗ₘ λₘ) ● f
   ≡⟨     {!!}     ⟩
       p , f
   ∎
@@ -63,7 +63,7 @@ paraLeftId {a = a} {b = b} {f = p , f} =
 para : (v : SymmetricMonoidal mc) → Cat n (n ⊔ m)
 Cat.obj (para v)      = obj
 Cat._hom_ (para v)    = λ a b → Σ obj (λ p → (p ⊗ₒ a) hom b )
-Cat.id (para v)       = 𝟙 , λₘ
+Cat.id (para v)       = 𝕀 , λₘ
 Cat._●_ (para v)      = _●ₚ_
 Cat.left-id (para v)  = {!!} -- paraLeftId
 Cat.right-id (para v) = {!!}

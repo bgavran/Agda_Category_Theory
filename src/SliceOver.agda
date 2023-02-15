@@ -8,7 +8,7 @@ open import Data.Product
 open import Category
 open import Functor
 open import CategoryOfCategories
-open import CategoryOfSets
+open import AgdaCategories
 open import Monoidal
 import Shapes
 

@@ -46,10 +46,49 @@ module reindexSemiring
 record ReflexiveGraph : Set (suc n) where
   constructor MkRflxGraph
   field
-    V : Set n
-    dir : V → Set n
-    tgt : (v : V) → (d : dir v) → V
-    id : (v : V) → dir v
-    eqq : (v : V) → v ≡ tgt v (id v)
+    pos : Set n
+    dir : pos → Set n
+    tgt : (v : pos) → (d : dir v) → pos
+    id : (v : pos) → dir v
+    eqq : (v : pos) → v ≡ tgt v (id v)
 
-GNN : (G : ReflexiveGraph n) → ?
+
+{-
+Set → Cat
+-- GNN : (G : ReflexiveGraph n) → IndexedContainer (V G) (V G)
+
+{-
+BF
+E+E--∇_e ---> E
+ |            |
+ src + E      π
+ v            v
+V + E         V
+
+-}
+
+
+Things you can do to a question:
+* Generalise it (the kind of thinking the answer to that particular question induces has nothing to do with that particular question; it applies in a more general setting)
+
+
+The coend of a functor F:Cᵒᵖ×C→Set is the same as its colimit weighted by Hom_c.
+But we also know that ∫F is the same as colim π;F, where π:El(Hom_c)→Cᵒᵖ×C.
+
+Are you saying this works in general - a weighted co
+
+
+Category of elements of F:C→Set? Oh you mean the colimit of F weighted by X↦X\C
+
+Ah, so the adjunction π₀ ⊣ discr between Cat and Set via the enriched base change gives to a local adjunction π₀* ⊣* discr* between 2-Cat and Cat?
+
+l:X×Y→ℝ
+
+(A, A') → (B, B') → (C, C')
+[C', B'] ⊗ [B', A']
+C' → A'
+
+∘ : [C', B'] ⊗ [B', A'] → [C', A']
+
+
+-}

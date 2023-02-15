@@ -3,29 +3,15 @@
 open import Level
 open import Cubical.Core.Everything
 open import Cubical.Foundations.Prelude hiding (Lift)
-open import Cubical.Foundations.GroupoidLaws using (lUnit; rUnit)
-open import Cubical.Foundations.HLevels
-open import Cubical.Foundations.Function hiding (flip)
+-- open import Cubical.Foundations.GroupoidLaws using (lUnit; rUnit)
 open import Data.Unit using (⊤; tt) -- for the terminal category
 open import Data.Empty using (⊥) -- for the initial category
-open import Data.Product
-open import Agda.Builtin.Bool
 open import Function renaming (id to idff)
-open import Data.Empty
 
-open import Utils
 open import Category
 open import Functor
-open import Product
-open import NaturalTransformation
-open import Monoidal
-open import SymmetricMonoidal
-open import CD-Category
-open import MonoidalNaturalTransformation
-open import Shapes
-open import Isomorphism
 
-open import CategoryOfSets
+open import AgdaCategories
 
 -- open import Terminal -- probably should move this proof of terminality of oneObjectCat to a different file
 
@@ -67,8 +53,10 @@ leftIdFunctor {cat₁ = cat₁} {cat₂ = cat₂} {f = f} = λ i → MkFunctor (
 
 
 
-catOfCats : {o m : Level} → Cat (suc o ⊔ suc m) (o ⊔ m)
-catOfCats {o = o} {m = m} = MkCat
+
+-- Even though we had previously defined a Functor which can go between categories between different levels, here all functors map between categories of levels o and m
+ℂ𝕒𝕥 : (o m : Level) → Cat (suc o ⊔ suc m) (o ⊔ m)
+ℂ𝕒𝕥 o m = MkCat
   (Cat o m)
   _Functor_
   idFunctor
@@ -79,10 +67,10 @@ catOfCats {o = o} {m = m} = MkCat
   {!!}
 
 
-ᵒᵖ : {o m : Level} → (catOfCats {o} {m}) Functor (catOfCats {o} {m})
+ᵒᵖ : {o m : Level} → (ℂ𝕒𝕥 o m) Functor (ℂ𝕒𝕥 o m)
 ᵒᵖ = MkFunctor
-  (λ (MkCat obj' hom' id' comp' left-id' right-id' assoc' resp') → (MkCat obj' (flip hom') id' (flip comp') right-id' left-id' (sym assoc') (flip resp')))
-  (λ F → MkFunctor (mapObj F) (mapMor F) (idLaw F) λ f g → compLaw F g f)
+  (λ c → (MkCat (obj c) (flip (_hom_ c)) (id c) (flip (_●_ c)) (right-id c) (left-id c) (sym (assoc c)) (flip (●-resp-≡ c))))
+  (λ F → MkFunctor (mapObj F) (mapMor F) (idLaw F) (λ f g → compLaw F g f))
   (λ {a = cat} → λ i → MkFunctor (λ x → x) (λ x → x) (λ i₁ → id cat) λ f g i₁ → cat [ g ● f ])
   (λ {a = a} {b = b} {c = c} F G → λ i → MkFunctor
     (λ x → mapObj G (mapObj F x))
@@ -109,9 +97,9 @@ disc {n = n} s = MkCat
   {!!}
   {!!}
 
-disc' : {o : Level} → 𝕊𝕖𝕥 {o = o} Functor catOfCats {o = o}
-disc' = MkFunctor
-  disc
+disc' : {o : Level} → (𝕋𝕪𝕡𝕖 o) Functor (ℂ𝕒𝕥 o o)
+disc' {o} = MkFunctor
+  (disc {o})
   (λ f → MkFunctor f {!!} {!!} {!!})
   {!!}
   {!!}
@@ -131,13 +119,13 @@ oneObjectCat {o = o} {m = m} = MkCat
   λ _ _ → refl
 
 
--- oneObjectCatTerminal : {o m : Level} → Terminal {cat = catOfCats} oneObjectCat
+-- oneObjectCatTerminal : {o m : Level} → Terminal {cat = ℂ𝕒𝕥} oneObjectCat
 -- oneObjectCatTerminal =
 --   MkTerminal (λ anyCat → MkFunctor (λ x → lift tt) (λ x → lift tt) refl λ f g → refl)
 --   (MkCommTr {!!})
 
 
--- name : {o m : Level} → Cat o m → oneObjectCat {o = o} {m = m} Functor catOfCats {o = o} {m = m}
+-- name : {o m : Level} → Cat o m → oneObjectCat {o = o} {m = m} Functor ℂ𝕒𝕥 {o = o} {m = m}
 -- name cat = MkFunctor (λ x → cat) (λ x → idFunctor) refl λ f g → refl
 
 emptyCat : {o m : Level} → Cat o m
@@ -148,6 +136,23 @@ emptyCat {o = o} {m = m} = MkCat
   -- λ { { lift () } }
   {!!}
   {!!}
+  {!!}
+  {!!}
+  {!!}
+
+
+FamInd : {o : Level} → ((𝕋𝕪𝕡𝕖 o) ᵒᵖᶜ) Functor (ℂ𝕒𝕥 (suc o) o)
+FamInd {o} = MkFunctor
+  FamCat
+  (λ f → MkFunctor (λ a' x → a' (f x)) {!!} {!!} {!!})
+  {!!}
+  {!!}
+
+
+
+Fam0Ind : {o : Level} → ((𝕋𝕪𝕡𝕖 o) ᵒᵖᶜ) Functor (ℂ𝕒𝕥 (suc o) o)
+Fam0Ind {o} = MkFunctor
+  Fam0Cat
   {!!}
   {!!}
   {!!}

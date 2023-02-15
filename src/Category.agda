@@ -62,7 +62,7 @@ record Cat (o m : Level) : Set (catLvl o m) where
     ●-resp-≡ : {a b c : obj} → {f g : a hom b} → {h i : b hom c}
       → f ≡ g
       → h ≡ i
-      → (f ● h ≡ g ● i)
+      → (f ● h ≡ g ● i) -- this should be a property of equality?
   syntax ●-resp-≡ l r = l ⟨●⟩ r
 
   dom : {a b : obj} -> (a hom b) -> obj

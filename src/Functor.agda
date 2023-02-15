@@ -19,6 +19,7 @@ private
 
 open Cat renaming (_∘_ to _∘₁_)
 
+-- A functor can go between cats of different levels?
 record _Functor_ (cat₁ : Cat n m) (cat₂ : Cat n' m') : Set (n ⊔ m ⊔ n' ⊔ m') where
   constructor MkFunctor
   field

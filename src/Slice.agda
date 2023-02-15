@@ -1,3 +1,4 @@
+{-# OPTIONS --allow-unsolved-metas #-}
 open import Level
 open import Function using (flip)
 open import Cubical.Core.Everything
@@ -8,8 +9,8 @@ open import Category
 open import Functor
 open import SliceOver
 open import CategoryOfCategories
-open import CategoryOfSets
-open import NaturalTransformation
+open import AgdaCategories
+-- open import NaturalTransformation
 import Shapes
 open Cat
 
@@ -27,7 +28,7 @@ module Slice {o m} {cat : Cat o m} where
     {!!}
 
 
-  // : cat Functor catOfCats
+  // : cat Functor (ℂ𝕒𝕥 (o ⊔ m) {!!})
   // = MkFunctor
     (λ x → cat / x)
     (λ f → preComp f)
@@ -36,16 +37,16 @@ module Slice {o m} {cat : Cat o m} where
 
   -- secNat : {n : Level} → // NatTrans (constFunctor 𝕊𝕖𝕥 {n = n})
   -- secNat = ?
-  -- ∫ : (cat Functor catofCats) →
+  -- ∫ : (cat Functor ℂ𝕒𝕥) →
 
-  record GrothObj (F : cat Functor catOfCats {o} {m}) : Set o  where
-    constructor MkGroth
+  record GrothObj (F : cat Functor ℂ𝕒𝕥 o m) : Set o  where
+    constructor MkGrothObj
     open _Functor_ F renaming (mapObj to F₀; mapMor to F₁)
     field
       base : obj cat
       point_over_base : obj (F₀ base)
 
-  record GrothHom {F : cat Functor catOfCats {o} {m}} (a b : GrothObj F) : Set m where
+  record GrothHom {F : cat Functor ℂ𝕒𝕥 o m} (a b : GrothObj F) : Set m where
     constructor MkGrothHom
     private
       module A = GrothObj a
@@ -62,12 +63,12 @@ module Slice {o m} {cat : Cat o m} where
     field
       fw# : F₀ B.base  [ F⟨fw⟩₀ A.point_over_base , B.point_over_base ]
 
-  --grothMorph : {F : cat Functor catOfCats} → GrothObj F → GrothObj F → Set {!!}
+  --grothMorph : {F : cat Functor ℂ𝕒𝕥} → GrothObj F → GrothObj F → Set {!!}
   --grothMorph (MkGroth a a') (MkGroth b b') = {!!}
 
-  grothMorph : {F : cat Functor catOfCats} {a b c : GrothObj F} →
+  grothMorph : {F : cat Functor ℂ𝕒𝕥 o m} {a b c : GrothObj F} →
              GrothHom a b → GrothHom b c → GrothHom a c
-  grothMorph {F = F} {c = (MkGroth c c')} (MkGrothHom f f#) (MkGrothHom g g#) = MkGrothHom (cat [ f ● g ]) {!F₀ c [ mapMor (F₁ g) f# ● g# ]!} -- here we need to use properties as structure! Which means we need 2-categories
+  grothMorph {F = F} {c = (MkGrothObj c c')} (MkGrothHom f f#) (MkGrothHom g g#) = MkGrothHom (cat [ f ● g ]) {!F₀ c [ mapMor (F₁ g) f# ● g# ]!} -- here we need to use properties as structure! Which means we need 2-categories
     where
     open _Functor_
     open _Functor_ F renaming (mapObj to F₀; mapMor to F₁)
@@ -75,8 +76,9 @@ module Slice {o m} {cat : Cat o m} where
 
   open _Functor_
   -- Grothendieck construction
-  g : (F : cat Functor catOfCats {o} {m}) → Cat o m
-  g F = MkCat
+  -- this functor (F) goes between two categories of different levels
+  groth : cat Functor (ℂ𝕒𝕥 o m) → Cat o m
+  groth F = MkCat
     (GrothObj F)
     (λ a b → GrothHom a b)
     (λ {a} → MkGrothHom (id cat {base a}) {!id (F₀ (base a)) {point_over_base a}!})
@@ -90,3 +92,6 @@ module Slice {o m} {cat : Cat o m} where
     open GrothObj
 
 
+
+  -- IndCatOp : cat Functor (ℂ𝕒𝕥 o m) → cat Functor (ℂ𝕒𝕥 o m)
+  -- IndCatOp f = f ●F ᵒᵖ
