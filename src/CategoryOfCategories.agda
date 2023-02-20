@@ -143,7 +143,7 @@ emptyCat {o = o} {m = m} = MkCat
 
 FamInd : {o : Level} → ((𝕋𝕪𝕡𝕖 o) ᵒᵖᶜ) Functor (ℂ𝕒𝕥 (suc o) o)
 FamInd {o} = MkFunctor
-  FamCat
+  (Fam (𝕋𝕪𝕡𝕖 o))
   (λ f → MkFunctor (λ a' x → a' (f x)) {!!} {!!} {!!})
   {!!}
   {!!}
@@ -152,7 +152,7 @@ FamInd {o} = MkFunctor
 
 Fam0Ind : {o : Level} → ((𝕋𝕪𝕡𝕖 o) ᵒᵖᶜ) Functor (ℂ𝕒𝕥 (suc o) o)
 Fam0Ind {o} = MkFunctor
-  Fam0Cat
+  (Fam0 (𝕋𝕪𝕡𝕖 o))
   {!!}
   {!!}
   {!!}

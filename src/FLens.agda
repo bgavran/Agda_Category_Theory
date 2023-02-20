@@ -40,11 +40,11 @@ DepLens = DepLens' {0ℓ}
 DepAdt : Cat (suc 0ℓ) 0ℓ
 DepAdt = DepAdt' {0ℓ}
 
--- Adt' : {o m o' m' : Level}
---   → (c : Cat o m)
---   → (d : Cat o m)
---   → Cat o {!!}
--- Adt' c d = FLens c (constFunctor d)
+Adt' : {o m : Level}
+  → (c : Cat o m)
+  → (d : Cat o m)
+  → Cat o m
+Adt' c d = FLens c (constFunctor d)
 
 switch : Bool → Type
 switch false = Unit
